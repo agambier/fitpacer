@@ -2,6 +2,10 @@
 
 ## Le principe
 
+**C'est Claude qui propose la séance**, pas moi : dans la conversation, Claude (qui connaît mon journal)
+me propose une séance adaptée et en génère la description au format FitPacer. Je ne fais que copier /
+coller. L'app ne crée ni ne modifie jamais de séance.
+
 1. Dans une conversation, Claude génère une séance (maison, salle) au **format FitPacer** (ci-dessous).
 2. Je copie le texte et je le colle dans l'app (bouton « Coller »).
 3. L'app affiche le programme, je règle mon plafond de FC, je connecte ma montre (Suunto, partage FC
@@ -77,13 +81,28 @@ Retour au calme | 5:00 | -0,5 km/h / 30 s | 0 % | finir à 3 km/h environ
 31/10/2026 | salle | 35 min | Tapis incliné 35 min : Chauffe 5 min (4 → 5,5 km/h, 0 %) ; Marche 5×4 min (5,5 km/h, 7 %) ; … | 72/118/134 | ressenti 6/10 | – | – | salle chaude
 ```
 
-Champs : `date | type | durée réelle | titre [(arrêtée avant la fin)] : contenu réalisé | FC min/moy/max
-(ou « FC non reçue ») | ressenti N/10 | – | – | commentaire`.
+Format du journal tenu par Claude (en-tête du journal) :
+`jj/mm/aaaa | type | durée | contenu et perfs | FC min/moy/max | ressenti x/10 | poids | tour de taille | remarque`
+
+Donc côté app : `date | type | durée réelle | titre [(arrêtée avant la fin)] : contenu réalisé | FC min/moy/max
+(ou « FC non reçue ») | ressenti N/10 | poids | tour de taille | commentaire`.
+**Poids** et **tour de taille** valent `–` si non saisis (le journal en contient presque toujours `–`).
+Le nombre et l'ordre des 9 colonnes ne doivent jamais changer.
+
+Observations sur le journal réel (Claude enrichit la ligne a posteriori) :
+- La colonne remarque contient aussi des données de la montre (distance, kcal, effet d'entraînement),
+  l'hydratation, la température de la salle…
+- Claude y note des analyses FC : **dérive cardiaque** à charge constante (« ~128→142 ») et
+  **récupération** (« 144→112 en 5 min, 90 peu après »). L'app peut les calculer elle-même.
+- Le journal contient aussi des séances hors app (marche, extérieur) : la ligne de l'app n'est qu'un
+  type d'entrée parmi d'autres.
 
 ## Questions ouvertes
 
-- À quoi correspondent les deux colonnes `–` de la ligne de journal ? (réservées par le format du journal
-  côté Claude ? distance / calories ?)
+- Ajouter au bilan deux champs optionnels **poids (kg)** et **tour de taille (cm)** pour remplir les
+  colonnes 7 et 8 ? (saisie ponctuelle, rien n'est stocké)
+- Calculer et ajouter à la remarque : dérive FC sur les blocs à charge constante, récupération FC
+  (FC en fin de dernière étape intense → FC 1 min / fin du retour au calme) ?
 - Faut-il un « prompt système » à donner à Claude pour qu'il génère toujours ce format ? → on pourrait
   l'afficher dans l'app (bouton « Copier les consignes pour Claude »).
 - Garder le dernier texte collé et le plafond FC en `localStorage` (comme le prototype) : oui par défaut.
