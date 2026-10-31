@@ -35,8 +35,12 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
       Le menu ouvre trois fenêtres : **Aide sur le format**, **Consignes pour Claude**
       (Copier / Partager / Télécharger), **À propos** (version, version du format, lien vers le code).
       La version figure aussi dans le fichier exporté.
-- [x] **iPhone / iPad (iOS)** : pas de Bluetooth web. « Connecter la montre » affiche un avertissement
-      dédié, et « Démarrer » ne propose pas de connecter la montre (la séance démarre directement).
+- [x] **Navigateurs sans Bluetooth web** : « Connecter la montre » explique pourquoi et quoi faire
+      (iPhone / iPad, Brave sans le flag, Firefox, Samsung Internet, navigateur intégré à une app,
+      page non sécurisée, autre navigateur). Dans ces cas « Démarrer » ne propose pas la montre et
+      la séance démarre directement, avec un rappel « séance sans FC ».
+      Navigateur compatible mais Bluetooth du téléphone coupé, ou Bluetooth bloqué pour le site :
+      message dédié au moment de la connexion.
 - [x] **Question au démarrage** : si la montre n'est pas connectée (et que le Bluetooth web existe),
       « Démarrer » demande « Voulez-vous la connecter ? ». Oui → sélecteur Bluetooth, puis la séance
       démarre (avec ou sans FC selon le résultat) ; Non → la séance démarre tout de suite sans montre.

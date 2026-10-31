@@ -1,13 +1,44 @@
 // Bluetooth heart rate (standard GATT Heart Rate service 0x180D), with auto-reconnect.
 
-/** iPhone / iPad (including iPadOS, which reports itself as a Mac). */
-export function isIOS(): boolean {
-  if (typeof navigator === "undefined") return false;
-  return /iPhone|iPad|iPod/i.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+export interface BtEnv {
+  secure: boolean;
+  hasBluetooth: boolean;
+  ua: string;
+  touchPoints: number;
+  isBrave: boolean;
 }
 
-export const IOS_MESSAGE =
-  "⚠️ Connexion de la montre indisponible sur iPhone / iPad (iOS) : le Bluetooth web n’y est pas pris en charge. La séance fonctionne sans FC ; la montre peut enregistrer l’activité de son côté.";
+export function currentBtEnv(): BtEnv {
+  const nav = typeof navigator !== "undefined" ? navigator : undefined;
+  return {
+    secure: typeof window === "undefined" || window.isSecureContext,
+    hasBluetooth: !!nav && "bluetooth" in nav,
+    ua: nav?.userAgent || "",
+    touchPoints: nav?.maxTouchPoints || 0,
+    isBrave: !!(nav as { brave?: unknown } | undefined)?.brave,
+  };
+}
+
+const NO_HR = " La séance fonctionne sans FC ; la montre peut enregistrer l’activité de son côté.";
+
+/**
+ * Why the watch cannot be connected with this browser, or null when Web Bluetooth is available.
+ * Order matters: iOS first (no browser there supports it, except special ones that expose navigator.bluetooth).
+ */
+export function btUnsupportedMessage(env: BtEnv): string | null {
+  if (env.hasBluetooth && env.secure) return null;
+  const ua = env.ua;
+  const ios = /iPhone|iPad|iPod/i.test(ua) || (/Macintosh/.test(ua) && env.touchPoints > 1);
+  if (!env.secure) return "⚠️ La connexion de la montre exige une page sécurisée (adresse en https://)." + NO_HR;
+  if (ios) return "⚠️ Connexion de la montre indisponible sur iPhone / iPad (iOS) : le Bluetooth web n’y est pas pris en charge." + NO_HR;
+  if (env.isBrave)
+    return "⚠️ Bluetooth web désactivé dans Brave. Activez-le via brave://flags (option « Web Bluetooth API »), relancez Brave, ou utilisez Chrome." + NO_HR;
+  if (/Firefox|FxiOS/i.test(ua)) return "⚠️ Firefox ne prend pas en charge le Bluetooth web : utilisez Chrome (ou Brave) pour connecter la montre." + NO_HR;
+  if (/SamsungBrowser/i.test(ua)) return "⚠️ Samsung Internet ne permet pas la connexion de la montre : utilisez Chrome (ou Brave)." + NO_HR;
+  if (/; wv\)|FBAN|FBAV|Instagram|Line\//i.test(ua))
+    return "⚠️ Ce navigateur intégré (ouvert depuis une autre app) ne permet pas le Bluetooth : ouvrez la page dans Chrome." + NO_HR;
+  return "⚠️ Ce navigateur ne prend pas en charge le Bluetooth web : utilisez Chrome sur Android (ou Brave) pour connecter la montre." + NO_HR;
+}
 
 export type BtState = "off" | "connecting" | "on" | "lost";
 
@@ -28,21 +59,26 @@ export class HeartRateMonitor {
     return this.device?.name || null;
   }
 
+  /** Web Bluetooth usable in this browser (it may still be switched off on the phone). */
   get supported() {
-    return typeof navigator !== "undefined" && "bluetooth" in navigator;
+    return btUnsupportedMessage(currentBtEnv()) === null;
   }
 
   /** Must be called from a user gesture. */
   async connect() {
-    if (!this.supported && isIOS()) {
-      this.cb.onMessage(IOS_MESSAGE);
+    const unsupported = btUnsupportedMessage(currentBtEnv());
+    if (unsupported) {
+      this.cb.onMessage(unsupported);
       return;
     }
-    if (!this.supported) {
-      this.cb.onMessage(
-        "Le Bluetooth web n’est pas disponible. Dans Brave, activez-le via brave://flags (option « Web Bluetooth API »), puis relancez Brave. Sinon, utilisez Chrome sur Android.",
-      );
-      return;
+    try {
+      // Bluetooth switched off, no adapter, or blocked by a policy.
+      if (navigator.bluetooth.getAvailability && !(await navigator.bluetooth.getAvailability())) {
+        this.cb.onMessage("⚠️ Bluetooth indisponible : activez le Bluetooth du téléphone, puis réessayez.");
+        return;
+      }
+    } catch {
+      /* getAvailability not usable: try anyway */
     }
     try {
       const opts: RequestDeviceOptions = this.wideScan
@@ -65,8 +101,10 @@ export class HeartRateMonitor {
       } else if (err.name === "NotFoundError") {
         this.wideScan = false;
         this.cb.onMessage("Aucun appareil choisi. Vérifiez que le partage de FC est actif sur la montre et que la localisation du téléphone est activée.");
-      } else if (err.name === "SecurityError") {
-        this.cb.onMessage("Le navigateur bloque le Bluetooth ici. Ouvrez l’app dans son propre onglet, puis réessayez.");
+      } else if (err.name === "SecurityError" || err.name === "NotAllowedError") {
+        this.cb.onMessage(
+          "⚠️ Le navigateur bloque le Bluetooth pour ce site. Autorisez-le dans les paramètres du site (icône à gauche de l’adresse → Autorisations), ou ouvrez l’app dans Chrome.",
+        );
       } else {
         this.cb.onMessage("Connexion impossible : " + err.message);
       }

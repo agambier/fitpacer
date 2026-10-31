@@ -381,7 +381,7 @@ function loop() {
 setInterval(loop, 200);
 
 function startSession() {
-  showMsg("");
+  showMsg(monitor.supported ? "" : "Séance sans FC : ce navigateur ne permet pas de connecter la montre (détails : bouton « Connecter la montre »).");
   buildSegs();
   sparkline($<SVGSVGElement & HTMLElement>("spark"), [], prog.est);
   $("pauseBtn").textContent = "Pause";
