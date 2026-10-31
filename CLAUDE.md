@@ -83,8 +83,14 @@ Garder la logique (parseur, moteur, journal) **séparée du DOM** pour pouvoir l
 
 Format **`vAA.MM.XX`** (année et mois sur deux chiffres, XX = numéro de version dans le mois, repart à
 01 chaque mois). Source unique : `src/version.ts` (affichée dans le menu et dans le fichier exporté).
-**Ne jamais changer la version de sa propre initiative** : l'utilisateur dit quand une version est
-stable, et c'est seulement là qu'on l'incrémente.
+
+- Seule une version **confirmée stable par l'utilisateur** s'écrit sans suffixe (ex. `v26.10.02`).
+- Toute modification non encore confirmée porte le suffixe **`-dev`** :
+  - après la stable `v26.10.02`, la première modification passe en `v26.10.03-dev` (mois suivant :
+    `v26.11.01-dev`) ; les modifications suivantes gardent ce même numéro ;
+  - quand l'utilisateur confirme que c'est stable, on retire `-dev` (→ `v26.10.03`).
+- Ne jamais retirer `-dev` ni changer de numéro sans que l'utilisateur l'ait dit.
+- Aucune version n'a encore été confirmée stable : la version en cours est `v26.10.02-dev`.
 
 ## Façon de travailler
 
