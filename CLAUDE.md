@@ -107,7 +107,7 @@ Format **`vAA.MM.XX`** (année et mois sur deux chiffres, XX = numéro de versio
   fusionner dans `main` et pousser `main`. Le push sur `main` déploie automatiquement la page stable,
   et `.github/workflows/release.yml` crée le tag `vAA.MM.XX` et la release GitHub (l'environnement de
   Claude ne peut pas pousser de tag lui-même).
-- Dernière version stable confirmée : `v26.10.02` (31/10/2026). La prochaine modification passe en `v26.10.03-dev`.
+- Dernière version stable confirmée : `v26.10.02` (31/10/2026). Version en cours : `v26.10.03-dev`.
 
 ## Façon de travailler
 

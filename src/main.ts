@@ -13,7 +13,7 @@ import { rampValueTxt } from "./core/ramp";
 import { Session, type Sample, type SessionEvent } from "./core/session";
 import { exportFileName, exportMarkdown, hrPerStep, hrStats, journalLine, RPE_TXT, activeDuration, type Feedback } from "./core/journal";
 import { finishAnnouncement, hrAlertAnnouncement, rampAnnouncement, resumeAnnouncement, stepAnnouncement } from "./core/speech";
-import { APP_VERSION } from "./version";
+import { APP_VERSION, IS_DEV_BUILD } from "./version";
 import { claudeInstructions, FORMAT_VERSION } from "./core/instructions";
 import { store } from "./device/store";
 import { keepAwake, releaseAwake, sounds, unlockAudio } from "./device/feedback";
@@ -111,6 +111,7 @@ refreshPlan();
 /* ---------- Claude instructions ---------- */
 $("appVersion").textContent = APP_VERSION;
 $("barVersion").textContent = APP_VERSION;
+$("devTag").hidden = !IS_DEV_BUILD;
 
 /* ---------- Top menu ---------- */
 const menu = $("menu");

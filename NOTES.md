@@ -35,6 +35,8 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
       Le menu ouvre trois fenêtres : **Aide sur le format**, **Consignes pour Claude**
       (Copier / Partager / Télécharger), **À propos** (version, version du format, lien vers le code).
       La version figure aussi dans le fichier exporté.
+      Sur la page de développement (`/dev/`, build `CHANNEL=dev`), un badge orange « Développement »
+      s'affiche entre ☰ et la version (décision du 31/10).
 - [x] **Aide** (menu ☰) en trois parties : Format de séance, Connexion de la montre (dépannage),
       Vie privée (ce qui est gardé sur le téléphone : dernière séance collée, plafond FC, choix de la
       voix ; rien n'est envoyé).

@@ -8,6 +8,7 @@ const isDev = process.env.CHANNEL === "dev";
 
 export default defineConfig({
   base: process.env.BASE || "/",
+  define: { "import.meta.env.VITE_CHANNEL": JSON.stringify(isDev ? "dev" : "stable") },
   plugins: [
     VitePWA({
       registerType: "autoUpdate",

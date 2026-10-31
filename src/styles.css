@@ -35,7 +35,12 @@ button { cursor: pointer; touch-action: manipulation; }
 .bar { position: relative; display: flex; align-items: center; justify-content: space-between; padding: 4px 8px 0; }
 .menuBtn { background: none; border: 0; font-size: 24px; line-height: 1; padding: 6px 10px; border-radius: 8px; color: var(--ink); }
 .menuBtn[aria-expanded="true"] { background: var(--surface); }
-.ver { color: var(--muted); font-size: 15px; padding-right: 8px; }
+.ver { color: var(--muted); font-size: 15px; padding-right: 8px; white-space: nowrap; }
+.devTag {
+  background: var(--amber); color: var(--bg); font-weight: 700; font-size: 13px; letter-spacing: .03em;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 999px; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; min-width: 0; margin: 0 8px;
+}
 .menu {
   position: absolute; top: 100%; left: 8px; z-index: 20; min-width: 240px; display: grid;
   background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
