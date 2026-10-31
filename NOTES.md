@@ -153,7 +153,17 @@ Planche latérale gauche 3×20 s ; Planche latérale droite 3×20 s ; Dead bug 3
 Corde 6×30 s ; Étirements 4 min`
 - Étapes en répétitions : si toutes les séries sont à l'objectif → `3×8 rép par côté` ; sinon le
   détail série par série → `10/10/8 rép`.
-- Étapes non faites (séance arrêtée, « Suiv. » en tout début d'étape) : non comptées.
+- Le contenu ne compte que ce qui a été **réellement fait**. Les écarts au programme sont ajoutés
+  à la fin du contenu, en segments fixes (dans cet ordre, seulement s'ils existent) :
+  - `sauté : …` — étape quittée avec « Suiv. » sans l'avoir faite : étape chronométrée quittée avant
+    20 % de sa durée, ou étape en répétitions passée par « Suiv. » au lieu de « Fait ».
+  - `écourté : …` — étape chronométrée quittée avec « Suiv. » entre 20 % et 90 % de sa durée ;
+    on indique le temps fait sur le temps prévu.
+  - `non fait (arrêt) : …` — étapes jamais atteintes parce que j'ai touché « Terminer la séance ».
+  - Les repos sautés ou écourtés ne sont pas signalés (sans intérêt pour l'analyse).
+  - Chaque étape est repérée par son tour quand elle est dans un bloc répété.
+  Ex. : `… ; Corde 5×30 s ; Étirements 4 min ; sauté : Corde (tour 3, 2e) ; écourté : Planche (tour 3)
+  0:18/0:30 ; non fait (arrêt) : –`
 
 ### Consignes « journal » à donner à Claude
 
@@ -167,7 +177,9 @@ jj/mm/aaaa | type | durée | contenu et perfs | FC min/moy/max | ressenti x/10 |
 
 Lignes venant de l'app FitPacer :
 - type : salle ou maison
-- contenu : « titre : étapes réalisées », suivi de « (arrêtée avant la fin) » si la séance a été interrompue
+- contenu : « titre : étapes réalisées », suivi de « (arrêtée avant la fin) » si la séance a été interrompue,
+  puis éventuellement les écarts au programme : « sauté : … », « écourté : … (fait/prévu) »,
+  « non fait (arrêt) : … » (étapes repérées par leur tour, ex. « Corde (tour 3, 2e) »)
 - FC : min/moy/max en bpm, ou « FC non reçue »
 - poids : « 82,4 kg » ou « – » ; tour de taille : « 94 cm » ou « – »
 - remarque : mon commentaire libre, puis éventuellement ces segments calculés par l'app, dans cet ordre :
@@ -177,6 +189,25 @@ Lignes venant de l'app FitPacer :
 Conserve ces lignes telles quelles ; tu peux compléter la remarque avec les données de la montre
 (distance, kcal, effet d'entraînement…) en les ajoutant à la fin, après « ; ».
 ```
+
+## Export de fichier de séance (proposé, à valider)
+
+But : donner à Claude, en plus de la ligne de journal, un fichier détaillé qu'il peut croiser avec
+le fichier `.fit` exporté par Suunto (calories, effet d'entraînement, FC de la montre…).
+
+- Clé de correspondance : **heure absolue** (début de séance et début/fin de chaque étape, en heure
+  locale + UTC). C'est ce qui permet d'aligner les deux fichiers.
+- Contenu : programme, étapes réelles (début, fin, statut fait / sauté / écourté, répétitions
+  faites, consignes vitesse/pente/palier en cours), FC seconde par seconde, RPE, commentaire,
+  poids, tour de taille.
+- Formats possibles :
+  1. **CSV/JSON** (recommandé en premier) : lisible directement par Claude, simple, fiable.
+  2. **.fit** (FIT SDK officiel de Garmin, encodeur JavaScript `@garmin/fitsdk`) : activité avec
+     `record` (FC), un `lap` par étape, `workout` / `workout_step` pour les noms d'étapes.
+     Utile pour importer ailleurs (Strava…) ; Claude doit le décoder avec du code. Les vitesses du
+     tapis ne seraient que des consignes, pas des mesures : ne pas les écrire comme vitesse mesurée.
+- Sortie : bouton « Partager le fichier » (Web Share API avec fichier → directement vers l'app
+  Claude) et repli « Télécharger ». Aucun stockage.
 
 ## Questions ouvertes
 
