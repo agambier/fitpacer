@@ -22,17 +22,17 @@ Les séances en extérieur restent sur la montre Suunto : hors périmètre.
 
 Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA installable :
 
-- [ ] Écran **Programme** : zone de texte, Coller / Effacer, aide sur le format, erreurs de lecture
+- [x] Écran **Programme** : zone de texte, Coller / Effacer, aide sur le format, erreurs de lecture
       ligne par ligne, plafond FC, aperçu des étapes, durée estimée, « Démarrer ».
-- [ ] Écran **Séance** : nom + n° de répétition (2/5), paramètres (vitesse, pente…), note, gros chrono
+- [x] Écran **Séance** : nom + n° de répétition (2/5), paramètres (vitesse, pente…), note, gros chrono
       (orange sur les 10 dernières s), mode répétitions avec bouton « Fait ✓ », visuel de pente,
       « Ensuite », barre de segments, temps écoulé / restant, courbe FC, Préc. / Pause / Suiv.,
       « Terminer la séance ».
-- [ ] Écran **Bilan** : stats, courbe, tableau FC par étape, RPE, commentaire, ligne de journal, « Copier ».
-- [ ] **FC Bluetooth** : connexion, affichage couleur (calme / proche du plafond / au-dessus / périmée),
+- [x] Écran **Bilan** : stats, courbe, tableau FC par étape, RPE, commentaire, ligne de journal, « Copier ».
+- [x] **FC Bluetooth** : connexion, affichage couleur (calme / proche du plafond / au-dessus / périmée),
       reconnexion automatique.
-- [ ] **Retours** : bips (3-2-1, changement d'étape, fin, alerte FC), vibrations, écran maintenu allumé.
-- [ ] **Annonce vocale** de chaque nouvelle étape (`speechSynthesis`, voix française), activable /
+- [x] **Retours** : bips (3-2-1, changement d'étape, fin, alerte FC), vibrations, écran maintenu allumé.
+- [x] **Annonce vocale** de chaque nouvelle étape (`speechSynthesis`, voix française), activable /
       désactivable (bouton dans l'en-tête, choix mémorisé). L'annonce dépend du type d'étape :
   - **Étape chronométrée** (`4:00`, `45s`…) : nom + durée + infos.
     Ex. « Montée, 1 minute, 5,5 kilomètres heure, pente 9 pour cent. »
@@ -51,7 +51,7 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
   - Les bips restent : la voix vient après le bip de changement d'étape, sans le remplacer.
   - Lecture des unités en toutes lettres (`km/h` → « kilomètres heure », `%` → « pour cent »,
     `→` → « à », `4:00` → « 4 minutes », `45s` → « 45 secondes »).
-- [ ] **Progressions guidées** (étapes chronométrées uniquement) : une info de la forme
+- [x] **Progressions guidées** (étapes chronométrées uniquement) : une info de la forme
       `A → B unité` (ou `A -> B unité`) est une progression linéaire sur la durée de l'étape.
   - Unités gérées et pas des paliers : `km/h` → 0,5 ; `%` → 0,5 ; `niv` / niveau → 1 ; `W` → 10 ;
     `rpm` → 5. Autre unité : affichée telle quelle, sans guidage.
@@ -65,10 +65,10 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
     regroupées si elles tombent à la même seconde.
   - Étape en répétitions : pas de guidage, texte affiché tel quel.
   - Ligne de journal : la progression est recopiée telle quelle (`Chauffe 5 min (4 → 5,5 km/h, 0 %)`).
-- [ ] **Poids et tour de taille** : deux champs optionnels sur l'écran Bilan (`kg`, `cm`, clavier
+- [x] **Poids et tour de taille** : deux champs optionnels sur l'écran Bilan (`kg`, `cm`, clavier
       numérique, virgule acceptée). Remplissent les colonnes 7 et 8 de la ligne de journal
       (`82,4 kg`, `94 cm`), sinon `–`. Rien n'est mémorisé d'une séance à l'autre.
-- [ ] **Analyses FC automatiques**, ajoutées en fin de colonne remarque (après mon commentaire,
+- [x] **Analyses FC automatiques**, ajoutées en fin de colonne remarque (après mon commentaire,
       séparées par ` ; `), uniquement si les données FC le permettent :
   - **Dérive cardiaque** : pour chaque étape chronométrée (même nom + mêmes infos, hors repos) dont
     chaque passage dure au moins 2 min et qui est répétée au moins 2 fois, ou d'au moins 8 min d'un seul
@@ -81,7 +81,7 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
     Étape « retour au calme » reconnue par son nom (`Retour au calme`, `Récup…`, `Étirements`…) ;
     à défaut, la dernière étape.
   - Seuils et règles regroupés dans un module pur et testé (`journal/`).
-- [ ] **Consignes pour Claude** : sur l'écran Programme, une section « Consignes pour Claude »
+- [x] **Consignes pour Claude** : sur l'écran Programme, une section « Consignes pour Claude »
       avec trois boutons **Copier**, **Partager**, **Télécharger** (fichier
       `fitpacer-consignes-claude.md`, repli `.txt`). Contenu = texte prêt à coller dans les
       instructions du projet Claude : rôle (Claude propose la séance), format de séance complet
@@ -89,9 +89,9 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
       toujours finir par un retour au calme, pas de ``` ni de `---`), puis le bloc « journal ».
       Version du format indiquée en tête (`Format FitPacer v1`) ; le texte est généré depuis une
       source unique dans le code, la même que l'aide affichée et les tests.
-- [ ] **Partage de fichiers** (commun au bilan et aux consignes) : Copier / Partager (Web Share API
+- [x] **Partage de fichiers** (commun au bilan et aux consignes) : Copier / Partager (Web Share API
       niveau 2 avec fichier) / Télécharger (Blob + lien `download`) ; boutons masqués si non supportés.
-- [ ] **PWA** : manifest, icônes, installable, hors ligne, polices locales.
+- [x] **PWA** : manifest, icônes, installable, hors ligne, polices locales.
 
 Explicitement **hors MVP** : comptes, sync, historique, envoi automatique à Claude, GPS, iOS.
 

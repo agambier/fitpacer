@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101C26">
+<meta name="description" content="FitPacer vous cadence pendant une séance préparée par Claude.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<title>FitPacer</title>
+</head>
+<body>
+<header class="top">
+  <div class="hr stale num" id="hrBox"><span class="v" id="hrVal">--</span><span class="u">bpm</span></div>
+  <button class="icon" id="voiceBtn" type="button" aria-pressed="true" title="Annonces vocales">🔊</button>
+  <button class="bt" id="btBtn" data-s="off" type="button">Connecter la montre</button>
+</header>
+
+<main>
+  <p class="msg" id="msg" role="status" hidden></p>
+
+  <!-- Programme -->
+  <section class="screen" id="edit">
+    <h1 id="planTitle">Programme</h1>
+    <div class="srcHead">
+      <label for="src">Étapes de la séance</label>
+      <div class="row">
+        <button class="ghost strong" id="pasteBtn" type="button">Coller</button>
+        <button class="ghost" id="clearBtn" type="button">Effacer</button>
+      </div>
+    </div>
+    <textarea id="src" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="Collez ici la séance préparée par Claude."></textarea>
+    <ul class="errors" id="errors"></ul>
+    <label for="cap">Plafond de FC (alerte au-dessus)</label>
+    <div class="row"><input type="number" id="cap" min="90" max="220" step="1" inputmode="numeric"> <span class="help inline">bpm</span></div>
+    <ul class="plan num" id="plan"></ul>
+    <p class="total" id="total"></p>
+    <button class="primary" id="startBtn" type="button">Démarrer la séance</button>
+
+    <details class="box" id="formatBox">
+      <summary>Aide sur le format</summary>
+      <p class="help">Une étape par ligne : <code>Nom | quantité | info 1 | info 2 | note</code>.<br>
+        Chronométrée : <code>4:00</code>, <code>45s</code> ou <code>5</code> (minutes).<br>
+        Répétitions : <code>10 rép</code>, <code>8 rép par côté</code> ou <code>max</code> : l’étape attend « Fait ».<br>
+        Infos : <code>5,5 km/h</code>, <code>7 %</code>, <code>6 kg</code>, <code>niv 8</code>…
+        Progression guidée : <code>4 → 5,5 km/h</code>.<br>
+        Bloc répété : <code>x3 {</code> … <code>}</code>. En tête : <code>titre: …</code>, <code>type: salle</code> ou <code>maison</code>.</p>
+    </details>
+
+    <details class="box" id="claudeBox">
+      <summary>Consignes pour Claude</summary>
+      <p class="help">À coller dans les instructions de votre projet Claude, pour qu’il propose ses séances au format FitPacer et tienne le journal au bon format. <span id="fmtVersion"></span></p>
+      <div class="row actions">
+        <button class="ghost strong" id="instrCopy" type="button">Copier</button>
+        <button class="ghost" id="instrShare" type="button">Partager</button>
+        <button class="ghost" id="instrDownload" type="button">Télécharger</button>
+      </div>
+    </details>
+  </section>
+
+  <!-- Déroulé -->
+  <section class="screen" id="run" hidden>
+    <div class="stage" id="stage">
+      <p class="stepname" id="sName"></p>
+      <span class="rep num" id="sRep"></span>
+      <div class="params num" id="params"></div>
+      <p class="note" id="sNote"></p>
+      <div class="clock num" id="clock"></div>
+      <p class="sub num" id="sub"></p>
+      <button class="doneBtn" id="doneBtn" type="button" hidden>Fait ✓</button>
+      <svg class="ramp" id="ramp" viewBox="0 0 400 58" preserveAspectRatio="none" aria-hidden="true" hidden><path id="rampPath" d="M0 58 L400 58 L400 58 Z"/></svg>
+      <div class="spacer" id="spacer"></div>
+    </div>
+    <div class="next"><span class="k">Ensuite</span><span class="n" id="nextTxt"></span></div>
+    <div class="segs" id="segs"></div>
+    <div class="times num"><span id="elapsed">0:00</span><span id="left"></span></div>
+    <svg class="spark" id="spark" viewBox="0 0 300 70" preserveAspectRatio="none" aria-label="Courbe de fréquence cardiaque"></svg>
+    <div class="ctrls">
+      <button id="prevBtn" type="button" aria-label="Étape précédente">◀ Préc.</button>
+      <button class="go" id="pauseBtn" type="button">Pause</button>
+      <button id="nextBtn" type="button" aria-label="Étape suivante">Suiv. ▶</button>
+    </div>
+    <button class="stop" id="stopBtn" type="button">Terminer la séance</button>
+  </section>
+
+  <!-- Bilan -->
+  <section class="screen" id="done" hidden>
+    <h1>Séance terminée</h1>
+    <div class="stats num" id="stats"></div>
+    <svg class="spark" id="spark2" viewBox="0 0 300 70" preserveAspectRatio="none" aria-label="Courbe de fréquence cardiaque de la séance"></svg>
+    <table class="num" id="perStep"></table>
+    <fieldset class="rpe">
+      <legend>Ressenti de l’effort</legend>
+      <div class="rpe-scale num" id="rpe" role="radiogroup" aria-label="Ressenti de 1 à 10"></div>
+      <div class="rpe-ends"><span>1 = très facile</span><span>10 = maximal</span></div>
+      <p class="rpe-txt" id="rpeTxt">Touchez une note.</p>
+    </fieldset>
+    <label for="comment">Commentaire</label>
+    <textarea id="comment" placeholder="Ex. : 8 pompes seulement à la 3e série, gainage facile, salle chaude…"></textarea>
+    <div class="measures">
+      <div><label for="weight">Poids (facultatif)</label>
+        <div class="row"><input type="text" id="weight" inputmode="decimal" autocomplete="off" placeholder="82,4"> <span class="help inline">kg</span></div></div>
+      <div><label for="waist">Tour de taille (facultatif)</label>
+        <div class="row"><input type="text" id="waist" inputmode="decimal" autocomplete="off" placeholder="94"> <span class="help inline">cm</span></div></div>
+    </div>
+    <label for="journal">Ligne pour le journal</label>
+    <textarea id="journal" readonly></textarea>
+    <div class="row actions">
+      <button class="ghost strong" id="copyBtn" type="button">Copier la ligne</button>
+      <button class="ghost" id="shareBtn" type="button">Partager le fichier</button>
+      <button class="ghost" id="downloadBtn" type="button">Télécharger</button>
+    </div>
+    <p class="help">Le fichier contient la ligne de journal, le détail horodaté des étapes et la FC : donnez-le à Claude avec le fichier .fit de la montre.</p>
+    <button class="primary" id="againBtn" type="button">Revenir au programme</button>
+  </section>
+</main>
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>

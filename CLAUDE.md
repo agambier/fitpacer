@@ -32,30 +32,35 @@ Le comportement du prototype fait foi tant que `NOTES.md` ne dit pas autre chose
 
 ## Commandes
 
-> À compléter quand le projet sera initialisé.
-
 ```
 npm install
-npm run dev       # serveur de dev
-npm run build     # build de prod (dist/)
+npm run dev       # serveur de dev (--host ; le Bluetooth exige HTTPS)
+npm run build     # tsc + build de prod (dist/) ; BASE=/fitpacer/ pour GitHub Pages
 npm run preview   # tester le build + service worker
-npm test          # Vitest
-npm run lint
+npm test          # Vitest (tests/)
 ```
 
-## Architecture visée
+Déploiement : `.github/workflows/deploy.yml` (push sur `main` ou la branche de dev).
+
+## Architecture
 
 ```
+index.html           # les 3 écrans (programme, séance, bilan)
 src/
-  main.ts            # bootstrap, routage entre écrans
-  parser/            # texte -> Program (pur, sans DOM, très testé)
-  session/           # moteur de déroulé (timer, pause, étapes, échantillons FC) — pur, testable
-  hr/                # Web Bluetooth Heart Rate (service 0x180D), reconnexion
-  feedback/          # bips WebAudio, vibration, Wake Lock
-  journal/           # bilan + génération de la ligne de journal (pur)
-  ui/                # écrans : edit, run, done ; composants
-  styles/
-public/              # icônes, manifest
+  main.ts            # câblage UI <-> cœur
+  styles.css
+  core/              # logique pure, sans DOM, testée
+    program.ts       # texte -> Program (format v1)
+    ramp.ts          # progressions A → B en paliers
+    session.ts       # moteur de séance (temps injecté), statuts fait/écourté/sauté/arrêt
+    journal.ts       # ligne de journal, analyses FC, export Markdown
+    speech.ts        # textes des annonces vocales
+    instructions.ts  # consignes pour Claude (source unique du format)
+    format.ts        # formats FR (nombres, durées, dates)
+  device/            # navigateur : Bluetooth FC, bips/vibration/wake lock, voix, partage, stockage
+tests/               # Vitest
+public/              # icônes
+examples/            # séances réelles (fixtures)
 reference/           # prototype HTML d'origine (ne pas modifier)
 ```
 
