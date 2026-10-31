@@ -91,7 +91,7 @@ Format **`vAA.MM.XX`** (année et mois sur deux chiffres, XX = numéro de versio
     `v26.11.01-dev`) ; les modifications suivantes gardent ce même numéro ;
   - quand l'utilisateur confirme que c'est stable, on retire `-dev` (→ `v26.10.03`).
 - Ne jamais retirer `-dev` ni changer de numéro sans que l'utilisateur l'ait dit.
-- Aucune version n'a encore été confirmée stable : la version en cours est `v26.10.02-dev`.
+- Dernière version stable confirmée : `v26.10.02` (31/10/2026). La prochaine modification passe en `v26.10.03-dev`.
 
 ## Façon de travailler
 
