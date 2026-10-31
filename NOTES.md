@@ -29,6 +29,9 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
       « Ensuite », barre de segments, temps écoulé / restant, courbe FC, Préc. / Pause / Suiv.,
       « Terminer la séance ».
 - [x] Écran **Bilan** : stats, courbe, tableau FC par étape, RPE, commentaire, ligne de journal, « Copier ».
+- [x] **Question au démarrage** : si la montre n'est pas connectée (et que le Bluetooth web existe),
+      « Démarrer » demande « Voulez-vous la connecter ? ». Oui → sélecteur Bluetooth, puis la séance
+      démarre (avec ou sans FC selon le résultat) ; Non → la séance démarre tout de suite sans montre.
 - [x] **FC Bluetooth** : connexion, affichage couleur (calme / proche du plafond / au-dessus / périmée),
       reconnexion automatique.
 - [x] **Retours** : bips (3-2-1, changement d'étape, fin, alerte FC), vibrations, écran maintenu allumé.
@@ -251,6 +254,8 @@ heure,fc,etape
 ## Idées pour plus tard
 
 - Boutons − / + pour saisir les répétitions réellement faites (reporté, décision du 31/10).
+- Export JSON du résultat : non retenu pour l'instant (31/10) — le Markdown est le plus pratique pour
+  Claude (tableaux + bloc CSV de FC). À reconsidérer si un programme doit relire les séances.
 - Export `.fit` par l'app (inutile tant que la Suunto enregistre chaque séance).
 
 - Historique local des séances et export.

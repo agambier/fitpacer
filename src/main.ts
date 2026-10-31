@@ -345,11 +345,7 @@ function loop() {
 }
 setInterval(loop, 200);
 
-$("startBtn").addEventListener("click", () => {
-  refreshPlan();
-  if (!prog.steps.length || prog.errors.length) return;
-  unlockAudio();
-  unlockVoice();
+function startSession() {
   showMsg("");
   buildSegs();
   sparkline($<SVGSVGElement & HTMLElement>("spark"), [], prog.est);
@@ -360,6 +356,31 @@ $("startBtn").addEventListener("click", () => {
   runSource = src.value;
   sess = new Session(prog, clock);
   handle(sess.tick());
+}
+
+const watchDialog = $<HTMLDialogElement>("watchDialog");
+$("startBtn").addEventListener("click", () => {
+  refreshPlan();
+  if (!prog.steps.length || prog.errors.length) return;
+  unlockAudio();
+  unlockVoice();
+  // Watch not connected: ask before starting (Bluetooth chooser needs this user gesture).
+  if (monitor.supported && btBtn.dataset.s !== "on" && typeof watchDialog.showModal === "function") {
+    watchDialog.showModal();
+    return;
+  }
+  startSession();
+});
+$("watchYes").addEventListener("click", async () => {
+  watchDialog.close();
+  await monitor.connect(); // opens the Bluetooth chooser
+  startSession();
+  if (btBtn.dataset.s !== "on" && btBtn.dataset.s !== "connecting")
+    showMsg("Montre non connectée : séance sans FC. Le bouton en haut permet de la connecter à tout moment.");
+});
+$("watchNo").addEventListener("click", () => {
+  watchDialog.close();
+  startSession();
 });
 $("doneBtn").addEventListener("click", () => {
   if (!sess) return;

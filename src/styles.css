@@ -142,3 +142,10 @@ td.r, th.r { text-align: right; }
 .measures { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 #journal { min-height: 120px; font: 14px/1.45 ui-monospace, "Roboto Mono", Menlo, monospace; }
 @media (prefers-reduced-motion: reduce) { .stage { transition: none; } .param.bump .v { animation: none; } }
+
+.dialog { border: 0; border-radius: 14px; background: var(--surface); color: var(--ink); padding: 20px; width: min(420px, calc(100vw - 32px)); }
+.dialog::backdrop { background: rgba(0, 0, 0, .55); }
+.dq { font: 600 24px/1.2 "Barlow Condensed", Barlow, sans-serif; margin: 0 0 16px; }
+.dbtns { display: grid; gap: 10px; }
+.dbtns .primary { margin: 0; order: -1; }
+.dbtns .ghost { padding: 14px; font-size: 17px; }
