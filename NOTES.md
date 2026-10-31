@@ -41,7 +41,15 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
     Ex. « Pompes, 10 répétitions. Touchez Fait quand c'est terminé. »
     Pas de compte à rebours : l'étape attend que je touche **« Fait ✓ »** (gros bouton vert) avant de
     passer à la suite (le temps passé est affiché, « En cours depuis 0:35 »).
+  - **Répétitions réellement faites** : à côté de « Fait ✓ », deux boutons − / + ajustent le
+    nombre (pré-rempli avec l'objectif ; pour `max`, champ vide à remplir, clavier numérique).
+    Un seul geste si l'objectif est atteint. Le nombre réel alimente la ligne de journal.
   - Annoncer aussi la note de l'étape si elle existe (« monter progressivement »).
+  - **Étape de repos** (`Repos…`, `Récup…`) : annoncer la durée **et l'exercice suivant** pour
+    se préparer. Ex. « Repos, 1 minute 30. Ensuite : planche, 30 secondes. »
+    Repos de moins de 15 s : version courte, « Repos. Ensuite : planche latérale droite. »
+  - Une annonce ne doit jamais chevaucher les bips 3-2-1 : si elle est trop longue pour l'étape,
+    on raccourcit (nom seul) et on n'annonce pas la note.
   - Annonce de fin de séance ; alerte FC parlée (« Fréquence cardiaque au-dessus de 150 ») en plus du bip.
   - Les bips restent : la voix vient après le bip de changement d'étape, sans le remplacer.
   - Lecture des unités en toutes lettres (`km/h` → « kilomètres heure », `%` → « pour cent »,
@@ -65,11 +73,12 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
       (`82,4 kg`, `94 cm`), sinon `–`. Rien n'est mémorisé d'une séance à l'autre.
 - [ ] **Analyses FC automatiques**, ajoutées en fin de colonne remarque (après mon commentaire,
       séparées par ` ; `), uniquement si les données FC le permettent :
-  - **Dérive cardiaque** : pour chaque étape (même nom + mêmes infos) répétée au moins 2 fois, ou
-    chronométrée d'au moins 8 min, comparer la FC moyenne du premier passage à celle du dernier
+  - **Dérive cardiaque** : pour chaque étape chronométrée (même nom + mêmes infos, hors repos) dont
+    chaque passage dure au moins 2 min et qui est répétée au moins 2 fois, ou d'au moins 8 min d'un seul
+    tenant (les efforts courts — corde 30 s, planche — ne donnent pas de dérive exploitable), comparer la FC moyenne du premier passage à celle du dernier
     (en ignorant les 60 premières secondes de chaque passage, temps de montée de la FC).
     Ne l'écrire que si l'écart est d'au moins 5 bpm. Ex. « dérive FC Marche ~128→142 ».
-  - **Récupération** : FC à la fin de la dernière étape d'effort (moyenne des 10 dernières s avant
+  - **Récupération** : FC à la fin de la dernière étape d'effort, en sautant les repos (moyenne des 10 dernières s avant
     l'étape de retour au calme ou la fin de séance), puis FC 1 min après et FC en fin de séance.
     Ex. « récup FC 144→121 en 1 min, 112 en 5 min ».
     Étape « retour au calme » reconnue par son nom (`Retour au calme`, `Récup…`, `Étirements`…) ;
@@ -137,6 +146,14 @@ Observations sur le journal réel (Claude enrichit la ligne a posteriori) :
   **récupération** (« 144→112 en 5 min, 90 peu après »). L'app peut les calculer elle-même.
 - Le journal contient aussi des séances hors app (marche, extérieur) : la ligne de l'app n'est qu'un
   type d'entrée parmi d'autres.
+
+Contenu réalisé, regroupé (repos exclus). Pour l'exemple maison :
+`Échauffement 3 min ; Corde douce 1 min (rythme facile) ; Pompes 10/10/8 rép ; Planche 3×30 s ;
+Planche latérale gauche 3×20 s ; Planche latérale droite 3×20 s ; Dead bug 3×8 rép par côté ;
+Corde 6×30 s ; Étirements 4 min`
+- Étapes en répétitions : si toutes les séries sont à l'objectif → `3×8 rép par côté` ; sinon le
+  détail série par série → `10/10/8 rép`.
+- Étapes non faites (séance arrêtée, « Suiv. » en tout début d'étape) : non comptées.
 
 ### Consignes « journal » à donner à Claude
 

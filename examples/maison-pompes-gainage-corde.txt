@@ -1,0 +1,22 @@
+titre: Maison pompes, gainage, corde
+type: maison
+Échauffement | 3:00 | | | rotations d’épaules, montées de genoux sur place
+Corde douce | 1:00 | rythme facile | | sauter bas, sur l’avant du pied
+Repos | 1:00
+x3 {
+  Pompes | 10 rép | | | garder 2-3 rép en réserve, souffler en poussant
+  Repos | 1:30
+  Planche | 30s | | | respirer normalement, ne pas bloquer
+  Repos | 30s
+  Planche latérale gauche | 20s
+  Repos | 10s
+  Planche latérale droite | 20s
+  Repos | 45s
+  Dead bug | 8 rép par côté | | | bas du dos plaqué au sol
+  Repos | 45s
+  Corde | 30s | | | sauter bas, rythme régulier
+  Repos | 30s
+  Corde | 30s
+  Repos | 1:30
+}
+Étirements | 4:00 | | | pectoraux, épaules, mollets
