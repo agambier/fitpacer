@@ -14,7 +14,7 @@
  <div class="bar">
   <button class="menuBtn" id="menuBtn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="menu" aria-label="Menu">☰</button>
   <nav class="menu" id="menu" role="menu" hidden>
-    <button type="button" role="menuitem" data-open="helpDialog">Aide sur le format</button>
+    <button type="button" role="menuitem" data-open="helpDialog">Aide</button>
     <button type="button" role="menuitem" data-open="claudeDialog">Consignes pour Claude</button>
     <button type="button" role="menuitem" data-open="aboutDialog">À propos</button>
   </nav>
@@ -106,17 +106,39 @@
   </section>
 </main>
 <dialog class="dialog info" id="helpDialog" aria-labelledby="helpT">
-  <h2 id="helpT">Aide sur le format</h2>
-  <p>Une étape par ligne : <code>Nom | quantité | info 1 | info 2 | note</code></p>
-  <ul>
-    <li><b>Chronométrée</b> : <code>4:00</code>, <code>45s</code> ou <code>5</code> (minutes). L’étape suivante démarre seule.</li>
-    <li><b>Répétitions</b> : <code>10 rép</code>, <code>8 rép par côté</code> ou <code>max</code>. L’étape attend « Fait ✓ ».</li>
-    <li><b>Infos</b> : <code>5,5 km/h</code>, <code>7 %</code>, <code>6 kg</code>, <code>niv 8</code>, <code>120 W</code>…</li>
-    <li><b>Progression guidée</b> : <code>4 → 5,5 km/h</code>, annoncée palier par palier.</li>
-    <li><b>Repos</b> : <code>Repos | 1:30</code>, l’exercice suivant est annoncé.</li>
-    <li><b>Bloc répété</b> : <code>x3 {</code> … <code>}</code></li>
-    <li><b>En tête</b> : <code>titre: …</code> et <code>type: salle</code> ou <code>maison</code>. <code>#</code> pour un commentaire.</li>
-  </ul>
+  <h2 id="helpT">Aide</h2>
+  <details open>
+    <summary>Format de séance</summary>
+    <p>Une étape par ligne : <code>Nom | quantité | info 1 | info 2 | note</code></p>
+    <ul>
+      <li><b>Chronométrée</b> : <code>4:00</code>, <code>45s</code> ou <code>5</code> (minutes). L’étape suivante démarre seule.</li>
+      <li><b>Répétitions</b> : <code>10 rép</code>, <code>8 rép par côté</code> ou <code>max</code>. L’étape attend « Fait ✓ ».</li>
+      <li><b>Infos</b> : <code>5,5 km/h</code>, <code>7 %</code>, <code>6 kg</code>, <code>niv 8</code>, <code>120 W</code>…</li>
+      <li><b>Progression guidée</b> : <code>4 → 5,5 km/h</code>, annoncée palier par palier.</li>
+      <li><b>Repos</b> : <code>Repos | 1:30</code>, l’exercice suivant est annoncé.</li>
+      <li><b>Bloc répété</b> : <code>x3 {</code> … <code>}</code></li>
+      <li><b>En tête</b> : <code>titre: …</code> et <code>type: salle</code> ou <code>maison</code>. <code>#</code> pour un commentaire.</li>
+    </ul>
+  </details>
+  <details>
+    <summary>Connexion de la montre</summary>
+    <ul>
+      <li><b>Navigateur</b> : Chrome sur Android, ou Brave avec <code>brave://flags</code> → « Web Bluetooth API » activé. Impossible sur iPhone / iPad.</li>
+      <li><b>Sur la montre</b> : activez le partage (diffusion) de la fréquence cardiaque. Sur Suunto, l’option se trouve dans les réglages de connectivité ou pendant l’exercice.</li>
+      <li><b>Sur le téléphone</b> : Bluetooth <b>et</b> localisation activés (Android l’exige pour trouver les appareils Bluetooth).</li>
+      <li><b>La montre n’apparaît pas</b> : appuyez de nouveau sur « Connecter la montre » : la recherche liste alors tous les appareils Bluetooth.</li>
+      <li><b>Montre déjà utilisée</b> : si la FC est diffusée vers un autre appareil (tapis, autre téléphone), déconnectez-le.</li>
+      <li><b>Bluetooth bloqué</b> : icône à gauche de l’adresse → Autorisations → autorisez le Bluetooth (ou les appareils à proximité).</li>
+      <li><b>Pendant la séance</b> : gardez l’app à l’écran. En cas de coupure, elle se reconnecte toute seule (bouton orange « Reconnexion… »).</li>
+      <li><b>Montre mémorisée</b> : la dernière montre connectée est proposée en premier ; « Choisir une autre montre » liste toutes les montres.</li>
+    </ul>
+  </details>
+  <details>
+    <summary>Vie privée</summary>
+    <p>Aucun compte, aucun serveur : rien n’est envoyé sur Internet et aucune séance n’est conservée. Le résultat n’existe que le temps de le copier ou de le partager.</p>
+    <p>Seuls quelques réglages restent sur ce téléphone, pour votre confort : le <b>nom de la dernière montre connectée</b>, la dernière séance collée, le plafond de FC et le choix des annonces vocales.</p>
+    <p class="row actions"><button class="ghost" id="forgetWatchBtn" type="button">Oublier la montre enregistrée</button></p>
+  </details>
   <button class="primary" type="button" data-close>Fermer</button>
 </dialog>
 
@@ -145,8 +167,9 @@
 <dialog class="dialog" id="watchDialog" aria-labelledby="watchQ">
   <p class="dq" id="watchQ">La montre n’est pas connectée.<br>Voulez-vous la connecter ?</p>
   <div class="dbtns">
-    <button class="ghost" id="watchNo" type="button">Non, démarrer sans</button>
+    <button class="primary" id="watchSaved" type="button" hidden></button>
     <button class="primary" id="watchYes" type="button">Oui, connecter</button>
+    <button class="ghost" id="watchNo" type="button">Non, démarrer sans</button>
   </div>
 </dialog>
 <script type="module" src="/src/main.ts"></script>

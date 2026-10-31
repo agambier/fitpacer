@@ -174,3 +174,7 @@ td.r, th.r { text-align: right; }
 .dialog.info li { margin: 0 0 6px; }
 .dialog.info code { font-size: 13px; }
 .dialog.info .primary { margin-top: 18px; }
+.dialog.info details { border-top: 1px solid var(--line); padding: 10px 0; }
+.dialog.info details:last-of-type { border-bottom: 1px solid var(--line); }
+.dialog.info summary { font-weight: 600; font-size: 17px; cursor: pointer; }
+.dialog.info details[open] summary { margin-bottom: 8px; }

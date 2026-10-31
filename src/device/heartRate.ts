@@ -1,4 +1,15 @@
 // Bluetooth heart rate (standard GATT Heart Rate service 0x180D), with auto-reconnect.
+import { store } from "./store";
+
+const WATCH_KEY = "fitpacer.watch";
+
+/** Name of the last watch connected on this phone (stored locally only), or null. */
+export function savedWatch(): string | null {
+  return store.get(WATCH_KEY, "") || null;
+}
+export function forgetWatch() {
+  store.set(WATCH_KEY, "");
+}
 
 export interface BtEnv {
   secure: boolean;
@@ -64,8 +75,12 @@ export class HeartRateMonitor {
     return btUnsupportedMessage(currentBtEnv()) === null;
   }
 
-  /** Must be called from a user gesture. */
-  async connect() {
+  /**
+   * Must be called from a user gesture.
+   * `saved`: the chooser only lists the watch connected last time (still needs a tap on "Associer").
+   */
+  async connect(saved = false) {
+    const savedName = saved ? savedWatch() : null;
     const unsupported = btUnsupportedMessage(currentBtEnv());
     if (unsupported) {
       this.cb.onMessage(unsupported);
@@ -81,9 +96,11 @@ export class HeartRateMonitor {
       /* getAvailability not usable: try anyway */
     }
     try {
-      const opts: RequestDeviceOptions = this.wideScan
-        ? { acceptAllDevices: true, optionalServices: ["heart_rate"] }
-        : { filters: [{ services: ["heart_rate"] }] };
+      const opts: RequestDeviceOptions = savedName
+        ? { filters: [{ name: savedName }], optionalServices: ["heart_rate"] }
+        : this.wideScan
+          ? { acceptAllDevices: true, optionalServices: ["heart_rate"] }
+          : { filters: [{ services: ["heart_rate"] }] };
       const dev = await navigator.bluetooth.requestDevice(opts);
       if (this.device && this.device !== dev) this.device.removeEventListener("gattserverdisconnected", this.onDisconnect);
       this.device = dev;
@@ -93,7 +110,11 @@ export class HeartRateMonitor {
     } catch (e) {
       const err = e as Error;
       this.cb.onState(this.device?.gatt?.connected ? "on" : "off", this.device?.name);
-      if (err.name === "NotFoundError" && !this.wideScan) {
+      if (err.name === "NotFoundError" && savedName) {
+        this.cb.onMessage(
+          "« " + savedName + " » n’a pas été trouvée (ou la recherche a été annulée). Vérifiez que le partage de FC est actif sur la montre, ou choisissez une autre montre.",
+        );
+      } else if (err.name === "NotFoundError" && !this.wideScan) {
         this.wideScan = true;
         this.cb.onMessage(
           "Aucune montre trouvée en mode FC. Vérifiez le partage de FC et la localisation du téléphone, puis appuyez de nouveau : la recherche listera tous les appareils Bluetooth.",
@@ -135,6 +156,7 @@ export class HeartRateMonitor {
     });
     await ch.startNotifications();
     this.retries = 0;
+    if (dev.name) store.set(WATCH_KEY, dev.name);
     this.cb.onState("on", dev.name);
     this.cb.onMessage("");
   }
