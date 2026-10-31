@@ -81,6 +81,16 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
     Étape « retour au calme » reconnue par son nom (`Retour au calme`, `Récup…`, `Étirements`…) ;
     à défaut, la dernière étape.
   - Seuils et règles regroupés dans un module pur et testé (`journal/`).
+- [ ] **Consignes pour Claude** : sur l'écran Programme, une section « Consignes pour Claude »
+      avec trois boutons **Copier**, **Partager**, **Télécharger** (fichier
+      `fitpacer-consignes-claude.md`, repli `.txt`). Contenu = texte prêt à coller dans les
+      instructions du projet Claude : rôle (Claude propose la séance), format de séance complet
+      (en-tête, étapes, chrono vs répétitions, repos, progressions `A → B`, blocs `xN { }`, règles :
+      toujours finir par un retour au calme, pas de ``` ni de `---`), puis le bloc « journal ».
+      Version du format indiquée en tête (`Format FitPacer v1`) ; le texte est généré depuis une
+      source unique dans le code, la même que l'aide affichée et les tests.
+- [ ] **Partage de fichiers** (commun au bilan et aux consignes) : Copier / Partager (Web Share API
+      niveau 2 avec fichier) / Télécharger (Blob + lien `download`) ; boutons masqués si non supportés.
 - [ ] **PWA** : manifest, icônes, installable, hors ligne, polices locales.
 
 Explicitement **hors MVP** : comptes, sync, historique, envoi automatique à Claude, GPS, iOS.
@@ -235,8 +245,6 @@ heure,fc,etape
 
 ## Questions ouvertes
 
-- Faut-il un « prompt système » à donner à Claude pour qu'il génère toujours ce format ? → on pourrait
-  l'afficher dans l'app (bouton « Copier les consignes pour Claude »).
 - Garder le dernier texte collé et le plafond FC en `localStorage` (comme le prototype) : oui par défaut.
 - Nom de domaine / URL de déploiement (GitHub Pages `agambier.github.io/fitpacer` ?).
 
