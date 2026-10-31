@@ -149,3 +149,8 @@ td.r, th.r { text-align: right; }
 .dbtns { display: grid; gap: 10px; }
 .dbtns .primary { margin: 0; order: -1; }
 .dbtns .ghost { padding: 14px; font-size: 17px; }
+.about { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 12px 0 0; }
+.about dt { color: var(--muted); }
+.about dd { margin: 0; font-weight: 600; }
+.about dd.num { font-size: 20px; }
+.about a { color: var(--ramp); }

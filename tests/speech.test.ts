@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { parseProgram } from "../src/core/program";
 import { parseRamp } from "../src/core/ramp";
-import { rampAnnouncement, sayDuration, sayInfo, stepAnnouncement } from "../src/core/speech";
+import { rampAnnouncement, resumeAnnouncement, sayDuration, sayInfo, stepAnnouncement } from "../src/core/speech";
 
 describe("speech", () => {
   it("reads durations and infos", () => {
@@ -24,5 +24,15 @@ describe("speech", () => {
   it("announces ramp levels", () => {
     expect(rampAnnouncement([{ ramp: parseRamp("4 → 5,5 km/h")!, value: 5 }])).toBe("Passez à 5 kilomètres heure.");
     expect(rampAnnouncement([{ ramp: parseRamp("2 → 6 %")!, value: 3 }])).toBe("Pente 3 pour cent.");
+  });
+
+  it("repeats the step instructions when resuming", () => {
+    const p = parseProgram("Chauffe | 5:00 | 4 → 5,5 km/h | 0 % | monter progressivement\nPompes | 10 rép\nRepos | 1:30\nPlanche | 30s");
+    const [ch, po, re, pl] = p.steps;
+    expect(resumeAnnouncement(ch, po, 200, [4.5, null])).toBe(
+      "On reprend. Chauffe. encore 3 minutes 20. 4,5 kilomètres heure, pente 0 pour cent. monter progressivement.",
+    );
+    expect(resumeAnnouncement(po, re, 0, [])).toBe("On reprend. Pompes. 10 répétitions. Touchez Fait quand c'est terminé.");
+    expect(resumeAnnouncement(re, pl, 45, [])).toBe("On reprend. Repos, encore 45 secondes. Ensuite : Planche, 30 secondes.");
   });
 });

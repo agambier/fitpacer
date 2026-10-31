@@ -12,7 +12,8 @@ import { amountTxt, paramLabel, parseProgram, weight, type Program } from "./cor
 import { rampValueTxt } from "./core/ramp";
 import { Session, type Sample, type SessionEvent } from "./core/session";
 import { exportFileName, exportMarkdown, hrPerStep, hrStats, journalLine, RPE_TXT, activeDuration, type Feedback } from "./core/journal";
-import { finishAnnouncement, hrAlertAnnouncement, rampAnnouncement, stepAnnouncement } from "./core/speech";
+import { finishAnnouncement, hrAlertAnnouncement, rampAnnouncement, resumeAnnouncement, stepAnnouncement } from "./core/speech";
+import { APP_VERSION } from "./version";
 import { claudeInstructions, FORMAT_VERSION } from "./core/instructions";
 import { store } from "./device/store";
 import { keepAwake, releaseAwake, sounds, unlockAudio } from "./device/feedback";
@@ -108,6 +109,8 @@ $("clearBtn").addEventListener("click", () => {
 refreshPlan();
 
 /* ---------- Claude instructions ---------- */
+$("appVersion").textContent = APP_VERSION;
+$("aboutFmt").textContent = "Format FitPacer " + FORMAT_VERSION;
 $("fmtVersion").textContent = "Format FitPacer " + FORMAT_VERSION + ".";
 const instrName = "fitpacer-consignes-claude.md";
 $("instrCopy").addEventListener("click", async (e) => {
@@ -398,7 +401,9 @@ $("pauseBtn").addEventListener("click", () => {
     sess.resume();
     $("pauseBtn").textContent = "Pause";
     void keepAwake();
-    say("On reprend.", { interrupt: true });
+    const st = sess.step;
+    const remaining = st.kind === "time" ? st.dur - sess.stepElapsed() : 0;
+    say(resumeAnnouncement(st, prog.steps[sess.idx + 1], remaining, sess.rampStates().map((r) => (r ? r.value : null))), { interrupt: true });
   }
 });
 $("nextBtn").addEventListener("click", () => {
@@ -511,7 +516,7 @@ $("waist").addEventListener("input", (e) => {
   updateJournal();
 });
 
-const exportText = () => exportMarkdown(finished!, fb, { source: runSource, cap: capValue(), device: monitor.name });
+const exportText = () => exportMarkdown(finished!, fb, { source: runSource, appVersion: APP_VERSION, cap: capValue(), device: monitor.name });
 $("copyBtn").addEventListener("click", async (e) => {
   const ok = await copyText($<HTMLTextAreaElement>("journal").value, $<HTMLTextAreaElement>("journal"));
   flashLabel(e.currentTarget as HTMLElement, ok ? "Ligne copiée ✓" : "Sélectionnée, copiez-la");

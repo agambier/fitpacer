@@ -79,6 +79,12 @@ Garder la logique (parseur, moteur, journal) **séparée du DOM** pour pouvoir l
 - Wake Lock réacquis au retour de visibilité.
 - Thème sombre par défaut (cf. captures), thème clair via `prefers-color-scheme`.
 
+## Version de l'app
+
+Format **`vAA.MM.XX`** (année et mois sur deux chiffres, XX = numéro de version dans le mois, repart à
+01 chaque mois). Source unique : `src/version.ts` (affichée dans « À propos » et dans le fichier
+exporté). **L'incrémenter à chaque push qui modifie l'app** (un push = un déploiement).
+
 ## Façon de travailler
 
 - Petits incréments, une fonctionnalité à la fois ; vérifier sur mobile réel quand c'est pertinent.

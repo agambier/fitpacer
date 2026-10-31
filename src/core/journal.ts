@@ -194,6 +194,8 @@ export function hrPerStep(sess: Session): { label: string; avg: number; max: num
 
 export interface ExportMeta {
   source: string;
+  /** "v26.10.01" */
+  appVersion?: string;
   cap: number;
   device: string | null;
 }
@@ -214,6 +216,7 @@ export function exportMarkdown(sess: Session, fb: Feedback, meta: ExportMeta): s
   const L: string[] = [];
   L.push("# FitPacer — " + p.title + " — " + fmtDateFr(start) + " " + fmtTime(start).slice(0, 5), "");
   L.push("## Ligne de journal", "", journalLine(sess, fb), "");
+  if (meta.appVersion) L.push("Généré par FitPacer " + meta.appVersion + ".", "");
   L.push("## Séance", "");
   L.push("- Début : " + fmtDateIso(start) + " " + fmtTime(start) + " (heure locale, " + fmtUtcOffset(start) + ") — Fin : " + fmtTime(end) +
     " — Durée active : " + fmtClock(activeDuration(sess)) + " — Durée totale (pauses incluses) : " + fmtClock((sess.endWall - sess.startWall) / 1000));

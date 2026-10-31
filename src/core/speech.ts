@@ -67,5 +67,26 @@ export function rampAnnouncement(changes: { ramp: Ramp; value: number }[]): stri
   return (txt.startsWith("pente") ? "P" + txt.slice(1) : "Passez à " + txt) + ".";
 }
 
+/**
+ * Reminder of the current step when resuming after a pause:
+ * remaining time and current level of progressions instead of the full plan.
+ */
+export function resumeAnnouncement(s: Step, next: Step | undefined, remaining: number, rampValues: (number | null)[]): string {
+  const left = s.kind === "time" ? "encore " + sayDuration(Math.max(1, Math.round(remaining))) : "";
+  if (s.isRest) {
+    return "On reprend. Repos" + (left ? ", " + left : "") + "." + (next ? " Ensuite : " + next.name + ", " + amountPhrase(next) + "." : "");
+  }
+  const infos = s.infos
+    .map((info, k) => {
+      const r = s.ramps[k];
+      const v = rampValues[k];
+      return r && v != null ? sayInfo(rampValueTxt(r, v)) : sayInfo(info);
+    })
+    .join(", ");
+  const amount = s.kind === "time" ? left : amountPhrase(s);
+  const base = "On reprend. " + s.name + ". " + amount + "." + (infos ? " " + infos + "." : "") + (s.note ? " " + s.note + "." : "");
+  return s.kind === "reps" ? base + " " + REPS_DONE : base;
+}
+
 export const finishAnnouncement = () => "Séance terminée. Bravo !";
 export const hrAlertAnnouncement = (cap: number) => "Fréquence cardiaque au-dessus de " + fmtNum(cap) + ".";

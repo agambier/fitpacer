@@ -29,6 +29,10 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
       « Ensuite », barre de segments, temps écoulé / restant, courbe FC, Préc. / Pause / Suiv.,
       « Terminer la séance ».
 - [x] Écran **Bilan** : stats, courbe, tableau FC par étape, RPE, commentaire, ligne de journal, « Copier ».
+- [x] **Reprise après pause** : si la voix est active, « Reprendre » répète les consignes de l'étape
+      en cours (temps restant, palier actuel des progressions, note ; pour un repos : l'exercice suivant).
+- [x] **À propos** (section repliable en bas de l'écran Programme) : version `vAA.MM.XX`, version du
+      format de séance, lien vers le code. La version figure aussi dans le fichier exporté.
 - [x] **Question au démarrage** : si la montre n'est pas connectée (et que le Bluetooth web existe),
       « Démarrer » demande « Voulez-vous la connecter ? ». Oui → sélecteur Bluetooth, puis la séance
       démarre (avec ou sans FC selon le résultat) ; Non → la séance démarre tout de suite sans montre.
