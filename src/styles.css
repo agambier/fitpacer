@@ -56,8 +56,12 @@ button { cursor: pointer; touch-action: manipulation; }
   box-shadow: 0 8px 24px rgba(0, 0, 0, .35);
 }
 .menu button { background: none; border: 0; text-align: left; padding: 14px 16px; font-size: 17px; }
-.menu button + button { border-top: 1px solid var(--line); }
+.menu button + button, .menu .submenu { border-top: 1px solid var(--line); }
 .menu button:active { background: var(--line); }
+.menu .subToggle::after { content: "›"; float: right; margin-left: 16px; font-size: 24px; line-height: 24px; color: var(--muted); transition: transform .15s; }
+.menu .subToggle[aria-expanded="true"]::after { transform: rotate(90deg); }
+.menu .submenu { display: grid; background: var(--bg); }
+.menu .submenu button { padding-left: 36px; }
 .menu .themeItem::after { content: ""; float: right; margin-left: 16px; color: var(--ok); font-weight: 700; }
 .menu .themeItem[aria-checked="true"]::after { content: "✓"; }
 .hrRow { display: flex; align-items: center; gap: 10px; padding: 4px 16px 10px; }

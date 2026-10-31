@@ -23,8 +23,11 @@
     <button type="button" role="menuitem" data-open="helpDialog">Aide</button>
     <button type="button" role="menuitem" data-open="claudeDialog">Consignes pour Claude</button>
     <button type="button" role="menuitem" data-open="aboutDialog">À propos</button>
-    <button type="button" role="menuitemradio" class="themeItem" data-theme-choice="dark" aria-checked="false">Thème sombre</button>
-    <button type="button" role="menuitemradio" class="themeItem" data-theme-choice="light" aria-checked="false">Thème clair</button>
+    <button type="button" role="menuitem" class="subToggle" id="themeBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="themeMenu">Thème</button>
+    <div class="submenu" id="themeMenu" role="menu" aria-label="Thème" hidden>
+      <button type="button" role="menuitemradio" class="themeItem" data-theme-choice="dark" aria-checked="false">Sombre</button>
+      <button type="button" role="menuitemradio" class="themeItem" data-theme-choice="light" aria-checked="false">Clair</button>
+    </div>
   </nav>
  </div>
  <div class="hrRow">

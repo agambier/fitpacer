@@ -117,8 +117,15 @@ $("devTag").hidden = !IS_DEV_BUILD;
 /* ---------- Top menu ---------- */
 const menu = $("menu");
 const menuBtn = $("menuBtn");
+const themeBtn = $("themeBtn");
+const themeMenu = $("themeMenu");
+function setThemeMenu(open: boolean) {
+  themeMenu.hidden = !open;
+  themeBtn.setAttribute("aria-expanded", String(open));
+}
 function setMenu(open: boolean) {
   menu.hidden = !open;
+  if (!open) setThemeMenu(false);
   menuBtn.setAttribute("aria-expanded", String(open));
 }
 menuBtn.addEventListener("click", (e) => {
@@ -145,6 +152,7 @@ function showTheme() {
 }
 applyTheme();
 showTheme();
+themeBtn.addEventListener("click", () => setThemeMenu(themeMenu.hidden === true));
 themeItems.forEach((b) =>
   b.addEventListener("click", () => {
     setTheme(b.dataset.themeChoice as Theme);

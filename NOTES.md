@@ -38,7 +38,7 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
       La version figure aussi dans le fichier exporté.
       Sur la page de développement (`/dev/`, build `CHANNEL=dev`), un badge orange « Développement »
       s'affiche au milieu de la barre (décision du 31/10).
-      Le menu propose aussi **Thème sombre** (par défaut) / **Thème clair** (gris clairs) ; le choix est
+      Le menu propose aussi un sous-menu **Thème** : **Sombre** (par défaut) / **Clair** (gris clairs) ; le choix est
       gardé sur le téléphone, sinon le réglage du système s'applique (décision du 31/10).
 - [x] **Aide** (menu ☰) en trois parties : Format de séance, Connexion de la montre (dépannage),
       Vie privée (ce qui est gardé sur le téléphone : dernière séance collée, plafond FC, choix de la
