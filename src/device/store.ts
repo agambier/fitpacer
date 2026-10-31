@@ -1,4 +1,4 @@
-// localStorage wrapper: preferences only (last pasted text, HR cap, voice on/off).
+// localStorage wrapper: preferences only (last pasted text, HR cap, voice on/off, theme).
 export const store = {
   get(k: string, d: string): string {
     try {

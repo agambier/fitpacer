@@ -20,6 +20,7 @@ import { keepAwake, releaseAwake, sounds, unlockAudio } from "./device/feedback"
 import { say, setVoiceEnabled, unlockVoice, voiceEnabled, voiceSupported } from "./device/voice";
 import { canShareFiles, copyText, downloadText, shareText } from "./device/share";
 import { HeartRateMonitor, type BtState } from "./device/heartRate";
+import { applyTheme, currentTheme, setTheme, type Theme } from "./device/theme";
 
 registerSW({ immediate: true });
 
@@ -134,6 +135,21 @@ menu.querySelectorAll<HTMLButtonElement>("[data-open]").forEach((b) =>
   b.addEventListener("click", () => {
     setMenu(false);
     $<HTMLDialogElement>(b.dataset.open!).showModal();
+  }),
+);
+/* ---------- Theme (dark / light) ---------- */
+const themeItems = menu.querySelectorAll<HTMLButtonElement>("[data-theme-choice]");
+function showTheme() {
+  const t = currentTheme();
+  themeItems.forEach((b) => b.setAttribute("aria-checked", String(b.dataset.themeChoice === t)));
+}
+applyTheme();
+showTheme();
+themeItems.forEach((b) =>
+  b.addEventListener("click", () => {
+    setTheme(b.dataset.themeChoice as Theme);
+    showTheme();
+    setMenu(false);
   }),
 );
 document.querySelectorAll<HTMLDialogElement>("dialog.info").forEach((d) => {

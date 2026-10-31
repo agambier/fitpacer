@@ -8,6 +8,7 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <title>FitPacer</title>
+<script>try{var t=localStorage.getItem("fitpacer.theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head>
 <body>
 <header class="top">
@@ -22,6 +23,8 @@
     <button type="button" role="menuitem" data-open="helpDialog">Aide</button>
     <button type="button" role="menuitem" data-open="claudeDialog">Consignes pour Claude</button>
     <button type="button" role="menuitem" data-open="aboutDialog">À propos</button>
+    <button type="button" role="menuitemradio" class="themeItem" data-theme-choice="dark" aria-checked="false">Thème sombre</button>
+    <button type="button" role="menuitemradio" class="themeItem" data-theme-choice="light" aria-checked="false">Thème clair</button>
   </nav>
  </div>
  <div class="hrRow">
@@ -139,7 +142,7 @@
   <details>
     <summary>Vie privée</summary>
     <p>Aucun compte, aucun serveur : rien n’est envoyé sur Internet et aucune séance n’est conservée. Le résultat n’existe que le temps de le copier ou de le partager.</p>
-    <p>Seuls quelques réglages restent sur ce téléphone, pour votre confort : la dernière séance collée, le plafond de FC et le choix des annonces vocales.</p>
+    <p>Seuls quelques réglages restent sur ce téléphone, pour votre confort : la dernière séance collée, le plafond de FC, le choix des annonces vocales et le thème (sombre ou clair).</p>
   </details>
   <button class="primary" type="button" data-close>Fermer</button>
 </dialog>

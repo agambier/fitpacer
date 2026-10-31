@@ -12,7 +12,7 @@ Le comportement du prototype fait foi tant que `NOTES.md` ne dit pas autre chose
 
 - **Aucun backend, aucun compte, aucun appel réseau** pour les données. Tout tourne dans le navigateur.
 - **Pas de stockage de séances/historique.** Seules exceptions tolérées en `localStorage` (confort) :
-  dernier texte collé, plafond FC, voix on/off. Toujours via
+  dernier texte collé, plafond FC, voix on/off, thème sombre/clair. Toujours via
   `device/store.ts`. Toute nouvelle donnée stockée doit être ajoutée à la section « Vie privée » de l'aide.
 - **Fonctionne hors ligne** une fois installée (service worker, assets précachés, polices auto-hébergées —
   pas de Google Fonts en CDN).
@@ -87,7 +87,7 @@ Garder la logique (parseur, moteur, journal) **séparée du DOM** pour pouvoir l
   la mise en veille des onglets.
 - AudioContext créé/repris au clic « Démarrer » (politique autoplay).
 - Wake Lock réacquis au retour de visibilité.
-- Thème sombre par défaut (cf. captures), thème clair via `prefers-color-scheme`.
+- Thème sombre par défaut (cf. captures), thème clair (gris clairs) au choix dans le menu (`device/theme.ts`) ; sans choix enregistré, `prefers-color-scheme` s'applique.
 
 ## Version de l'app
 
