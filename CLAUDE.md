@@ -40,7 +40,8 @@ npm run preview   # tester le build + service worker
 npm test          # Vitest (tests/)
 ```
 
-Déploiement : `.github/workflows/deploy.yml` (push sur `main` ou la branche de dev).
+Déploiement : `.github/workflows/deploy.yml`, sur push vers `main` ou une branche `ccr-*`
+(l'environnement GitHub `github-pages` autorise ce motif). Un seul site : le dernier push déployé gagne.
 
 ## Architecture
 
