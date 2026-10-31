@@ -46,6 +46,20 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
   - Les bips restent : la voix vient après le bip de changement d'étape, sans le remplacer.
   - Lecture des unités en toutes lettres (`km/h` → « kilomètres heure », `%` → « pour cent »,
     `→` → « à », `4:00` → « 4 minutes », `45s` → « 45 secondes »).
+- [ ] **Progressions guidées** (étapes chronométrées uniquement) : une info de la forme
+      `A → B unité` (ou `A -> B unité`) est une progression linéaire sur la durée de l'étape.
+  - Unités gérées et pas des paliers : `km/h` → 0,5 ; `%` → 0,5 ; `niv` / niveau → 1 ; `W` → 10 ;
+    `rpm` → 5. Autre unité : affichée telle quelle, sans guidage.
+  - Nombre de paliers = |B − A| / pas + 1, chacun de même durée. Ex. `4 → 5,5 km/h` sur 5:00 →
+    4 / 4,5 / 5 / 5,5, un palier toutes les 1:15 ; `5,5 → 3 km/h` sur 5:00 → 6 paliers de 0:50.
+  - Écran : la valeur **à régler maintenant** en gros (« 4,5 km/h »), et en petit la cible
+    (« → 5,5 ») + « prochain palier dans 0:12 ».
+  - À chaque palier : double bip court + vibration + voix « Passez à 5 kilomètres heure »
+    (ou « Pente 8 pour cent »). Pas de bips 3-2-1 avant un palier (seulement avant un changement d'étape).
+  - Deux progressions dans la même étape (vitesse et pente) : chacune a ses paliers, annonces
+    regroupées si elles tombent à la même seconde.
+  - Étape en répétitions : pas de guidage, texte affiché tel quel.
+  - Ligne de journal : la progression est recopiée telle quelle (`Chauffe 5 min (4 → 5,5 km/h, 0 %)`).
 - [ ] **Poids et tour de taille** : deux champs optionnels sur l'écran Bilan (`kg`, `cm`, clavier
       numérique, virgule acceptée). Remplissent les colonnes 7 et 8 de la ligne de journal
       (`82,4 kg`, `94 cm`), sinon `–`. Rien n'est mémorisé d'une séance à l'autre.
@@ -86,6 +100,9 @@ Retour au calme | 5:00 | -0,5 km/h / 30 s | 0 % | finir à 3 km/h environ
   (durée estimée 40 s pour les calculs).
 - **Infos** : texte libre, libellé déduit : `km/h` → Vitesse, `%` → Pente (+ visuel de rampe),
   `kg` → Charge, `rpm` / `tr/min` → Cadence, `W` → Puissance, `niv…` → Niveau, sinon Consigne.
+- **Progression** : `A → B unité` dans une info = l'app guide palier par palier (voir MVP).
+  C'est la seule forme à utiliser pour une montée ou une descente de vitesse / pente ; une consigne
+  du type `−0,5 km/h / 30 s` reste acceptée mais n'est qu'affichée.
 - **Répétition de bloc** : `x3 {` (ou `3x {`) … `}` ; imbrication possible.
 - Lignes vides et lignes commençant par `#` ignorées.
 - Les étapes nommées `Repos…` / `Récup…` sont exclues du contenu de la ligne de journal.

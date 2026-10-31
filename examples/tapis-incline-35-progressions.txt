@@ -1,0 +1,8 @@
+titre: Tapis incliné 35 min
+type: salle
+Chauffe | 5:00 | 4 → 5,5 km/h | 0 % | monter progressivement
+x5 {
+  Marche | 4:00 | 5,5 km/h | 7 %
+  Montée | 1:00 | 5,5 km/h | 9 %
+}
+Retour au calme | 5:00 | 5,5 → 3 km/h | 0 %
