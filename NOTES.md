@@ -90,6 +90,15 @@ Retour au calme | 5:00 | -0,5 km/h / 30 s | 0 % | finir à 3 km/h environ
 - Lignes vides et lignes commençant par `#` ignorées.
 - Les étapes nommées `Repos…` / `Récup…` sont exclues du contenu de la ligne de journal.
 
+### Robustesse du collage (à gérer par le parseur)
+
+Le texte vient d'un copier-coller depuis l'app Claude, il faut tolérer :
+- les lignes de séparation `---` et les clôtures de bloc de code ` ``` ` (ignorées) ;
+- le signe moins Unicode `−` (U+2212), le tiret `–`, les espaces insécables, `→` ou `->` ;
+- l'indentation (espaces, tabulations) dans les blocs `x5 { … }`.
+
+Exemples réels de séances : dossier `examples/` (utilisés comme fixtures de tests).
+
 ### Ligne de journal produite
 
 ```
