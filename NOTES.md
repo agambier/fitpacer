@@ -31,8 +31,10 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
 - [x] Écran **Bilan** : stats, courbe, tableau FC par étape, RPE, commentaire, ligne de journal, « Copier ».
 - [x] **Reprise après pause** : si la voix est active, « Reprendre » répète les consignes de l'étape
       en cours (temps restant, palier actuel des progressions, note ; pour un repos : l'exercice suivant).
-- [x] **À propos** (section repliable en bas de l'écran Programme) : version `vAA.MM.XX`, version du
-      format de séance, lien vers le code. La version figure aussi dans le fichier exporté.
+- [x] **Barre de menu** (en haut, toujours visible) : bouton ☰ à gauche, version `vAA.MM.XX` à droite.
+      Le menu ouvre trois fenêtres : **Aide sur le format**, **Consignes pour Claude**
+      (Copier / Partager / Télécharger), **À propos** (version, version du format, lien vers le code).
+      La version figure aussi dans le fichier exporté.
 - [x] **Question au démarrage** : si la montre n'est pas connectée (et que le Bluetooth web existe),
       « Démarrer » demande « Voulez-vous la connecter ? ». Oui → sélecteur Bluetooth, puis la séance
       démarre (avec ou sans FC selon le résultat) ; Non → la séance démarre tout de suite sans montre.
@@ -88,7 +90,7 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
     Étape « retour au calme » reconnue par son nom (`Retour au calme`, `Récup…`, `Étirements`…) ;
     à défaut, la dernière étape.
   - Seuils et règles regroupés dans un module pur et testé (`journal/`).
-- [x] **Consignes pour Claude** : sur l'écran Programme, une section « Consignes pour Claude »
+- [x] **Consignes pour Claude** : dans le menu ☰, une fenêtre « Consignes pour Claude »
       avec trois boutons **Copier**, **Partager**, **Télécharger** (fichier
       `fitpacer-consignes-claude.md`, repli `.txt`). Contenu = texte prêt à coller dans les
       instructions du projet Claude : rôle (Claude propose la séance), format de séance complet

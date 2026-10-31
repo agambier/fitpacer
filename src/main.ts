@@ -110,6 +110,38 @@ refreshPlan();
 
 /* ---------- Claude instructions ---------- */
 $("appVersion").textContent = APP_VERSION;
+$("barVersion").textContent = APP_VERSION;
+
+/* ---------- Top menu ---------- */
+const menu = $("menu");
+const menuBtn = $("menuBtn");
+function setMenu(open: boolean) {
+  menu.hidden = !open;
+  menuBtn.setAttribute("aria-expanded", String(open));
+}
+menuBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  setMenu(menu.hidden === true);
+});
+document.addEventListener("click", (e) => {
+  if (!menu.hidden && !menu.contains(e.target as Node)) setMenu(false);
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") setMenu(false);
+});
+menu.querySelectorAll<HTMLButtonElement>("[data-open]").forEach((b) =>
+  b.addEventListener("click", () => {
+    setMenu(false);
+    $<HTMLDialogElement>(b.dataset.open!).showModal();
+  }),
+);
+document.querySelectorAll<HTMLDialogElement>("dialog.info").forEach((d) => {
+  d.querySelector("[data-close]")?.addEventListener("click", () => d.close());
+  // tap on the backdrop closes the popup
+  d.addEventListener("click", (e) => {
+    if (e.target === d) d.close();
+  });
+});
 $("aboutFmt").textContent = "Format FitPacer " + FORMAT_VERSION;
 $("fmtVersion").textContent = "Format FitPacer " + FORMAT_VERSION + ".";
 const instrName = "fitpacer-consignes-claude.md";

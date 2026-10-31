@@ -11,9 +11,20 @@
 </head>
 <body>
 <header class="top">
+ <div class="bar">
+  <button class="menuBtn" id="menuBtn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="menu" aria-label="Menu">☰</button>
+  <nav class="menu" id="menu" role="menu" hidden>
+    <button type="button" role="menuitem" data-open="helpDialog">Aide sur le format</button>
+    <button type="button" role="menuitem" data-open="claudeDialog">Consignes pour Claude</button>
+    <button type="button" role="menuitem" data-open="aboutDialog">À propos</button>
+  </nav>
+  <span class="ver num" id="barVersion"></span>
+ </div>
+ <div class="hrRow">
   <div class="hr stale num" id="hrBox"><span class="v" id="hrVal">--</span><span class="u">bpm</span></div>
   <button class="icon" id="voiceBtn" type="button" aria-pressed="true" title="Annonces vocales">🔊</button>
   <button class="bt" id="btBtn" data-s="off" type="button">Connecter la montre</button>
+ </div>
 </header>
 
 <main>
@@ -36,35 +47,6 @@
     <ul class="plan num" id="plan"></ul>
     <p class="total" id="total"></p>
     <button class="primary" id="startBtn" type="button">Démarrer la séance</button>
-
-    <details class="box" id="formatBox">
-      <summary>Aide sur le format</summary>
-      <p class="help">Une étape par ligne : <code>Nom | quantité | info 1 | info 2 | note</code>.<br>
-        Chronométrée : <code>4:00</code>, <code>45s</code> ou <code>5</code> (minutes).<br>
-        Répétitions : <code>10 rép</code>, <code>8 rép par côté</code> ou <code>max</code> : l’étape attend « Fait ».<br>
-        Infos : <code>5,5 km/h</code>, <code>7 %</code>, <code>6 kg</code>, <code>niv 8</code>…
-        Progression guidée : <code>4 → 5,5 km/h</code>.<br>
-        Bloc répété : <code>x3 {</code> … <code>}</code>. En tête : <code>titre: …</code>, <code>type: salle</code> ou <code>maison</code>.</p>
-    </details>
-
-    <details class="box" id="claudeBox">
-      <summary>Consignes pour Claude</summary>
-      <p class="help">À coller dans les instructions de votre projet Claude, pour qu’il propose ses séances au format FitPacer et tienne le journal au bon format. <span id="fmtVersion"></span></p>
-      <div class="row actions">
-        <button class="ghost strong" id="instrCopy" type="button">Copier</button>
-        <button class="ghost" id="instrShare" type="button">Partager</button>
-        <button class="ghost" id="instrDownload" type="button">Télécharger</button>
-      </div>
-    </details>
-    <details class="box" id="aboutBox">
-      <summary>À propos</summary>
-      <dl class="about">
-        <dt>Version</dt><dd class="num" id="appVersion"></dd>
-        <dt>Format de séance</dt><dd id="aboutFmt"></dd>
-        <dt>Code source</dt><dd><a href="https://github.com/agambier/fitpacer" target="_blank" rel="noopener">github.com/agambier/fitpacer</a></dd>
-      </dl>
-      <p class="help">FitPacer vous cadence pendant les séances préparées par Claude. Aucune donnée n’est envoyée ni conservée : tout reste sur le téléphone.</p>
-    </details>
   </section>
 
   <!-- Déroulé -->
@@ -123,6 +105,43 @@
     <button class="primary" id="againBtn" type="button">Revenir au programme</button>
   </section>
 </main>
+<dialog class="dialog info" id="helpDialog" aria-labelledby="helpT">
+  <h2 id="helpT">Aide sur le format</h2>
+  <p>Une étape par ligne : <code>Nom | quantité | info 1 | info 2 | note</code></p>
+  <ul>
+    <li><b>Chronométrée</b> : <code>4:00</code>, <code>45s</code> ou <code>5</code> (minutes). L’étape suivante démarre seule.</li>
+    <li><b>Répétitions</b> : <code>10 rép</code>, <code>8 rép par côté</code> ou <code>max</code>. L’étape attend « Fait ✓ ».</li>
+    <li><b>Infos</b> : <code>5,5 km/h</code>, <code>7 %</code>, <code>6 kg</code>, <code>niv 8</code>, <code>120 W</code>…</li>
+    <li><b>Progression guidée</b> : <code>4 → 5,5 km/h</code>, annoncée palier par palier.</li>
+    <li><b>Repos</b> : <code>Repos | 1:30</code>, l’exercice suivant est annoncé.</li>
+    <li><b>Bloc répété</b> : <code>x3 {</code> … <code>}</code></li>
+    <li><b>En tête</b> : <code>titre: …</code> et <code>type: salle</code> ou <code>maison</code>. <code>#</code> pour un commentaire.</li>
+  </ul>
+  <button class="primary" type="button" data-close>Fermer</button>
+</dialog>
+
+<dialog class="dialog info" id="claudeDialog" aria-labelledby="claudeT">
+  <h2 id="claudeT">Consignes pour Claude</h2>
+  <p>À coller dans les instructions de votre projet Claude, pour qu’il propose ses séances au format FitPacer et tienne le journal au bon format. <span id="fmtVersion"></span></p>
+  <div class="row actions">
+    <button class="ghost strong" id="instrCopy" type="button">Copier</button>
+    <button class="ghost" id="instrShare" type="button">Partager</button>
+    <button class="ghost" id="instrDownload" type="button">Télécharger</button>
+  </div>
+  <button class="primary" type="button" data-close>Fermer</button>
+</dialog>
+
+<dialog class="dialog info" id="aboutDialog" aria-labelledby="aboutT">
+  <h2 id="aboutT">À propos</h2>
+  <dl class="about">
+    <dt>Version</dt><dd class="num" id="appVersion"></dd>
+    <dt>Format de séance</dt><dd id="aboutFmt"></dd>
+    <dt>Code source</dt><dd><a href="https://github.com/agambier/fitpacer" target="_blank" rel="noopener">github.com/agambier/fitpacer</a></dd>
+  </dl>
+  <p class="help">FitPacer vous cadence pendant les séances préparées par Claude. Aucune donnée n’est envoyée ni conservée : tout reste sur le téléphone.</p>
+  <button class="primary" type="button" data-close>Fermer</button>
+</dialog>
+
 <dialog class="dialog" id="watchDialog" aria-labelledby="watchQ">
   <p class="dq" id="watchQ">La montre n’est pas connectée.<br>Voulez-vous la connecter ?</p>
   <div class="dbtns">
