@@ -107,6 +107,11 @@ Format **`vAA.MM.XX`** (année et mois sur deux chiffres, XX = numéro de versio
   fusionner dans `main` et pousser `main`. Le push sur `main` déploie automatiquement la page stable,
   et `.github/workflows/release.yml` crée le tag `vAA.MM.XX` et la release GitHub (l'environnement de
   Claude ne peut pas pousser de tag lui-même).
+- **Toujours vérifier** après chaque push (outils GitHub `actions_list` / `get_workflow_run`, `get_release_by_tag`) :
+  le workflow de déploiement se termine en succès ; sur `main`, le workflow Release aussi et la release
+  `vAA.MM.XX` existe avec le bon texte. Ne pas annoncer « déployé » avant. (Un run `ccr-*` « cancelled »
+  remplacé par le run `main` du même commit est normal.) Le site github.io n'est pas joignable depuis
+  l'environnement de Claude : le dire plutôt que de prétendre l'avoir vu.
 - Dernière version stable confirmée : `v26.10.04` (31/10/2026). La prochaine modification passe en `v26.11.01-dev` (ou `v26.10.05-dev` si elle est faite en octobre).
 
 ## Façon de travailler
