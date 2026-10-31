@@ -1,5 +1,9 @@
 name: Déploiement GitHub Pages
 
+# One Pages site, two apps (each deployment rebuilds both):
+#   /fitpacer/      stable version = main
+#   /fitpacer/dev/  development version = the pushed ccr-* branch
+#                   (on a push to main: the most recent of main and the ccr-* branches)
 on:
   push:
     branches: [main, 'ccr-*']
@@ -19,18 +23,50 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
-      - run: npm test
-      - run: npm run build
+      - name: Choose the commits to build
+        id: refs
+        run: |
+          stable=$(git rev-parse origin/main)
+          if [[ "$GITHUB_REF_NAME" == ccr-* ]]; then
+            dev="$GITHUB_SHA"
+          else
+            # Newest commit among main and the ccr-* branches.
+            dev=$(git for-each-ref --sort=-committerdate --format='%(objectname)' \
+              refs/remotes/origin/main 'refs/remotes/origin/ccr-*' | head -1)
+          fi
+          echo "stable=$stable" >> "$GITHUB_OUTPUT"
+          echo "dev=$dev" >> "$GITHUB_OUTPUT"
+          echo "Stable: $stable ($(git show -s --format=%s "$stable"))"
+          echo "Dev:    $dev ($(git show -s --format=%s "$dev"))"
+      - name: Build stable version
         env:
           BASE: /${{ github.event.repository.name }}/
+          CHANNEL: stable
+        run: |
+          git worktree add ../stable "${{ steps.refs.outputs.stable }}"
+          cd ../stable && npm ci && npm test && npm run build
+      - name: Build development version
+        env:
+          BASE: /${{ github.event.repository.name }}/dev/
+          CHANNEL: dev
+        run: |
+          git worktree add ../dev "${{ steps.refs.outputs.dev }}"
+          cd ../dev && npm ci && npm test && npm run build
+      - name: Assemble site
+        run: |
+          mkdir -p site
+          cp -r ../stable/dist/. site/
+          mkdir -p site/dev
+          cp -r ../dev/dist/. site/dev/
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: site
   deploy:
     needs: build
     runs-on: ubuntu-latest

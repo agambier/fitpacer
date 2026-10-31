@@ -42,7 +42,16 @@ npm test          # Vitest (tests/)
 ```
 
 Déploiement : `.github/workflows/deploy.yml`, sur push vers `main` ou une branche `ccr-*`
-(l'environnement GitHub `github-pages` autorise ce motif). Un seul site : le dernier push déployé gagne.
+(l'environnement GitHub `github-pages` autorise ce motif). Un seul site Pages, deux apps, reconstruites
+toutes les deux à chaque déploiement :
+
+- **stable** : `https://agambier.github.io/fitpacer/` = `main` (build `CHANNEL=stable`) ;
+- **développement** : `https://agambier.github.io/fitpacer/dev/` = la branche `ccr-*` poussée
+  (sur un push vers `main` : le plus récent de `main` et des branches `ccr-*`), build `CHANNEL=dev`,
+  nom d'app « FitPacer DEV ».
+
+Le service worker stable exclut `/dev/` de son repli de navigation (`vite.config.ts`) ; chaque app a
+son propre service worker. Le `localStorage` est partagé (même origine).
 
 ## Architecture
 
@@ -91,9 +100,13 @@ Format **`vAA.MM.XX`** (année et mois sur deux chiffres, XX = numéro de versio
     `v26.11.01-dev`) ; les modifications suivantes gardent ce même numéro ;
   - quand l'utilisateur confirme que c'est stable, on retire `-dev` (→ `v26.10.03`).
 - Ne jamais retirer `-dev` ni changer de numéro sans que l'utilisateur l'ait dit.
-- Quand une version devient stable : retirer `-dev`, ajouter sa section dans `CHANGELOG.md`, fusionner
-  dans `main`. Le workflow `.github/workflows/release.yml` crée alors le tag et la release GitHub
-  (l'environnement de Claude ne peut pas pousser de tag lui-même).
+- Pendant le développement : on ne pousse **que** sur la branche `ccr-*` de la session → déployé sur la
+  page de développement (`/fitpacer/dev/`). La page stable n'est jamais touchée.
+- Quand l'utilisateur dit que la version est stable (cela vaut autorisation de pousser sur `main`) :
+  retirer `-dev`, ajouter sa section dans `CHANGELOG.md`, committer sur la branche `ccr-*`, puis
+  fusionner dans `main` et pousser `main`. Le push sur `main` déploie automatiquement la page stable,
+  et `.github/workflows/release.yml` crée le tag `vAA.MM.XX` et la release GitHub (l'environnement de
+  Claude ne peut pas pousser de tag lui-même).
 - Dernière version stable confirmée : `v26.10.02` (31/10/2026). La prochaine modification passe en `v26.10.03-dev`.
 
 ## Façon de travailler

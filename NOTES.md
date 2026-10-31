@@ -269,7 +269,8 @@ heure,fc,etape
 ## Questions ouvertes
 
 - Garder le dernier texte collé et le plafond FC en `localStorage` (comme le prototype) : oui par défaut.
-- Nom de domaine / URL de déploiement (GitHub Pages `agambier.github.io/fitpacer` ?).
+- ~~URL de déploiement~~ : décidé le 31/10 — stable `agambier.github.io/fitpacer/` (`main`),
+  développement `agambier.github.io/fitpacer/dev/` (branche de travail `ccr-*`).
 
 ## Idées pour plus tard
 

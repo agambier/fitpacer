@@ -1,7 +1,11 @@
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
-// BASE is set by the GitHub Pages workflow ("/fitpacer/").
+// Set by the GitHub Pages workflow:
+//   stable build: BASE=/fitpacer/      CHANNEL=stable
+//   dev build:    BASE=/fitpacer/dev/  CHANNEL=dev
+const isDev = process.env.CHANNEL === "dev";
+
 export default defineConfig({
   base: process.env.BASE || "/",
   plugins: [
@@ -9,8 +13,8 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["favicon.svg", "apple-touch-icon.png"],
       manifest: {
-        name: "FitPacer",
-        short_name: "FitPacer",
+        name: isDev ? "FitPacer DEV" : "FitPacer",
+        short_name: isDev ? "FitPacer DEV" : "FitPacer",
         description: "Vous cadence pendant une séance préparée par Claude.",
         lang: "fr",
         start_url: ".",
@@ -27,6 +31,9 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,svg,png,woff2}"],
+        // The dev site lives under the stable one (/fitpacer/dev/): the stable service worker
+        // must not answer its navigations with the stable index.html.
+        navigateFallbackDenylist: isDev ? [] : [/\/dev\//],
       },
     }),
   ],

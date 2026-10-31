@@ -14,4 +14,7 @@ npm test
 npm run build    # dist/
 ```
 
+- Version stable : https://agambier.github.io/fitpacer/
+- Version en développement : https://agambier.github.io/fitpacer/dev/
+
 Web Bluetooth : Chrome Android (ou Brave avec `brave://flags` → Web Bluetooth). HTTPS obligatoire.
