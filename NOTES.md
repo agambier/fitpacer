@@ -41,9 +41,6 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
     Ex. « Pompes, 10 répétitions. Touchez Fait quand c'est terminé. »
     Pas de compte à rebours : l'étape attend que je touche **« Fait ✓ »** (gros bouton vert) avant de
     passer à la suite (le temps passé est affiché, « En cours depuis 0:35 »).
-  - **Répétitions réellement faites** : à côté de « Fait ✓ », deux boutons − / + ajustent le
-    nombre (pré-rempli avec l'objectif ; pour `max`, champ vide à remplir, clavier numérique).
-    Un seul geste si l'objectif est atteint. Le nombre réel alimente la ligne de journal.
   - Annoncer aussi la note de l'étape si elle existe (« monter progressivement »).
   - **Étape de repos** (`Repos…`, `Récup…`) : annoncer la durée **et l'exercice suivant** pour
     se préparer. Ex. « Repos, 1 minute 30. Ensuite : planche, 30 secondes. »
@@ -148,11 +145,11 @@ Observations sur le journal réel (Claude enrichit la ligne a posteriori) :
   type d'entrée parmi d'autres.
 
 Contenu réalisé, regroupé (repos exclus). Pour l'exemple maison :
-`Échauffement 3 min ; Corde douce 1 min (rythme facile) ; Pompes 10/10/8 rép ; Planche 3×30 s ;
+`Échauffement 3 min ; Corde douce 1 min (rythme facile) ; Pompes 3×10 rép ; Planche 3×30 s ;
 Planche latérale gauche 3×20 s ; Planche latérale droite 3×20 s ; Dead bug 3×8 rép par côté ;
 Corde 6×30 s ; Étirements 4 min`
-- Étapes en répétitions : si toutes les séries sont à l'objectif → `3×8 rép par côté` ; sinon le
-  détail série par série → `10/10/8 rép`.
+- Étapes en répétitions : l'objectif est recopié (`3×8 rép par côté`). Si je n'ai pas fait toutes
+  les répétitions, je le dis dans le commentaire.
 - Le contenu ne compte que ce qui a été **réellement fait**. Les écarts au programme sont ajoutés
   à la fin du contenu, en segments fixes (dans cet ordre, seulement s'ils existent) :
   - `sauté : …` — étape quittée avec « Suiv. » sans l'avoir faite : étape chronométrée quittée avant
@@ -190,24 +187,51 @@ Conserve ces lignes telles quelles ; tu peux compléter la remarque avec les don
 (distance, kcal, effet d'entraînement…) en les ajoutant à la fin, après « ; ».
 ```
 
-## Export de fichier de séance (proposé, à valider)
+## Export du résultat (MVP)
 
-But : donner à Claude, en plus de la ligne de journal, un fichier détaillé qu'il peut croiser avec
-le fichier `.fit` exporté par Suunto (calories, effet d'entraînement, FC de la montre…).
+Je lance **toujours** un exercice sur ma Suunto pendant la séance : la montre produit son propre
+`.fit` (FC, calories, effet d'entraînement…). L'app **ne génère donc pas de .fit** ; elle produit un
+fichier texte que je donne à Claude avec le `.fit` Suunto, pour qu'il fasse la correspondance.
 
-- Clé de correspondance : **heure absolue** (début de séance et début/fin de chaque étape, en heure
-  locale + UTC). C'est ce qui permet d'aligner les deux fichiers.
-- Contenu : programme, étapes réelles (début, fin, statut fait / sauté / écourté, répétitions
-  faites, consignes vitesse/pente/palier en cours), FC seconde par seconde, RPE, commentaire,
-  poids, tour de taille.
-- Formats possibles :
-  1. **CSV/JSON** (recommandé en premier) : lisible directement par Claude, simple, fiable.
-  2. **.fit** (FIT SDK officiel de Garmin, encodeur JavaScript `@garmin/fitsdk`) : activité avec
-     `record` (FC), un `lap` par étape, `workout` / `workout_step` pour les noms d'étapes.
-     Utile pour importer ailleurs (Strava…) ; Claude doit le décoder avec du code. Les vitesses du
-     tapis ne seraient que des consignes, pas des mesures : ne pas les écrire comme vitesse mesurée.
-- Sortie : bouton « Partager le fichier » (Web Share API avec fichier → directement vers l'app
-  Claude) et repli « Télécharger ». Aucun stockage.
+Écran Bilan, trois actions :
+- **Copier la ligne** (existant) : la ligne de journal seule.
+- **Partager** : Web Share API avec fichier (→ directement l'app Claude sur Android).
+- **Télécharger** : repli si le partage de fichier n'est pas disponible.
+
+Fichier Markdown `fitpacer-AAAA-MM-JJ-HHMM-<titre-court>.md` (si le partage refuse `text/markdown`,
+même contenu en `.txt` / `text/plain`). Contenu :
+
+```
+# FitPacer — <titre> — 31/10/2026 11:02
+
+## Ligne de journal
+<la ligne de journal, identique au bouton Copier>
+
+## Séance
+- Début : 2026-10-31 11:02:14 (heure locale, UTC+1) — Fin : 11:37:40 — Durée : 35:26
+- Type : salle — Plafond FC : 150 — Montre : Suunto Watch HR 1211 (ou « FC non reçue »)
+- Ressenti : 8/10 — Poids : – — Tour de taille : –
+- Commentaire : …
+
+## Étapes
+| # | Tour | Étape | Prévu | Consignes | Début | Fin | Durée | Statut | FC moy | FC max |
+|---|------|-------|-------|-----------|-------|-----|-------|--------|--------|--------|
+| 1 | | Chauffe | 5:00 | 4 → 5,5 km/h, 0 % | 11:02:14 | 11:07:14 | 5:00 | fait | 92 | 104 |
+| … |
+Statut : fait / sauté / écourté / non fait (arrêt) ; pauses indiquées en ligne « pause » avec début/fin.
+
+## Fréquence cardiaque (toutes les 5 s)
+heure,fc,etape
+11:02:15,79,1
+…
+
+## Programme collé
+<le texte d'origine, tel quel>
+```
+
+- Les **heures absolues** (début/fin de chaque étape et des pauses) sont la clé pour aligner avec
+  le `.fit` Suunto.
+- Rien n'est stocké : le fichier est construit à la volée au moment du partage/téléchargement.
 
 ## Questions ouvertes
 
@@ -217,6 +241,9 @@ le fichier `.fit` exporté par Suunto (calories, effet d'entraînement, FC de la
 - Nom de domaine / URL de déploiement (GitHub Pages `agambier.github.io/fitpacer` ?).
 
 ## Idées pour plus tard
+
+- Boutons − / + pour saisir les répétitions réellement faites (reporté, décision du 31/10).
+- Export `.fit` par l'app (inutile tant que la Suunto enregistre chaque séance).
 
 - Historique local des séances et export.
 - Bibliothèque de séances favorites.
