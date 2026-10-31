@@ -28,6 +28,20 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
 - [ ] **FC Bluetooth** : connexion, affichage couleur (calme / proche du plafond / au-dessus / périmée),
       reconnexion automatique.
 - [ ] **Retours** : bips (3-2-1, changement d'étape, fin, alerte FC), vibrations, écran maintenu allumé.
+- [ ] **Annonce vocale** de chaque nouvelle étape (`speechSynthesis`, voix française), activable /
+      désactivable (bouton dans l'en-tête, choix mémorisé). L'annonce dépend du type d'étape :
+  - **Étape chronométrée** (`4:00`, `45s`…) : nom + durée + infos.
+    Ex. « Montée, 1 minute, 5,5 kilomètres heure, pente 9 pour cent. »
+    Le chrono passe tout seul à l'étape suivante, avec les bips 3-2-1.
+  - **Étape en répétitions** (`10 rép`, `max`…) : nom + nombre + rappel du bouton.
+    Ex. « Pompes, 10 répétitions. Touchez Fait quand c'est terminé. »
+    Pas de compte à rebours : l'étape attend que je touche **« Fait ✓ »** (gros bouton vert) avant de
+    passer à la suite (le temps passé est affiché, « En cours depuis 0:35 »).
+  - Annoncer aussi la note de l'étape si elle existe (« monter progressivement »).
+  - Annonce de fin de séance ; alerte FC parlée (« Fréquence cardiaque au-dessus de 150 ») en plus du bip.
+  - Les bips restent : la voix vient après le bip de changement d'étape, sans le remplacer.
+  - Lecture des unités en toutes lettres (`km/h` → « kilomètres heure », `%` → « pour cent »,
+    `→` → « à », `4:00` → « 4 minutes », `45s` → « 45 secondes »).
 - [ ] **PWA** : manifest, icônes, installable, hors ligne, polices locales.
 
 Explicitement **hors MVP** : comptes, sync, historique, envoi automatique à Claude, GPS, iOS.
@@ -72,7 +86,6 @@ Champs : `date | type | durée réelle | titre [(arrêtée avant la fin)] : cont
   côté Claude ? distance / calories ?)
 - Faut-il un « prompt système » à donner à Claude pour qu'il génère toujours ce format ? → on pourrait
   l'afficher dans l'app (bouton « Copier les consignes pour Claude »).
-- Synthèse vocale (annoncer l'étape et la vitesse) en plus des bips ?
 - Garder le dernier texte collé et le plafond FC en `localStorage` (comme le prototype) : oui par défaut.
 - Nom de domaine / URL de déploiement (GitHub Pages `agambier.github.io/fitpacer` ?).
 
