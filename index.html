@@ -12,14 +12,17 @@
 <body>
 <header class="top">
  <div class="bar">
+  <div class="brand">
+    <img class="appIcon" src="/favicon.svg" alt="FitPacer" width="28" height="28">
+    <span class="ver num" id="barVersion"></span>
+  </div>
+  <span class="devTag" id="devTag" title="Version de développement" hidden>Développement</span>
   <button class="menuBtn" id="menuBtn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="menu" aria-label="Menu">☰</button>
   <nav class="menu" id="menu" role="menu" hidden>
     <button type="button" role="menuitem" data-open="helpDialog">Aide</button>
     <button type="button" role="menuitem" data-open="claudeDialog">Consignes pour Claude</button>
     <button type="button" role="menuitem" data-open="aboutDialog">À propos</button>
   </nav>
-  <span class="devTag" id="devTag" title="Version de développement" hidden>Développement</span>
-  <span class="ver num" id="barVersion"></span>
  </div>
  <div class="hrRow">
   <div class="hr stale num" id="hrBox"><span class="v" id="hrVal">--</span><span class="u">bpm</span></div>

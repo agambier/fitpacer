@@ -32,17 +32,20 @@ button { cursor: pointer; touch-action: manipulation; }
   position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg);
   border-bottom: 1px solid var(--line);
 }
-.bar { position: relative; display: flex; align-items: center; justify-content: space-between; padding: 4px 8px 0; }
-.menuBtn { background: none; border: 0; font-size: 24px; line-height: 1; padding: 6px 10px; border-radius: 8px; color: var(--ink); }
+/* Top bar: icon + version (left), dev badge (centre), menu (right). */
+.bar { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 4px 8px 0; }
+.brand { display: flex; align-items: center; gap: 8px; padding-left: 8px; }
+.appIcon { width: 28px; height: 28px; border-radius: 7px; flex: none; }
+.menuBtn { justify-self: end; grid-column: 3; background: none; border: 0; font-size: 24px; line-height: 1; padding: 6px 10px; border-radius: 8px; color: var(--ink); }
 .menuBtn[aria-expanded="true"] { background: var(--surface); }
-.ver { color: var(--muted); font-size: 15px; padding-right: 8px; white-space: nowrap; }
+.ver { color: var(--muted); font-size: 15px; white-space: nowrap; }
 .devTag {
   background: var(--amber); color: var(--bg); font-weight: 700; font-size: 13px; letter-spacing: .03em;
   text-transform: uppercase; padding: 4px 10px; border-radius: 999px; white-space: nowrap;
-  overflow: hidden; text-overflow: ellipsis; min-width: 0; margin: 0 8px;
+  overflow: hidden; text-overflow: ellipsis; min-width: 0; grid-column: 2; justify-self: center;
 }
 .menu {
-  position: absolute; top: 100%; left: 8px; z-index: 20; min-width: 240px; display: grid;
+  position: absolute; top: 100%; right: 8px; z-index: 20; min-width: 240px; display: grid;
   background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
   box-shadow: 0 8px 24px rgba(0, 0, 0, .35);
 }
