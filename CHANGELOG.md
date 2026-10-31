@@ -3,6 +3,15 @@
 Format `vAA.MM.XX` (voir `CLAUDE.md`). Seules les versions stables figurent ici : chaque section sert
 de texte à la release GitHub créée automatiquement.
 
+## v26.10.04
+
+**Barre de menu**
+- Icône de l'app et version à gauche, badge « Développement » au milieu (version en développement), menu ☰ à droite.
+
+**Menu**
+- Nouveau sous-menu **Thème** : Sombre (par défaut) ou Clair (gris clairs). Le choix est gardé sur le téléphone ; sans choix, le réglage du système s'applique.
+- « À propos » indique l'auteur : Alexandre Gambier, avec l'aide de l'IA.
+
 ## v26.10.03
 
 **Versions**
