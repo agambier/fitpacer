@@ -112,6 +112,29 @@ Observations sur le journal réel (Claude enrichit la ligne a posteriori) :
 - Le journal contient aussi des séances hors app (marche, extérieur) : la ligne de l'app n'est qu'un
   type d'entrée parmi d'autres.
 
+### Consignes « journal » à donner à Claude
+
+L'app **n'ajoute aucune colonne** : les 9 colonnes du journal restent identiques. Toute nouvelle donnée
+calculée par l'app va dans la colonne `remarque`, sous forme de segments fixes séparés par ` ; `.
+Si le format évolue, ce bloc doit être mis à jour **et** redonné à Claude.
+
+```
+Journal d'entraînement — format (9 colonnes, séparateur « | », ne jamais changer l'ordre) :
+jj/mm/aaaa | type | durée | contenu et perfs | FC min/moy/max | ressenti x/10 | poids | tour de taille | remarque
+
+Lignes venant de l'app FitPacer :
+- type : salle ou maison
+- contenu : « titre : étapes réalisées », suivi de « (arrêtée avant la fin) » si la séance a été interrompue
+- FC : min/moy/max en bpm, ou « FC non reçue »
+- poids : « 82,4 kg » ou « – » ; tour de taille : « 94 cm » ou « – »
+- remarque : mon commentaire libre, puis éventuellement ces segments calculés par l'app, dans cet ordre :
+    « dérive FC <étape> ~<FC début>→<FC fin> »   (une par étape concernée)
+    « récup FC <FC fin d'effort>→<FC à 1 min> en 1 min, <FC finale> en <n> min »
+  Les segments sont séparés par « ; ». « – » si rien.
+Conserve ces lignes telles quelles ; tu peux compléter la remarque avec les données de la montre
+(distance, kcal, effet d'entraînement…) en les ajoutant à la fin, après « ; ».
+```
+
 ## Questions ouvertes
 
 - Faut-il un « prompt système » à donner à Claude pour qu'il génère toujours ce format ? → on pourrait
