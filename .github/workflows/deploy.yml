@@ -3,7 +3,7 @@ name: Déploiement GitHub Pages
 # One Pages site, two apps (each deployment rebuilds both):
 #   /fitpacer/      stable version = main
 #   /fitpacer/dev/  development version = the pushed ccr-* branch
-#                   (on a push to main: the most recent of main and the ccr-* branches)
+#                   (on a push to main: the most recent ccr-* branch not merged into main, else main)
 on:
   push:
     branches: [main, 'ccr-*']
@@ -36,9 +36,11 @@ jobs:
           if [[ "$GITHUB_REF_NAME" == ccr-* ]]; then
             dev="$GITHUB_SHA"
           else
-            # Newest commit among main and the ccr-* branches.
-            dev=$(git for-each-ref --sort=-committerdate --format='%(objectname)' \
-              refs/remotes/origin/main 'refs/remotes/origin/ccr-*' | head -1)
+            # Most recent ccr-* branch not yet merged into main, otherwise main.
+            dev=$stable
+            for c in $(git for-each-ref --sort=-committerdate --format='%(objectname)' 'refs/remotes/origin/ccr-*'); do
+              if ! git merge-base --is-ancestor "$c" "$stable"; then dev=$c; break; fi
+            done
           fi
           echo "stable=$stable" >> "$GITHUB_OUTPUT"
           echo "dev=$dev" >> "$GITHUB_OUTPUT"

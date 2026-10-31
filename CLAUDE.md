@@ -47,7 +47,7 @@ toutes les deux à chaque déploiement :
 
 - **stable** : `https://agambier.github.io/fitpacer/` = `main` (build `CHANNEL=stable`) ;
 - **développement** : `https://agambier.github.io/fitpacer/dev/` = la branche `ccr-*` poussée
-  (sur un push vers `main` : le plus récent de `main` et des branches `ccr-*`), build `CHANNEL=dev`,
+  (sur un push vers `main` : la branche `ccr-*` non fusionnée la plus récente, sinon `main`), build `CHANNEL=dev`,
   nom d'app « FitPacer DEV ».
 
 Le service worker stable exclut `/dev/` de son repli de navigation (`vite.config.ts`) ; chaque app a
