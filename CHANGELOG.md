@@ -3,6 +3,13 @@
 Format `vAA.MM.XX` (voir `CLAUDE.md`). Seules les versions stables figurent ici : chaque section sert
 de texte à la release GitHub créée automatiquement.
 
+## v26.10.03
+
+**Versions**
+- Deux pages : la version stable (https://agambier.github.io/fitpacer/) et la version en développement (https://agambier.github.io/fitpacer/dev/), installables côte à côte (« FitPacer » et « FitPacer DEV »).
+- Badge « Développement » dans la barre de menu de la version en développement.
+- Chaque version stable est publiée automatiquement avec son tag et sa release GitHub.
+
 ## v26.10.02
 
 Première version stable de FitPacer, la PWA qui cadence les séances préparées par Claude.
