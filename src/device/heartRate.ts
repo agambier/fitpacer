@@ -1,5 +1,14 @@
 // Bluetooth heart rate (standard GATT Heart Rate service 0x180D), with auto-reconnect.
 
+/** iPhone / iPad (including iPadOS, which reports itself as a Mac). */
+export function isIOS(): boolean {
+  if (typeof navigator === "undefined") return false;
+  return /iPhone|iPad|iPod/i.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+}
+
+export const IOS_MESSAGE =
+  "⚠️ Connexion de la montre indisponible sur iPhone / iPad (iOS) : le Bluetooth web n’y est pas pris en charge. La séance fonctionne sans FC ; la montre peut enregistrer l’activité de son côté.";
+
 export type BtState = "off" | "connecting" | "on" | "lost";
 
 export interface HrCallbacks {
@@ -25,6 +34,10 @@ export class HeartRateMonitor {
 
   /** Must be called from a user gesture. */
   async connect() {
+    if (!this.supported && isIOS()) {
+      this.cb.onMessage(IOS_MESSAGE);
+      return;
+    }
     if (!this.supported) {
       this.cb.onMessage(
         "Le Bluetooth web n’est pas disponible. Dans Brave, activez-le via brave://flags (option « Web Bluetooth API »), puis relancez Brave. Sinon, utilisez Chrome sur Android.",
