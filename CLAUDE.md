@@ -91,6 +91,9 @@ Format **`vAA.MM.XX`** (année et mois sur deux chiffres, XX = numéro de versio
     `v26.11.01-dev`) ; les modifications suivantes gardent ce même numéro ;
   - quand l'utilisateur confirme que c'est stable, on retire `-dev` (→ `v26.10.03`).
 - Ne jamais retirer `-dev` ni changer de numéro sans que l'utilisateur l'ait dit.
+- Quand une version devient stable : retirer `-dev`, ajouter sa section dans `CHANGELOG.md`, fusionner
+  dans `main`. Le workflow `.github/workflows/release.yml` crée alors le tag et la release GitHub
+  (l'environnement de Claude ne peut pas pousser de tag lui-même).
 - Dernière version stable confirmée : `v26.10.02` (31/10/2026). La prochaine modification passe en `v26.10.03-dev`.
 
 ## Façon de travailler

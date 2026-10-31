@@ -1,0 +1,33 @@
+name: Release
+
+# On main, a stable version (no "-dev" in src/version.ts) gets its tag and GitHub release,
+# with the matching section of CHANGELOG.md as notes. Does nothing if the release already exists.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read version
+        id: v
+        run: |
+          v=$(grep -oE 'v[0-9]{2}\.[0-9]{2}\.[0-9]{2}(-dev)?' src/version.ts | head -1)
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+          echo "Version: $v"
+      - name: Create tag and release
+        if: ${{ !contains(steps.v.outputs.version, '-dev') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          V: ${{ steps.v.outputs.version }}
+        run: |
+          if gh release view "$V" >/dev/null 2>&1; then echo "Release $V already exists"; exit 0; fi
+          awk -v v="## $V" '$0==v{f=1;next} /^## /{f=0} f' CHANGELOG.md > notes.md
+          [ -s notes.md ] || echo "FitPacer $V" > notes.md
+          gh release create "$V" --target "$GITHUB_SHA" --title "FitPacer $V" --notes-file notes.md
