@@ -79,18 +79,18 @@ export class HeartRateMonitor {
    * Must be called from a user gesture.
    * `saved`: the chooser only lists the watch connected last time (still needs a tap on "Associer").
    */
-  async connect(saved = false) {
+  async connect(saved = false): Promise<"ok" | "savedNotFound" | "failed"> {
     const savedName = saved ? savedWatch() : null;
     const unsupported = btUnsupportedMessage(currentBtEnv());
     if (unsupported) {
       this.cb.onMessage(unsupported);
-      return;
+      return "failed";
     }
     try {
       // Bluetooth switched off, no adapter, or blocked by a policy.
       if (navigator.bluetooth.getAvailability && !(await navigator.bluetooth.getAvailability())) {
         this.cb.onMessage("⚠️ Bluetooth indisponible : activez le Bluetooth du téléphone, puis réessayez.");
-        return;
+        return "failed";
       }
     } catch {
       /* getAvailability not usable: try anyway */
@@ -107,14 +107,15 @@ export class HeartRateMonitor {
       this.retries = 0;
       dev.addEventListener("gattserverdisconnected", this.onDisconnect);
       await this.attach(dev);
+      return "ok";
     } catch (e) {
       const err = e as Error;
       this.cb.onState(this.device?.gatt?.connected ? "on" : "off", this.device?.name);
       if (err.name === "NotFoundError" && savedName) {
-        this.cb.onMessage(
-          "« " + savedName + " » n’a pas été trouvée (ou la recherche a été annulée). Vérifiez que le partage de FC est actif sur la montre, ou choisissez une autre montre.",
-        );
-      } else if (err.name === "NotFoundError" && !this.wideScan) {
+        // The caller offers the full list (a new tap is required by the browser).
+        return "savedNotFound";
+      }
+      if (err.name === "NotFoundError" && !this.wideScan) {
         this.wideScan = true;
         this.cb.onMessage(
           "Aucune montre trouvée en mode FC. Vérifiez le partage de FC et la localisation du téléphone, puis appuyez de nouveau : la recherche listera tous les appareils Bluetooth.",
@@ -129,6 +130,7 @@ export class HeartRateMonitor {
       } else {
         this.cb.onMessage("Connexion impossible : " + err.message);
       }
+      return "failed";
     }
   }
 

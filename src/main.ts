@@ -402,26 +402,40 @@ const watchDialog = $<HTMLDialogElement>("watchDialog");
 /** true: asked when starting the session (the session starts afterwards). */
 let watchAtStart = false;
 
-function openWatchDialog(atStart: boolean) {
+/**
+ * Watch choice. `notFound`: the remembered watch was not found; the full list needs a new tap
+ * (the browser only opens its Bluetooth list right after a tap).
+ */
+function openWatchDialog(atStart: boolean, notFound = false) {
   watchAtStart = atStart;
   const saved = savedWatch();
-  $("watchQ").innerHTML = "";
-  $("watchQ").append(
-    atStart ? "La montre n’est pas connectée." : "Quelle montre connecter ?",
-    ...(atStart ? [document.createElement("br"), "Voulez-vous la connecter ?"] : []),
-  );
+  const q = $("watchQ");
+  q.replaceChildren();
+  if (notFound && saved) q.append("« " + saved + " » est introuvable.", document.createElement("br"), "Afficher les montres présentes ?");
+  else if (atStart) q.append("La montre n’est pas connectée.", document.createElement("br"), "Voulez-vous la connecter ?");
+  else q.append("Quelle montre connecter ?");
   const savedBtn = $("watchSaved");
+  const yes = $("watchYes");
   savedBtn.hidden = !saved;
-  savedBtn.textContent = saved ? "Connecter « " + saved + " »" : "";
-  $("watchYes").textContent = saved ? "Choisir une autre montre" : "Oui, connecter";
-  $("watchYes").className = saved ? "ghost" : "primary";
+  savedBtn.textContent = saved ? (notFound ? "Réessayer « " + saved + " »" : "Connecter « " + saved + " »") : "";
+  savedBtn.className = notFound ? "ghost" : "primary";
+  yes.textContent = notFound ? "Afficher les montres présentes" : saved ? "Choisir une autre montre" : "Oui, connecter";
+  yes.className = saved && !notFound ? "ghost" : "primary";
+  // primary action first
+  const box = yes.parentElement!;
+  if (notFound) box.prepend(yes);
+  else box.prepend(savedBtn);
   $("watchNo").textContent = atStart ? "Non, démarrer sans" : "Annuler";
   watchDialog.showModal();
 }
 
 async function connectFromDialog(saved: boolean) {
   watchDialog.close();
-  await monitor.connect(saved); // opens the Bluetooth chooser (only the saved watch when `saved`)
+  const res = await monitor.connect(saved); // opens the Bluetooth chooser (only the saved watch when `saved`)
+  if (res === "savedNotFound") {
+    openWatchDialog(watchAtStart, true);
+    return;
+  }
   if (!watchAtStart) return;
   startSession();
   if (btBtn.dataset.s !== "on" && btBtn.dataset.s !== "connecting")

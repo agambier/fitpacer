@@ -38,7 +38,11 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
 - [x] **Montre mémorisée** : le nom de la dernière montre connectée est gardé sur le téléphone. Ensuite,
       « Connecter la montre » et la question au démarrage proposent « Connecter « Suunto … » » : le
       sélecteur Bluetooth ne liste alors que cette montre (il faut toujours toucher « Associer », rien
-      n'est automatique) ; « Choisir une autre montre » liste toutes les montres. « Oublier la montre
+      n'est automatique) ; « Choisir une autre montre » liste toutes les montres.
+      Si la montre mémorisée est introuvable (liste vide / annulée), la fenêtre revient avec
+      « Afficher les montres présentes » en bouton principal (le navigateur exige un nouveau toucher
+      pour rouvrir sa liste). Dans la liste complète, le navigateur ne permet pas de mettre la montre
+      mémorisée en avant ; la dernière montre connectée remplace la précédente. « Oublier la montre
       enregistrée » dans Aide → Vie privée. (Le navigateur ne permet pas de présélectionner un appareil
       dans sa liste complète : filtrer par nom est l'équivalent le plus proche.)
 - [x] **Aide** (menu ☰) en trois parties : Format de séance, Connexion de la montre (dépannage),
