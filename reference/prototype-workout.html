@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Séance guidée</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF1F4; --surface:#FFFFFF; --ink:#13202B; --muted:#56656F; --line:#C9D2DA;
+  --ramp:#2F5D8A; --amber:#B86E00; --ok:#1C7F52; --hot:#C2302A; --flash:rgba(184,110,0,.18);
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#101C26; --surface:#172633; --ink:#E8EEF3; --muted:#91A3B1; --line:#2A3B4A;
+    --ramp:#5E9BD6; --amber:#F2A93B; --ok:#45C48A; --hot:#FF6B5E; --flash:rgba(242,169,59,.16);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101C26; --surface:#172633; --ink:#E8EEF3; --muted:#91A3B1; --line:#2A3B4A;
+  --ramp:#5E9BD6; --amber:#F2A93B; --ok:#45C48A; --hot:#FF6B5E; --flash:rgba(242,169,59,.16);
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
+  font:400 16px/1.45 Barlow,"Segoe UI",Roboto,Arial,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.num{font-family:"Barlow Condensed","Arial Narrow",Barlow,sans-serif;font-variant-numeric:tabular-nums}
+button,textarea,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--ramp);outline-offset:2px}
+
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);
+  display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line)}
+.hr{display:flex;align-items:baseline;gap:6px;min-width:0}
+.hr .v{font-size:44px;font-weight:700;line-height:1}
+.hr .u{color:var(--muted);font-size:15px}
+.hr.calm .v{color:var(--ok)} .hr.near .v{color:var(--amber)} .hr.over .v{color:var(--hot)}
+.hr.stale .v{color:var(--muted)}
+.bt{margin-left:auto;border:1px solid var(--line);background:var(--surface);border-radius:999px;
+  padding:8px 14px;font-weight:600;font-size:14px;max-width:58%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bt[data-s="on"]{border-color:var(--ok);color:var(--ok)}
+.bt[data-s="lost"],.bt[data-s="connecting"]{border-color:var(--amber);color:var(--amber)}
+
+main{max-width:640px;margin:0 auto;padding:16px}
+.screen[hidden]{display:none}
+.msg{border-left:4px solid var(--amber);background:var(--surface);padding:10px 12px;margin:0 0 14px;font-size:15px}
+.msg[hidden]{display:none}
+
+h1{font:600 30px/1.1 "Barlow Condensed",Barlow,sans-serif;margin:4px 0 12px}
+label,legend{display:block;font-weight:600;margin:14px 0 6px;padding:0}
+textarea{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px}
+#src{min-height:250px;font:15px/1.5 ui-monospace,"Roboto Mono",Menlo,monospace;resize:vertical}
+.help{color:var(--muted);font-size:14px;margin:6px 0 0}
+.help code{font-size:13px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+input[type=number]{width:96px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.errors{color:var(--hot);font-size:14px;margin:8px 0 0;padding-left:18px}
+.plan{list-style:none;margin:14px 0 0;padding:0;border-top:1px solid var(--line)}
+.plan li{display:grid;grid-template-columns:3.6em 1fr auto;gap:10px;align-items:baseline;padding:8px 2px;border-bottom:1px solid var(--line)}
+.plan .t{font-size:20px;font-weight:600}
+.plan .t.reps{color:var(--amber)}
+.plan .d{color:var(--muted);font-size:14px}
+.plan .s{font-size:18px;font-weight:600;color:var(--ramp);text-align:right}
+.total{margin:10px 0 0;color:var(--muted)}
+.primary{display:block;width:100%;margin:18px 0 8px;padding:16px;border:0;border-radius:10px;
+  background:var(--ramp);color:#fff;font:700 22px/1 "Barlow Condensed",Barlow,sans-serif}
+.primary:disabled{opacity:.45;cursor:not-allowed}
+.ghost{background:none;border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:14px}
+.ghost.strong{border-color:var(--ramp);color:var(--ramp);font-weight:600;padding:10px 18px;font-size:16px}
+.srcHead{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin-top:14px}
+.srcHead label{margin:0 0 6px}
+.srcHead .row{margin-bottom:6px}
+
+#run{display:grid;gap:10px}
+.stage{position:relative;background:var(--surface);border-radius:12px;padding:16px 16px 0;overflow:hidden;transition:background-color .4s}
+.stage.flash{background:var(--flash)}
+.stepname{font:600 28px/1.1 "Barlow Condensed",Barlow,sans-serif;margin:0;padding-right:70px}
+.rep{position:absolute;top:20px;right:16px;color:var(--muted);font-size:16px}
+.params{display:flex;gap:22px;margin-top:6px;flex-wrap:wrap}
+.params[hidden]{display:none}
+.param .k{color:var(--muted);font-size:14px}
+.param .v{font-size:36px;font-weight:700;line-height:1}
+.param.slope .v{color:var(--ramp)}
+.note{color:var(--muted);font-size:16px;margin:6px 0 0}
+.clock{font-size:clamp(96px,30vw,168px);font-weight:700;line-height:.9;margin:10px 0 0;letter-spacing:-1px}
+.clock.last{color:var(--amber)}
+.clock .unit{display:block;font-size:22px;font-weight:600;letter-spacing:0;color:var(--muted);margin-top:4px}
+.sub{color:var(--muted);font-size:16px;margin:6px 0 0}
+.ramp{display:block;width:calc(100% + 32px);height:58px;margin:8px -16px 0}
+.ramp[hidden]{display:none}
+.ramp path{fill:var(--ramp);opacity:.9}
+.doneBtn{display:block;width:100%;margin:14px 0 16px;padding:22px;border:0;border-radius:12px;
+  background:var(--ok);color:#fff;font:700 30px/1 "Barlow Condensed",Barlow,sans-serif}
+.doneBtn[hidden]{display:none}
+.stage .spacer{height:16px}
+.next{display:flex;justify-content:space-between;gap:10px;background:var(--surface);border-radius:12px;padding:12px 16px;font-size:17px}
+.next .k{color:var(--muted)}
+.next .n{font-weight:600;text-align:right}
+.segs{display:flex;height:12px;gap:2px;border-radius:4px;overflow:hidden}
+.segs span{display:block;background:var(--line);height:100%}
+.segs span.done{background:var(--muted)}
+.segs span.cur{background:var(--amber)}
+.times{display:flex;justify-content:space-between;color:var(--muted);font-size:15px}
+.spark{display:block;width:100%;height:70px;background:var(--surface);border-radius:12px}
+.spark .ln{fill:none;stroke:var(--hot);stroke-width:2}
+.spark .cap{stroke:var(--amber);stroke-dasharray:4 4;stroke-width:1}
+.ctrls{display:grid;grid-template-columns:1fr 1.6fr 1fr;gap:10px;margin-top:4px}
+.ctrls button{border:0;border-radius:10px;padding:16px 8px;background:var(--surface);font:700 20px/1 "Barlow Condensed",Barlow,sans-serif}
+.ctrls .go{background:var(--ramp);color:#fff}
+.stop{justify-self:center;background:none;border:0;color:var(--muted);text-decoration:underline;padding:10px;font-size:15px}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.stats div{background:var(--surface);border-radius:10px;padding:10px 12px}
+.stats .k{color:var(--muted);font-size:14px}
+.stats .v{font-size:32px;font-weight:700;line-height:1.1}
+table{width:100%;border-collapse:collapse;font-size:15px;margin-top:6px}
+th,td{text-align:left;padding:7px 4px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:500}
+td.r,th.r{text-align:right}
+.rpe{border:0;margin:18px 0 0;padding:0}
+.rpe-scale{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
+.rpe-scale button{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:12px 0;font-size:22px;font-weight:700}
+.rpe-scale button[aria-checked="true"]{background:var(--ramp);border-color:var(--ramp);color:#fff}
+.rpe-ends{display:flex;justify-content:space-between;color:var(--muted);font-size:13px;margin-top:4px}
+.rpe-txt{margin:6px 0 0;font-weight:600}
+#comment{min-height:70px;font-size:15px}
+#journal{min-height:100px;font:14px/1.45 ui-monospace,"Roboto Mono",Menlo,monospace}
+@media (prefers-reduced-motion:reduce){.stage{transition:none}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="hr stale num" id="hrBox"><span class="v" id="hrVal">--</span><span class="u">bpm</span></div>
+  <button class="bt" id="btBtn" data-s="off" type="button">Connecter la montre</button>
+</header>
+
+<main>
+  <p class="msg" id="msg" role="status" hidden></p>
+
+  <!-- Programme -->
+  <section class="screen" id="edit">
+    <h1 id="planTitle">Programme</h1>
+    <div class="srcHead">
+      <label for="src">Étapes de la séance</label>
+      <div class="row">
+        <button class="ghost strong" id="pasteBtn" type="button">Coller</button>
+        <button class="ghost" id="clearBtn" type="button">Effacer</button>
+      </div>
+    </div>
+    <textarea id="src" spellcheck="false" autocapitalize="off" placeholder="Collez ici la séance préparée dans la conversation."></textarea>
+    <p class="help">Une étape par ligne : <code>Nom | quantité | info 1 | info 2 | note</code>.<br>
+      Quantité chronométrée : <code>4:00</code>, <code>45s</code> ou <code>5</code> (minutes).<br>
+      Quantité en répétitions : <code>10 rép</code>, <code>12 rép par bras</code> ou <code>max</code>. L’étape attend que vous touchiez « Fait ».<br>
+      Infos : vitesse (<code>5,5 km/h</code>), pente (<code>7 %</code>), charge (<code>6 kg</code>), niveau… Répétition : <code>x3 {</code> … <code>}</code>.<br>
+      En tête : <code>titre: …</code> et <code>type: salle</code> ou <code>maison</code>. <code>#</code> pour un commentaire.</p>
+    <ul class="errors" id="errors"></ul>
+    <label for="cap">Plafond de FC (alerte au-dessus)</label>
+    <div class="row"><input type="number" id="cap" min="90" max="200" step="1" inputmode="numeric"> <span class="help" style="margin:0">bpm</span></div>
+    <ul class="plan num" id="plan"></ul>
+    <p class="total" id="total"></p>
+    <button class="primary" id="startBtn" type="button">Démarrer la séance</button>
+  </section>
+
+  <!-- Déroulé -->
+  <section class="screen" id="run" hidden>
+    <div class="stage" id="stage">
+      <p class="stepname" id="sName"></p>
+      <span class="rep num" id="sRep"></span>
+      <div class="params num" id="params"></div>
+      <p class="note" id="sNote"></p>
+      <div class="clock num" id="clock"></div>
+      <p class="sub num" id="sub"></p>
+      <button class="doneBtn" id="doneBtn" type="button" hidden>Fait ✓</button>
+      <svg class="ramp" id="ramp" viewBox="0 0 400 58" preserveAspectRatio="none" aria-hidden="true" hidden><path id="rampPath" d="M0 58 L400 58 L400 58 Z"/></svg>
+      <div class="spacer" id="spacer"></div>
+    </div>
+    <div class="next"><span class="k">Ensuite</span><span class="n" id="nextTxt"></span></div>
+    <div class="segs" id="segs"></div>
+    <div class="times num"><span id="elapsed">0:00</span><span id="left"></span></div>
+    <svg class="spark" id="spark" viewBox="0 0 300 70" preserveAspectRatio="none" aria-label="Courbe de fréquence cardiaque"></svg>
+    <div class="ctrls">
+      <button id="prevBtn" type="button" aria-label="Étape précédente">◀ Préc.</button>
+      <button class="go" id="pauseBtn" type="button">Pause</button>
+      <button id="nextBtn" type="button" aria-label="Étape suivante">Suiv. ▶</button>
+    </div>
+    <button class="stop" id="stopBtn" type="button">Terminer la séance</button>
+  </section>
+
+  <!-- Bilan -->
+  <section class="screen" id="done" hidden>
+    <h1>Séance terminée</h1>
+    <div class="stats num" id="stats"></div>
+    <svg class="spark" id="spark2" viewBox="0 0 300 70" preserveAspectRatio="none" aria-label="Courbe de fréquence cardiaque de la séance"></svg>
+    <table class="num" id="perStep"></table>
+    <fieldset class="rpe">
+      <legend>Ressenti de l’effort</legend>
+      <div class="rpe-scale num" id="rpe" role="radiogroup" aria-label="Ressenti de 1 à 10"></div>
+      <div class="rpe-ends"><span>1 = très facile</span><span>10 = maximal</span></div>
+      <p class="rpe-txt" id="rpeTxt">Touchez une note.</p>
+    </fieldset>
+    <label for="comment">Commentaire</label>
+    <textarea id="comment" placeholder="Ex. : 8 pompes seulement à la 3e série, gainage facile, salle chaude…"></textarea>
+    <label for="journal">Ligne pour le journal</label>
+    <textarea id="journal" readonly></textarea>
+    <div class="row" style="margin-top:8px"><button class="ghost" id="copyBtn" type="button">Copier la ligne</button></div>
+    <button class="primary" id="againBtn" type="button">Revenir au programme</button>
+  </section>
+</main>
+
+<script>
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+
+const REP_GUESS = 40; // durée estimée d’une étape en répétitions, en secondes
+
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v === null ? d : v; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, v); }catch(e){} }
+};
+
+const fmt = s => { s = Math.max(0, Math.round(s)); const m = Math.floor(s/60), r = s%60; return m + ":" + String(r).padStart(2,"0"); };
+const fmtLong = s => { s = Math.round(s); const h = Math.floor(s/3600), m = Math.floor((s%3600)/60); return h ? h+" h "+String(m).padStart(2,"0") : Math.max(1, m)+" min"; };
+const fmtDur = s => s < 60 ? s + " s" : (s % 60 ? fmt(s) : (s/60) + " min");
+function showMsg(t){ const m = $("msg"); m.textContent = t || ""; m.hidden = !t; }
+
+function parseDur(s){
+  s = String(s).trim().toLowerCase().replace(",", ".");
+  let m;
+  if ((m = s.match(/^(\d+):(\d{1,2})$/))) return +m[1]*60 + +m[2];
+  if ((m = s.match(/^(\d+(?:\.\d+)?)\s*s$/))) return Math.round(+m[1]);
+  if ((m = s.match(/^(\d+(?:\.\d+)?)\s*(?:min|mn|m)?$/))) return Math.round(+m[1]*60);
+  return NaN;
+}
+function parseAmount(s){
+  s = String(s).trim();
+  let m;
+  if (/^max(imum)?$/i.test(s)) return {kind: "reps", reps: "Max", extra: ""};
+  if ((m = s.match(/^(\d+)\s*(?:r[ée]p(?:s|\.|étitions?)?|reps?)\b\.?\s*(.*)$/i))) return {kind: "reps", reps: m[1], extra: m[2].trim()};
+  const d = parseDur(s);
+  if (d > 0) return {kind: "time", dur: d};
+  return null;
+}
+function paramLabel(v){
+  if (/km\s*\/\s*h/i.test(v)) return "Vitesse";
+  if (/%/.test(v)) return "Pente";
+  if (/\bkg\b/i.test(v)) return "Charge";
+  if (/rpm|tr\s*\/\s*min/i.test(v)) return "Cadence";
+  if (/\d\s*w\b|watts?/i.test(v)) return "Puissance";
+  if (/niv/i.test(v)) return "Niveau";
+  return "Consigne";
+}
+const slopeOf = infos => { const v = infos.find(x => /%/.test(x)); if (!v) return null; const m = v.match(/(-?\d+(?:[.,]\d+)?)\s*%\s*$/); return m ? parseFloat(m[1].replace(",", ".")) : null; };
+
+/* ---------- Lecture du programme ---------- */
+function parse(text){
+  let title = "", type = "";
+  const root = [], stack = [{items: root}], errors = [];
+  text.split(/\r?\n/).forEach((raw, i) => {
+    const line = raw.trim();
+    if (!line || line.startsWith("#")) return;
+    let m;
+    if ((m = line.match(/^titre\s*:\s*(.+)$/i))) { title = m[1].trim(); return; }
+    if ((m = line.match(/^type\s*:\s*(.+)$/i))) { type = m[1].trim(); return; }
+    if ((m = line.match(/^(?:x\s*(\d+)|(\d+)\s*x)\s*\{$/i))) {
+      const blk = {repeat: +(m[1] || m[2]), items: []};
+      stack[stack.length-1].items.push(blk); stack.push(blk); return;
+    }
+    if (line === "}") { if (stack.length > 1) stack.pop(); else errors.push("Ligne "+(i+1)+" : « } » ferme un bloc qui n’a pas été ouvert."); return; }
+    const p = line.split("|").map(x => x.trim());
+    const amt = parseAmount(p[1] || "");
+    if (!p[0] || !amt) { errors.push("Ligne "+(i+1)+" : quantité illisible. Exemples : 4:00, 45s, 10 rép, max."); return; }
+    stack[stack.length-1].items.push(Object.assign({name: p[0], infos: [p[2] || "", p[3] || ""].filter(Boolean), note: p[4] || ""}, amt));
+  });
+  if (stack.length > 1) errors.push("Un bloc de répétition n’est pas fermé : ajoutez une ligne « } ».");
+  const steps = [];
+  const flat = (items, rep) => items.forEach(it => {
+    if (it.repeat) { for (let r = 1; r <= it.repeat; r++) flat(it.items, {r, n: it.repeat}); }
+    else steps.push(Object.assign({}, it, {rep}));
+  });
+  flat(root, null);
+  const est = steps.reduce((a, s) => a + (s.kind === "time" ? s.dur : REP_GUESS), 0);
+  return {title: title || "Séance", type: type || "salle", steps, est, errors};
+}
+const weight = s => s.kind === "time" ? s.dur : REP_GUESS;
+const amountTxt = s => s.kind === "time" ? fmt(s.dur) : (s.reps === "Max" ? "max" : s.reps + " rép" + (s.extra ? " " + s.extra : ""));
+
+/* ---------- Éditeur ---------- */
+let prog = null;
+const src = $("src"), cap = $("cap");
+src.value = store.get("guidee.texte", "");
+cap.value = store.get("guidee.plafond", "150");
+
+function refreshPlan(){
+  prog = parse(src.value);
+  store.set("guidee.texte", src.value);
+  $("planTitle").textContent = prog.title;
+  const errs = $("errors"); errs.replaceChildren();
+  prog.errors.forEach(e => { const li = document.createElement("li"); li.textContent = e; errs.append(li); });
+  const plan = $("plan"); plan.replaceChildren();
+  prog.steps.forEach(s => {
+    const li = document.createElement("li");
+    const a = document.createElement("span"); a.className = "t" + (s.kind === "reps" ? " reps" : "");
+    a.textContent = s.kind === "time" ? fmt(s.dur) : (s.reps === "Max" ? "max" : s.reps + "×");
+    const b = document.createElement("span"); b.className = "d";
+    b.textContent = s.name + (s.rep ? "  ("+s.rep.r+"/"+s.rep.n+")" : "") + (s.kind === "reps" && s.extra ? ", " + s.extra : "");
+    const c = document.createElement("span"); c.className = "s"; c.textContent = s.infos.join(" · ");
+    li.append(a, b, c); plan.append(li);
+  });
+  const nReps = prog.steps.filter(s => s.kind === "reps").length;
+  $("total").textContent = prog.steps.length
+    ? prog.steps.length + " étapes, environ " + fmtLong(prog.est) + (nReps ? " (dont " + nReps + " en répétitions, durée estimée)" : "") + "."
+    : "Collez une séance pour commencer.";
+  $("startBtn").disabled = !prog.steps.length || prog.errors.length > 0;
+}
+src.addEventListener("input", refreshPlan);
+cap.addEventListener("change", () => store.set("guidee.plafond", cap.value));
+$("pasteBtn").addEventListener("click", async () => {
+  try{
+    const t = await navigator.clipboard.readText();
+    if (!t.trim()) { showMsg("Le presse-papiers est vide. Copiez d’abord la séance dans la conversation."); return; }
+    src.value = t.trim(); refreshPlan(); showMsg(""); window.scrollTo(0, 0);
+  }catch(e){
+    src.focus();
+    showMsg("Le navigateur n’autorise pas la lecture du presse-papiers. Faites un appui long dans la zone de texte, puis « Coller ».");
+  }
+});
+$("clearBtn").addEventListener("click", () => {
+  if (src.value.trim() && !confirm("Effacer la séance affichée ?")) return;
+  src.value = ""; refreshPlan(); src.focus();
+});
+refreshPlan();
+
+/* ---------- Son, vibration, écran allumé ---------- */
+let actx = null, wakeLock = null;
+function beep(freq, ms){
+  if (!actx) return;
+  const o = actx.createOscillator(), g = actx.createGain();
+  o.type = "sine"; o.frequency.value = freq;
+  g.gain.setValueAtTime(0.0001, actx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.5, actx.currentTime + 0.01);
+  g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + ms/1000);
+  o.connect(g).connect(actx.destination); o.start(); o.stop(actx.currentTime + ms/1000 + 0.02);
+}
+const buzz = p => { try{ navigator.vibrate && navigator.vibrate(p); }catch(e){} };
+async function keepAwake(){
+  try{ if ("wakeLock" in navigator && !wakeLock) { wakeLock = await navigator.wakeLock.request("screen"); wakeLock.addEventListener("release", () => { wakeLock = null; }); } }catch(e){}
+}
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && run.state === "running") keepAwake(); });
+
+/* ---------- Fréquence cardiaque Bluetooth ---------- */
+let hr = null, hrAt = 0, btDev = null, retries = 0, wideScan = false;
+const btBtn = $("btBtn");
+function setBt(state, name){
+  btBtn.dataset.s = state;
+  btBtn.textContent = state === "on" ? (name || "Montre") + " connectée"
+    : state === "connecting" ? "Connexion…"
+    : state === "lost" ? "Reconnexion…" : "Connecter la montre";
+}
+function onHr(bpm){ if (!bpm) return; hr = bpm; hrAt = performance.now(); renderHr(); }
+function renderHr(){
+  const box = $("hrBox"), fresh = hr && performance.now() - hrAt < 5000, c = +cap.value || 150;
+  $("hrVal").textContent = fresh ? hr : "--";
+  box.className = "hr num " + (!fresh ? "stale" : hr > c ? "over" : hr > c - 10 ? "near" : "calm");
+}
+async function attach(dev){
+  setBt("connecting");
+  const server = await dev.gatt.connect();
+  let svc;
+  try{ svc = await server.getPrimaryService("heart_rate"); }
+  catch(e){ btDev = null; try{ dev.gatt.disconnect(); }catch(_){} throw new Error((dev.name || "Cet appareil") + " ne diffuse pas de FC. Activez le partage de FC sur la montre."); }
+  const ch = await svc.getCharacteristic("heart_rate_measurement");
+  ch.addEventListener("characteristicvaluechanged", ev => {
+    const v = ev.target.value, f = v.getUint8(0);
+    onHr((f & 1) ? v.getUint16(1, true) : v.getUint8(1));
+  });
+  await ch.startNotifications();
+  retries = 0; setBt("on", dev.name); showMsg("");
+}
+function onDisconnect(){
+  if (!btDev) return;
+  setBt("lost");
+  if (retries++ < 15) setTimeout(() => btDev && attach(btDev).catch(onDisconnect), Math.min(1000 * retries, 5000));
+  else { setBt("off"); showMsg("La montre ne répond plus. Vérifiez que le partage de FC est actif, puis appuyez sur « Connecter la montre »."); }
+}
+btBtn.addEventListener("click", async () => {
+  if (btBtn.dataset.s === "on") return;
+  if (!navigator.bluetooth) {
+    showMsg("Le Bluetooth web n’est pas disponible. Dans Brave, activez-le via brave://flags (option « Web Bluetooth API »), puis relancez Brave. Sinon, ouvrez cette page dans Chrome.");
+    return;
+  }
+  try{
+    const opts = wideScan ? {acceptAllDevices: true, optionalServices: ["heart_rate"]} : {filters: [{services: ["heart_rate"]}]};
+    const dev = await navigator.bluetooth.requestDevice(opts);
+    if (btDev && btDev !== dev) btDev.removeEventListener("gattserverdisconnected", onDisconnect);
+    btDev = dev; retries = 0;
+    dev.addEventListener("gattserverdisconnected", onDisconnect);
+    await attach(dev);
+  }catch(e){
+    setBt(btDev && btDev.gatt.connected ? "on" : "off", btDev && btDev.name);
+    if (e.name === "NotFoundError" && !wideScan) { wideScan = true; btBtn.textContent = "Chercher tous les appareils"; showMsg("Aucune montre trouvée en mode FC. Vérifiez le partage de FC et la localisation du téléphone, puis appuyez de nouveau : la recherche listera tous les appareils Bluetooth."); }
+    else if (e.name === "NotFoundError") { wideScan = false; showMsg("Aucun appareil choisi. Vérifiez que le partage de FC est actif sur la montre et que la localisation du téléphone est activée."); }
+    else if (e.name === "SecurityError") showMsg("Le navigateur bloque le Bluetooth dans ce cadre. Ouvrez la page seule, dans son propre onglet, puis réessayez.");
+    else showMsg("Connexion impossible : " + e.message);
+  }
+});
+setInterval(renderHr, 1000);
+
+/* ---------- Déroulé, étape par étape ---------- */
+const run = {state: "idle", t0: 0, pausedAt: 0, paused: 0, idx: -1, stepStart: 0, beeped: null, lastSample: -1, alertAt: 0, done: []};
+let samples = [];
+const now = () => performance.now();
+const sessionEl = () => ((run.state === "paused" ? run.pausedAt : now()) - run.t0 - run.paused) / 1000;
+const stepEl = () => sessionEl() - run.stepStart;
+function show(id){ ["edit","run","done"].forEach(x => $(x).hidden = x !== id); window.scrollTo(0, 0); }
+
+function buildSegs(){
+  const segs = $("segs"); segs.replaceChildren();
+  prog.steps.forEach(s => { const sp = document.createElement("span"); sp.style.flex = weight(s) + " 0 0"; segs.append(sp); });
+}
+function renderStep(i){
+  const s = prog.steps[i], n = prog.steps[i+1];
+  $("sName").textContent = s.name;
+  $("sRep").textContent = s.rep ? s.rep.r + "/" + s.rep.n : "";
+  const params = $("params"); params.replaceChildren();
+  s.infos.forEach(v => {
+    const d = document.createElement("div"); d.className = "param" + (/%/.test(v) ? " slope" : "");
+    const k = document.createElement("div"); k.className = "k"; k.textContent = paramLabel(v);
+    const val = document.createElement("div"); val.className = "v"; val.textContent = v;
+    d.append(k, val); params.append(d);
+  });
+  params.hidden = !s.infos.length;
+  $("sNote").textContent = s.note;
+  const slope = slopeOf(s.infos);
+  $("ramp").hidden = slope === null;
+  $("spacer").hidden = slope !== null;
+  if (slope !== null) $("rampPath").setAttribute("d", "M0 58 L400 58 L400 " + (58 - Math.min(56, Math.max(2, slope * 4))) + " Z");
+  const isReps = s.kind === "reps";
+  $("doneBtn").hidden = !isReps;
+  if (isReps) {
+    const c = $("clock"); c.classList.remove("last");
+    c.textContent = s.reps === "Max" ? "Max" : s.reps;
+    const u = document.createElement("span"); u.className = "unit";
+    u.textContent = (s.reps === "Max" ? "le plus possible" : "répétitions") + (s.extra ? " " + s.extra : "");
+    c.append(u);
+  }
+  $("nextTxt").textContent = n ? n.name + " (" + amountTxt(n) + ")" : "Fin de séance";
+  [...$("segs").children].forEach((sp, k) => sp.className = k < i ? "done" : k === i ? "cur" : "");
+}
+function goTo(i, announce){
+  if (i >= prog.steps.length) { finish(); return; }
+  run.idx = Math.max(0, i); run.stepStart = sessionEl(); run.beeped = null;
+  renderStep(run.idx);
+  if (announce) {
+    beep(1175, 450); buzz([300, 120, 300]);
+    const st = $("stage"); st.classList.add("flash"); setTimeout(() => st.classList.remove("flash"), 1500);
+  }
+  tick();
+}
+function leaveForward(){
+  run.done[run.idx] = Math.round(stepEl());
+  goTo(run.idx + 1, run.state === "running");
+}
+function sparkline(svg, pts, total){
+  svg.replaceChildren();
+  const c = +cap.value || 150, hrs = pts.map(p => p.hr);
+  const lo = Math.min(80, ...hrs) - 5, hi = Math.max(c + 5, ...hrs) + 5;
+  const y = v => 70 - (v - lo) / (hi - lo) * 66 - 2;
+  const ns = "http://www.w3.org/2000/svg";
+  const capLine = document.createElementNS(ns, "line");
+  capLine.setAttribute("class", "cap"); capLine.setAttribute("x1", 0); capLine.setAttribute("x2", 300);
+  capLine.setAttribute("y1", y(c)); capLine.setAttribute("y2", y(c)); svg.append(capLine);
+  if (pts.length < 2) return;
+  const pl = document.createElementNS(ns, "polyline");
+  pl.setAttribute("class", "ln");
+  pl.setAttribute("points", pts.map(p => (p.t / total * 300).toFixed(1) + "," + y(p.hr).toFixed(1)).join(" "));
+  svg.append(pl);
+}
+function remainingEst(){
+  const s = prog.steps[run.idx];
+  let r = s.kind === "time" ? Math.max(0, s.dur - stepEl()) : Math.max(0, REP_GUESS - stepEl());
+  for (let k = run.idx + 1; k < prog.steps.length; k++) r += weight(prog.steps[k]);
+  return r;
+}
+
+function tick(){
+  if (run.state === "idle" || run.idx < 0) return;
+  const s = prog.steps[run.idx], el = stepEl(), t = sessionEl();
+  if (s.kind === "time") {
+    const rem = s.dur - el;
+    if (rem <= 0 && run.state === "running") { leaveForward(); return; }
+    const sec = Math.ceil(rem);
+    $("clock").textContent = fmt(rem);
+    $("clock").classList.toggle("last", rem <= 10);
+    $("sub").textContent = "";
+    if (run.state === "running" && sec <= 3 && sec >= 1 && run.beeped !== sec) { run.beeped = sec; beep(880, 160); buzz(80); }
+  } else {
+    $("sub").textContent = "En cours depuis " + fmt(el);
+  }
+  $("elapsed").textContent = fmt(t);
+  $("left").textContent = "reste ≈ " + fmt(remainingEst());
+
+  const whole = Math.floor(t);
+  if (run.state === "running" && whole !== run.lastSample) {
+    run.lastSample = whole;
+    if (hr && now() - hrAt < 5000) {
+      samples.push({t, hr, i: run.idx});
+      if (samples.length % 5 === 0) sparkline($("spark"), samples, Math.max(prog.est, t + 1));
+      const c = +cap.value || 150;
+      if (hr > c && now() - run.alertAt > 20000) { run.alertAt = now(); beep(440, 600); buzz([500, 200, 500]); }
+    }
+  }
+}
+setInterval(tick, 200);
+
+$("startBtn").addEventListener("click", () => {
+  refreshPlan();
+  if (!prog.steps.length || prog.errors.length) return;
+  try{ actx = actx || new (window.AudioContext || window.webkitAudioContext)(); actx.resume(); }catch(e){}
+  samples = [];
+  Object.assign(run, {state: "running", t0: now(), pausedAt: 0, paused: 0, idx: -1, stepStart: 0, beeped: null, lastSample: -1, alertAt: 0, done: []});
+  buildSegs(); sparkline($("spark"), [], prog.est);
+  $("pauseBtn").textContent = "Pause";
+  show("run"); keepAwake(); beep(988, 250);
+  goTo(0, false);
+});
+$("doneBtn").addEventListener("click", () => { if (run.state === "paused") { run.paused += now() - run.pausedAt; run.state = "running"; $("pauseBtn").textContent = "Pause"; } leaveForward(); });
+$("pauseBtn").addEventListener("click", () => {
+  if (run.state === "running") { run.state = "paused"; run.pausedAt = now(); $("pauseBtn").textContent = "Reprendre"; }
+  else if (run.state === "paused") { run.paused += now() - run.pausedAt; run.state = "running"; $("pauseBtn").textContent = "Pause"; keepAwake(); }
+});
+$("nextBtn").addEventListener("click", () => { if (run.idx >= 0) leaveForward(); });
+$("prevBtn").addEventListener("click", () => {
+  if (run.idx < 0) return;
+  goTo(stepEl() > 3 || run.idx === 0 ? run.idx : run.idx - 1, false);
+});
+$("stopBtn").addEventListener("click", () => { if (confirm("Terminer la séance maintenant ?")) finish(); });
+
+/* ---------- Bilan ---------- */
+let rpe = null, journalBase = {head: "", fc: ""};
+function finish(){
+  if (run.state === "idle") return;
+  const dur = sessionEl(), complete = run.done.length >= prog.steps.length && run.done[prog.steps.length - 1] !== undefined;
+  run.state = "idle";
+  try{ wakeLock && wakeLock.release(); }catch(e){}
+  beep(660, 300); setTimeout(() => beep(990, 500), 320); buzz([400, 150, 400, 150, 600]);
+
+  const hrs = samples.map(p => p.hr);
+  const min = hrs.length ? Math.min(...hrs) : null, max = hrs.length ? Math.max(...hrs) : null;
+  const avg = hrs.length ? Math.round(hrs.reduce((a, b) => a + b, 0) / hrs.length) : null;
+  const stats = $("stats"); stats.replaceChildren();
+  [["Durée", fmtLong(dur)], ["FC min / moy", min ? min + " / " + avg : "–"], ["FC max", max || "–"]].forEach(([k, v]) => {
+    const d = document.createElement("div");
+    const a = document.createElement("div"); a.className = "k"; a.textContent = k;
+    const b = document.createElement("div"); b.className = "v"; b.textContent = v;
+    d.append(a, b); stats.append(d);
+  });
+  sparkline($("spark2"), samples, Math.max(dur, 1));
+
+  // FC par exercice
+  const groups = new Map();
+  samples.forEach(p => {
+    const s = prog.steps[p.i]; if (!s) return;
+    const key = s.name + (s.infos.length ? " (" + s.infos.join(", ") + ")" : "");
+    const g = groups.get(key) || {sum: 0, n: 0, max: 0};
+    g.sum += p.hr; g.n++; g.max = Math.max(g.max, p.hr); groups.set(key, g);
+  });
+  const tbl = $("perStep"); tbl.replaceChildren();
+  if (groups.size) {
+    const head = tbl.insertRow();
+    ["Étape", "FC moy", "FC max"].forEach((h, k) => { const th = document.createElement("th"); th.textContent = h; if (k) th.className = "r"; head.append(th); });
+    groups.forEach((g, key) => {
+      const r = tbl.insertRow();
+      r.insertCell().textContent = key;
+      const b = r.insertCell(); b.className = "r"; b.textContent = Math.round(g.sum / g.n);
+      const c = r.insertCell(); c.className = "r"; c.textContent = g.max;
+    });
+  }
+
+  // Contenu réalisé : exercices faits, hors repos, regroupés
+  const content = new Map();
+  prog.steps.forEach((s, k) => {
+    if (run.done[k] === undefined || /^repos\b|^r[ée]cup/i.test(s.name)) return;
+    const key = s.name + "|" + amountTxt(s) + "|" + s.infos.join(", ");
+    const c = content.get(key) || {s, n: 0}; c.n++; content.set(key, c);
+  });
+  const parts = [...content.values()].map(({s, n}) => {
+    const amt = s.kind === "time" ? fmtDur(s.dur) : (s.reps === "Max" ? "max" : s.reps + (s.extra ? " " + s.extra : ""));
+    return s.name + " " + (n > 1 ? n + "×" : "") + amt + (s.infos.length ? " (" + s.infos.join(", ") + ")" : "");
+  });
+
+  const d = new Date(), date = String(d.getDate()).padStart(2,"0") + "/" + String(d.getMonth()+1).padStart(2,"0") + "/" + d.getFullYear();
+  journalBase = {
+    head: date + " | " + prog.type + " | " + fmtLong(dur) + " | " + prog.title + (complete ? "" : " (arrêtée avant la fin)") + (parts.length ? " : " + parts.join(" ; ") : ""),
+    fc: min ? min + "/" + avg + "/" + max : "FC non reçue"
+  };
+  rpe = null; $("comment").value = ""; renderRpe();
+  show("done");
+}
+
+const RPE_TXT = ["", "Très facile", "Très facile", "Facile", "Modéré", "Un peu dur", "Dur", "Dur", "Très dur", "Très dur", "Maximal"];
+const rpeBox = $("rpe");
+for (let n = 1; n <= 10; n++) {
+  const b = document.createElement("button");
+  b.type = "button"; b.textContent = n; b.setAttribute("role", "radio"); b.setAttribute("aria-checked", "false");
+  b.addEventListener("click", () => { rpe = n; renderRpe(); });
+  rpeBox.append(b);
+}
+function renderRpe(){
+  [...rpeBox.children].forEach((b, k) => b.setAttribute("aria-checked", String(k + 1 === rpe)));
+  $("rpeTxt").textContent = rpe ? rpe + "/10 : " + RPE_TXT[rpe] : "Touchez une note.";
+  updateJournal();
+}
+function updateJournal(){
+  const remark = $("comment").value.replace(/\s*\n\s*/g, " ; ").replace(/\|/g, "/").trim();
+  $("journal").value = journalBase.head + " | " + journalBase.fc + " | ressenti " + (rpe || "?") + "/10 | – | – | " + (remark || "–");
+}
+$("comment").addEventListener("input", updateJournal);
+
+$("copyBtn").addEventListener("click", async () => {
+  const ta = $("journal");
+  try{ await navigator.clipboard.writeText(ta.value); $("copyBtn").textContent = "Ligne copiée"; }
+  catch(e){ ta.focus(); ta.select(); $("copyBtn").textContent = "Sélectionnée, copiez-la"; }
+  setTimeout(() => $("copyBtn").textContent = "Copier la ligne", 2500);
+});
+$("againBtn").addEventListener("click", () => show("edit"));
+window.addEventListener("beforeunload", e => { if (run.state !== "idle") { e.preventDefault(); e.returnValue = ""; } });
+})();
+</script>
+</body>
+</html>
