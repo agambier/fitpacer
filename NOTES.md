@@ -34,7 +34,7 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
 - [x] **Barre de menu** (en haut, toujours visible) : icône de l'app et version `vAA.MM.XX` à gauche,
       bouton ☰ à droite (décision du 31/10).
       Le menu ouvre trois fenêtres : **Aide sur le format**, **Consignes pour Claude**
-      (Copier / Partager / Télécharger), **À propos** (version, version du format, lien vers le code).
+      (Copier / Partager / Télécharger), **À propos** (auteur — Alexandre Gambier, avec l'aide de l'IA —, version, version du format, lien vers le code).
       La version figure aussi dans le fichier exporté.
       Sur la page de développement (`/dev/`, build `CHANNEL=dev`), un badge orange « Développement »
       s'affiche au milieu de la barre (décision du 31/10).

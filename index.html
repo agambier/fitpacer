@@ -22,12 +22,12 @@
   <nav class="menu" id="menu" role="menu" hidden>
     <button type="button" role="menuitem" data-open="helpDialog">Aide</button>
     <button type="button" role="menuitem" data-open="claudeDialog">Consignes pour Claude</button>
-    <button type="button" role="menuitem" data-open="aboutDialog">À propos</button>
     <button type="button" role="menuitem" class="subToggle" id="themeBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="themeMenu">Thème</button>
     <div class="submenu" id="themeMenu" role="menu" aria-label="Thème" hidden>
       <button type="button" role="menuitemradio" class="themeItem" data-theme-choice="dark" aria-checked="false">Sombre</button>
       <button type="button" role="menuitemradio" class="themeItem" data-theme-choice="light" aria-checked="false">Clair</button>
     </div>
+    <button type="button" role="menuitem" data-open="aboutDialog">À propos</button>
   </nav>
  </div>
  <div class="hrRow">
@@ -164,6 +164,7 @@
 <dialog class="dialog info" id="aboutDialog" aria-labelledby="aboutT">
   <h2 id="aboutT">À propos</h2>
   <dl class="about">
+    <dt>Auteur</dt><dd>Alexandre Gambier, avec l’aide de l’IA</dd>
     <dt>Version</dt><dd class="num" id="appVersion"></dd>
     <dt>Format de séance</dt><dd id="aboutFmt"></dd>
     <dt>Code source</dt><dd><a href="https://github.com/agambier/fitpacer" target="_blank" rel="noopener">github.com/agambier/fitpacer</a></dd>
