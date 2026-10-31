@@ -82,8 +82,9 @@ Garder la logique (parseur, moteur, journal) **séparée du DOM** pour pouvoir l
 ## Version de l'app
 
 Format **`vAA.MM.XX`** (année et mois sur deux chiffres, XX = numéro de version dans le mois, repart à
-01 chaque mois). Source unique : `src/version.ts` (affichée dans « À propos » et dans le fichier
-exporté). **L'incrémenter à chaque push qui modifie l'app** (un push = un déploiement).
+01 chaque mois). Source unique : `src/version.ts` (affichée dans le menu et dans le fichier exporté).
+**Ne jamais changer la version de sa propre initiative** : l'utilisateur dit quand une version est
+stable, et c'est seulement là qu'on l'incrémente.
 
 ## Façon de travailler
 

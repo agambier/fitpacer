@@ -36,6 +36,8 @@ Lignes venant de l'app FitPacer :
 - FC : min/moy/max en bpm, ou « FC non reçue »
 - poids : « 82,4 kg » ou « – » ; tour de taille : « 94 cm » ou « – »
 - remarque : mon commentaire libre, puis éventuellement ces segments calculés par l'app, dans cet ordre :
+    « montre non connectée : pas de FC (ni dérive ni récupération) »  ou
+    « FC partielle : reçue <durée> sur <durée> (montre déconnectée) »  — la FC est alors absente ou incomplète
     « dérive FC <étape> ~<FC début>→<FC fin> »   (une par étape concernée)
     « récup FC <FC fin d'effort>→<FC à 1 min> en 1 min, <FC finale> en <n> min »
   Les segments sont séparés par « ; ». « – » si rien.

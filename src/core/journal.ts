@@ -95,6 +95,25 @@ export function hrRecovery(sess: Session): string | null {
   return txt;
 }
 
+/* ---------- HR availability ---------- */
+
+/** Below this share of the active time with HR, the HR is reported as partial. */
+export const HR_PARTIAL_BELOW = 0.9;
+
+/**
+ * Tells Claude when HR data is missing, so it does not misread the session:
+ * "montre non connectée : pas de FC (ni dérive ni récupération)" or
+ * "FC partielle : reçue 23 min sur 35 (montre déconnectée)". Null when HR is complete.
+ */
+export function hrWarning(sess: Session): string | null {
+  const total = activeDuration(sess);
+  if (total < 1) return null;
+  if (!sess.samples.length) return "montre non connectée : pas de FC (ni dérive ni récupération)";
+  const got = Math.min(total, sess.samples.length);
+  if (got / total >= HR_PARTIAL_BELOW) return null;
+  return "FC partielle : reçue " + fmtLong(got) + " sur " + fmtLong(total) + " (montre déconnectée)";
+}
+
 /* ---------- Content and deviations ---------- */
 
 function plannedTxt(s: Step): string {
@@ -161,7 +180,7 @@ export function journalLine(sess: Session, fb: Feedback): string {
   const statuses = stepStatuses(sess);
   const content = [...doneContent(p.steps, statuses), ...deviations(sess, statuses)];
   const st = hrStats(sess.samples);
-  const remark = [clean(fb.comment), ...hrDrift(sess), hrRecovery(sess) || ""].filter(Boolean).join(" ; ");
+  const remark = [clean(fb.comment), hrWarning(sess) || "", ...hrDrift(sess), hrRecovery(sess) || ""].filter(Boolean).join(" ; ");
   return [
     fmtDateFr(new Date(sess.startWall)),
     p.type,
@@ -222,6 +241,8 @@ export function exportMarkdown(sess: Session, fb: Feedback, meta: ExportMeta): s
     " — Durée active : " + fmtClock(activeDuration(sess)) + " — Durée totale (pauses incluses) : " + fmtClock((sess.endWall - sess.startWall) / 1000));
   L.push("- Type : " + p.type + " — Plafond FC : " + meta.cap + " — Capteur FC : " + (meta.device || "aucun") +
     " — FC min/moy/max : " + (st ? st.min + "/" + st.avg + "/" + st.max : "FC non reçue"));
+  const warn = hrWarning(sess);
+  if (warn) L.push("- ⚠️ " + warn.charAt(0).toUpperCase() + warn.slice(1) + ". Les données de FC de cette séance sont incomplètes : se fier au fichier .fit de la montre s'il existe.");
   L.push("- Ressenti : " + (fb.rpe ? fb.rpe + "/10 (" + RPE_TXT[fb.rpe] + ")" : "non noté") + " — Poids : " + measure(fb.weight, "kg") +
     " — Tour de taille : " + measure(fb.waist, "cm"));
   L.push("- Commentaire : " + (clean(fb.comment) || "–"));

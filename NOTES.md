@@ -77,6 +77,9 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
 - [x] **Poids et tour de taille** : deux champs optionnels sur l'écran Bilan (`kg`, `cm`, clavier
       numérique, virgule acceptée). Remplissent les colonnes 7 et 8 de la ligne de journal
       (`82,4 kg`, `94 cm`), sinon `–`. Rien n'est mémorisé d'une séance à l'autre.
+- [x] **FC manquante signalée** : si la montre n'était pas connectée (aucune FC), ou s'il manque plus
+      de 10 % de la FC (déconnexion), la remarque du journal le dit (« montre non connectée : … » /
+      « FC partielle : reçue 23 min sur 35 … ») et le fichier exporté l'indique en tête.
 - [x] **Analyses FC automatiques**, ajoutées en fin de colonne remarque (après mon commentaire,
       séparées par ` ; `), uniquement si les données FC le permettent :
   - **Dérive cardiaque** : pour chaque étape chronométrée (même nom + mêmes infos, hors repos) dont
@@ -199,6 +202,8 @@ Lignes venant de l'app FitPacer :
 - FC : min/moy/max en bpm, ou « FC non reçue »
 - poids : « 82,4 kg » ou « – » ; tour de taille : « 94 cm » ou « – »
 - remarque : mon commentaire libre, puis éventuellement ces segments calculés par l'app, dans cet ordre :
+    « montre non connectée : pas de FC (ni dérive ni récupération) »  ou
+    « FC partielle : reçue <durée> sur <durée> (montre déconnectée) »  — la FC est alors absente ou incomplète
     « dérive FC <étape> ~<FC début>→<FC fin> »   (une par étape concernée)
     « récup FC <FC fin d'effort>→<FC à 1 min> en 1 min, <FC finale> en <n> min »
   Les segments sont séparés par « ; ». « – » si rien.

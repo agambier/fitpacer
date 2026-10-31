@@ -50,7 +50,7 @@ describe("journal line", () => {
     expect(cols[3]).toMatch(/non fait \(arrêt\) : Étirements$/);
     expect(cols[4]).toBe("FC non reçue");
     expect(cols[5]).toBe("ressenti ?/10");
-    expect(cols[8]).toBe("–");
+    expect(cols[8]).toBe("montre non connectée : pas de FC (ni dérive ni récupération)");
   });
 
   it("no drift on short efforts", () => {
@@ -79,5 +79,28 @@ describe("markdown export", () => {
     expect(md).toContain("Jamais atteintes : 2. Marche (tour 1), 3. Montée (tour 1)");
     expect(md).toContain("Montée | 1:00 | 5,5 km/h | 9 %");
     expect(exportFileName(sess)).toMatch(/^fitpacer-2026-10-31-\d{4}-tapis-incline-35-min\.md$/);
+  });
+});
+
+describe("missing HR", () => {
+  it("says when the watch was not connected", () => {
+    const { sess, clock } = start(parseProgram("A | 2:00\nRetour au calme | 2:00"));
+    advance(sess, clock, 241);
+    const cols = journalLine(sess, { rpe: 5, comment: "ok", weight: "", waist: "" }).split(" | ");
+    expect(cols[4]).toBe("FC non reçue");
+    expect(cols[8]).toBe("ok ; montre non connectée : pas de FC (ni dérive ni récupération)");
+    expect(exportMarkdown(sess, fb, { source: "", cap: 150, device: null })).toContain("⚠️ Montre non connectée");
+  });
+  it("says when HR is partial", () => {
+    const { sess, clock } = start(parseProgram("A | 10:00"));
+    advance(sess, clock, 300, () => 120);
+    advance(sess, clock, 301);
+    const remark = journalLine(sess, { rpe: 5, comment: "", weight: "", waist: "" }).split(" | ")[8];
+    expect(remark).toBe("FC partielle : reçue 5 min sur 10 min (montre déconnectée)");
+  });
+  it("says nothing when HR is complete", () => {
+    const { sess, clock } = start(parseProgram("A | 2:00"));
+    advance(sess, clock, 121, () => 120);
+    expect(journalLine(sess, { rpe: 5, comment: "", weight: "", waist: "" }).split(" | ")[8]).toBe("–");
   });
 });
