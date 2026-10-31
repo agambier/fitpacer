@@ -19,7 +19,7 @@ import { store } from "./device/store";
 import { keepAwake, releaseAwake, sounds, unlockAudio } from "./device/feedback";
 import { say, setVoiceEnabled, unlockVoice, voiceEnabled, voiceSupported } from "./device/voice";
 import { canShareFiles, copyText, downloadText, shareText } from "./device/share";
-import { HeartRateMonitor, forgetWatch, savedWatch, type BtState } from "./device/heartRate";
+import { HeartRateMonitor, type BtState } from "./device/heartRate";
 
 registerSW({ immediate: true });
 
@@ -204,11 +204,6 @@ function renderHr() {
 }
 btBtn.addEventListener("click", async () => {
   if (btBtn.dataset.s === "on") return;
-  // A watch is remembered: let the user pick it (or another one) first.
-  if (monitor.supported && savedWatch() && btBtn.dataset.s === "off") {
-    openWatchDialog(false);
-    return;
-  }
   await monitor.connect();
   if (btBtn.dataset.s === "off") btBtn.textContent = monitor.wide ? "Chercher tous les appareils" : "Connecter la montre";
 });
@@ -399,49 +394,6 @@ function startSession() {
 }
 
 const watchDialog = $<HTMLDialogElement>("watchDialog");
-/** true: asked when starting the session (the session starts afterwards). */
-let watchAtStart = false;
-
-/**
- * Watch choice. `notFound`: the remembered watch was not found; the full list needs a new tap
- * (the browser only opens its Bluetooth list right after a tap).
- */
-function openWatchDialog(atStart: boolean, notFound = false) {
-  watchAtStart = atStart;
-  const saved = savedWatch();
-  const q = $("watchQ");
-  q.replaceChildren();
-  if (notFound && saved) q.append("« " + saved + " » est introuvable.", document.createElement("br"), "Afficher les montres présentes ?");
-  else if (atStart) q.append("La montre n’est pas connectée.", document.createElement("br"), "Voulez-vous la connecter ?");
-  else q.append("Quelle montre connecter ?");
-  const savedBtn = $("watchSaved");
-  const yes = $("watchYes");
-  savedBtn.hidden = !saved;
-  savedBtn.textContent = saved ? (notFound ? "Réessayer « " + saved + " »" : "Connecter « " + saved + " »") : "";
-  savedBtn.className = notFound ? "ghost" : "primary";
-  yes.textContent = notFound ? "Afficher les montres présentes" : saved ? "Choisir une autre montre" : "Oui, connecter";
-  yes.className = saved && !notFound ? "ghost" : "primary";
-  // primary action first
-  const box = yes.parentElement!;
-  if (notFound) box.prepend(yes);
-  else box.prepend(savedBtn);
-  $("watchNo").textContent = atStart ? "Non, démarrer sans" : "Annuler";
-  watchDialog.showModal();
-}
-
-async function connectFromDialog(saved: boolean) {
-  watchDialog.close();
-  const res = await monitor.connect(saved); // opens the Bluetooth chooser (only the saved watch when `saved`)
-  if (res === "savedNotFound") {
-    openWatchDialog(watchAtStart, true);
-    return;
-  }
-  if (!watchAtStart) return;
-  startSession();
-  if (btBtn.dataset.s !== "on" && btBtn.dataset.s !== "connecting")
-    showMsg("Montre non connectée : séance sans FC. Le bouton en haut permet de la connecter à tout moment.");
-}
-
 $("startBtn").addEventListener("click", () => {
   refreshPlan();
   if (!prog.steps.length || prog.errors.length) return;
@@ -449,20 +401,20 @@ $("startBtn").addEventListener("click", () => {
   unlockVoice();
   // Watch not connected: ask before starting (Bluetooth chooser needs this user gesture).
   if (monitor.supported && btBtn.dataset.s !== "on" && typeof watchDialog.showModal === "function") {
-    openWatchDialog(true);
+    watchDialog.showModal();
     return;
   }
   startSession();
 });
-$("watchSaved").addEventListener("click", () => connectFromDialog(true));
-$("watchYes").addEventListener("click", () => connectFromDialog(false));
+$("watchYes").addEventListener("click", async () => {
+  watchDialog.close();
+  const ok = await monitor.connect(); // opens the Bluetooth chooser
+  startSession();
+  if (!ok && btBtn.dataset.s !== "on") showMsg("Montre non connectée : séance sans FC. Le bouton en haut permet de la connecter à tout moment.");
+});
 $("watchNo").addEventListener("click", () => {
   watchDialog.close();
-  if (watchAtStart) startSession();
-});
-$("forgetWatchBtn").addEventListener("click", (e) => {
-  forgetWatch();
-  flashLabel(e.currentTarget as HTMLElement, "Montre oubliée ✓");
+  startSession();
 });
 $("doneBtn").addEventListener("click", () => {
   if (!sess) return;

@@ -35,19 +35,9 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
       Le menu ouvre trois fenêtres : **Aide sur le format**, **Consignes pour Claude**
       (Copier / Partager / Télécharger), **À propos** (version, version du format, lien vers le code).
       La version figure aussi dans le fichier exporté.
-- [x] **Montre mémorisée** : le nom de la dernière montre connectée est gardé sur le téléphone. Ensuite,
-      « Connecter la montre » et la question au démarrage proposent « Connecter « Suunto … » » : le
-      sélecteur Bluetooth ne liste alors que cette montre (il faut toujours toucher « Associer », rien
-      n'est automatique) ; « Choisir une autre montre » liste toutes les montres.
-      Si la montre mémorisée est introuvable (liste vide / annulée), la fenêtre revient avec
-      « Afficher les montres présentes » en bouton principal (le navigateur exige un nouveau toucher
-      pour rouvrir sa liste). Dans la liste complète, le navigateur ne permet pas de mettre la montre
-      mémorisée en avant ; la dernière montre connectée remplace la précédente. « Oublier la montre
-      enregistrée » dans Aide → Vie privée. (Le navigateur ne permet pas de présélectionner un appareil
-      dans sa liste complète : filtrer par nom est l'équivalent le plus proche.)
 - [x] **Aide** (menu ☰) en trois parties : Format de séance, Connexion de la montre (dépannage),
-      Vie privée (ce qui est gardé sur le téléphone : nom de la montre, dernière séance collée,
-      plafond FC, choix de la voix ; rien n'est envoyé).
+      Vie privée (ce qui est gardé sur le téléphone : dernière séance collée, plafond FC, choix de la
+      voix ; rien n'est envoyé).
 - [x] **Navigateurs sans Bluetooth web** : « Connecter la montre » explique pourquoi et quoi faire
       (iPhone / iPad, Brave sans le flag, Firefox, Samsung Internet, navigateur intégré à une app,
       page non sécurisée, autre navigateur). Dans ces cas « Démarrer » ne propose pas la montre et
@@ -282,6 +272,9 @@ heure,fc,etape
 - Nom de domaine / URL de déploiement (GitHub Pages `agambier.github.io/fitpacer` ?).
 
 ## Idées pour plus tard
+
+- Montre mémorisée (liste Bluetooth filtrée sur la dernière montre) : essayée puis retirée le 31/10,
+  le gain était nul (il fallait quand même la resélectionner dans la liste).
 
 - Boutons − / + pour saisir les répétitions réellement faites (reporté, décision du 31/10).
 - Export JSON du résultat : non retenu pour l'instant (31/10) — le Markdown est le plus pratique pour

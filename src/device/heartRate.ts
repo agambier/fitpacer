@@ -1,15 +1,8 @@
 // Bluetooth heart rate (standard GATT Heart Rate service 0x180D), with auto-reconnect.
 import { store } from "./store";
 
-const WATCH_KEY = "fitpacer.watch";
-
-/** Name of the last watch connected on this phone (stored locally only), or null. */
-export function savedWatch(): string | null {
-  return store.get(WATCH_KEY, "") || null;
-}
-export function forgetWatch() {
-  store.set(WATCH_KEY, "");
-}
+// Watch memory was tried then removed (31/10): clear what older versions stored.
+store.set("fitpacer.watch", "");
 
 export interface BtEnv {
   secure: boolean;
@@ -75,30 +68,24 @@ export class HeartRateMonitor {
     return btUnsupportedMessage(currentBtEnv()) === null;
   }
 
-  /**
-   * Must be called from a user gesture.
-   * `saved`: the chooser only lists the watch connected last time (still needs a tap on "Associer").
-   */
-  async connect(saved = false): Promise<"ok" | "savedNotFound" | "failed"> {
-    const savedName = saved ? savedWatch() : null;
+  /** Must be called from a user gesture. Returns true when connected. */
+  async connect(): Promise<boolean> {
     const unsupported = btUnsupportedMessage(currentBtEnv());
     if (unsupported) {
       this.cb.onMessage(unsupported);
-      return "failed";
+      return false;
     }
     try {
       // Bluetooth switched off, no adapter, or blocked by a policy.
       if (navigator.bluetooth.getAvailability && !(await navigator.bluetooth.getAvailability())) {
         this.cb.onMessage("⚠️ Bluetooth indisponible : activez le Bluetooth du téléphone, puis réessayez.");
-        return "failed";
+        return false;
       }
     } catch {
       /* getAvailability not usable: try anyway */
     }
     try {
-      const opts: RequestDeviceOptions = savedName
-        ? { filters: [{ name: savedName }], optionalServices: ["heart_rate"] }
-        : this.wideScan
+      const opts: RequestDeviceOptions = this.wideScan
           ? { acceptAllDevices: true, optionalServices: ["heart_rate"] }
           : { filters: [{ services: ["heart_rate"] }] };
       const dev = await navigator.bluetooth.requestDevice(opts);
@@ -107,14 +94,10 @@ export class HeartRateMonitor {
       this.retries = 0;
       dev.addEventListener("gattserverdisconnected", this.onDisconnect);
       await this.attach(dev);
-      return "ok";
+      return true;
     } catch (e) {
       const err = e as Error;
       this.cb.onState(this.device?.gatt?.connected ? "on" : "off", this.device?.name);
-      if (err.name === "NotFoundError" && savedName) {
-        // The caller offers the full list (a new tap is required by the browser).
-        return "savedNotFound";
-      }
       if (err.name === "NotFoundError" && !this.wideScan) {
         this.wideScan = true;
         this.cb.onMessage(
@@ -130,7 +113,7 @@ export class HeartRateMonitor {
       } else {
         this.cb.onMessage("Connexion impossible : " + err.message);
       }
-      return "failed";
+      return false;
     }
   }
 
@@ -158,7 +141,6 @@ export class HeartRateMonitor {
     });
     await ch.startNotifications();
     this.retries = 0;
-    if (dev.name) store.set(WATCH_KEY, dev.name);
     this.cb.onState("on", dev.name);
     this.cb.onMessage("");
   }
