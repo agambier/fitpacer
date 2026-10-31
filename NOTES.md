@@ -46,6 +46,21 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
   - Les bips restent : la voix vient après le bip de changement d'étape, sans le remplacer.
   - Lecture des unités en toutes lettres (`km/h` → « kilomètres heure », `%` → « pour cent »,
     `→` → « à », `4:00` → « 4 minutes », `45s` → « 45 secondes »).
+- [ ] **Poids et tour de taille** : deux champs optionnels sur l'écran Bilan (`kg`, `cm`, clavier
+      numérique, virgule acceptée). Remplissent les colonnes 7 et 8 de la ligne de journal
+      (`82,4 kg`, `94 cm`), sinon `–`. Rien n'est mémorisé d'une séance à l'autre.
+- [ ] **Analyses FC automatiques**, ajoutées en fin de colonne remarque (après mon commentaire,
+      séparées par ` ; `), uniquement si les données FC le permettent :
+  - **Dérive cardiaque** : pour chaque étape (même nom + mêmes infos) répétée au moins 2 fois, ou
+    chronométrée d'au moins 8 min, comparer la FC moyenne du premier passage à celle du dernier
+    (en ignorant les 60 premières secondes de chaque passage, temps de montée de la FC).
+    Ne l'écrire que si l'écart est d'au moins 5 bpm. Ex. « dérive FC Marche ~128→142 ».
+  - **Récupération** : FC à la fin de la dernière étape d'effort (moyenne des 10 dernières s avant
+    l'étape de retour au calme ou la fin de séance), puis FC 1 min après et FC en fin de séance.
+    Ex. « récup FC 144→121 en 1 min, 112 en 5 min ».
+    Étape « retour au calme » reconnue par son nom (`Retour au calme`, `Récup…`, `Étirements`…) ;
+    à défaut, la dernière étape.
+  - Seuils et règles regroupés dans un module pur et testé (`journal/`).
 - [ ] **PWA** : manifest, icônes, installable, hors ligne, polices locales.
 
 Explicitement **hors MVP** : comptes, sync, historique, envoi automatique à Claude, GPS, iOS.
@@ -99,10 +114,6 @@ Observations sur le journal réel (Claude enrichit la ligne a posteriori) :
 
 ## Questions ouvertes
 
-- Ajouter au bilan deux champs optionnels **poids (kg)** et **tour de taille (cm)** pour remplir les
-  colonnes 7 et 8 ? (saisie ponctuelle, rien n'est stocké)
-- Calculer et ajouter à la remarque : dérive FC sur les blocs à charge constante, récupération FC
-  (FC en fin de dernière étape intense → FC 1 min / fin du retour au calme) ?
 - Faut-il un « prompt système » à donner à Claude pour qu'il génère toujours ce format ? → on pourrait
   l'afficher dans l'app (bouton « Copier les consignes pour Claude »).
 - Garder le dernier texte collé et le plafond FC en `localStorage` (comme le prototype) : oui par défaut.
