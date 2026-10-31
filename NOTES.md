@@ -31,15 +31,18 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
 - [x] Écran **Bilan** : stats, courbe, tableau FC par étape, RPE, commentaire, ligne de journal, « Copier ».
 - [x] **Reprise après pause** : si la voix est active, « Reprendre » répète les consignes de l'étape
       en cours (temps restant, palier actuel des progressions, note ; pour un repos : l'exercice suivant).
-- [x] **Barre de menu** (en haut, toujours visible) : bouton ☰ à gauche, version `vAA.MM.XX` à droite.
+- [x] **Barre de menu** (en haut, toujours visible) : icône de l'app et version `vAA.MM.XX` à gauche,
+      bouton ☰ à droite (décision du 31/10).
       Le menu ouvre trois fenêtres : **Aide sur le format**, **Consignes pour Claude**
       (Copier / Partager / Télécharger), **À propos** (version, version du format, lien vers le code).
       La version figure aussi dans le fichier exporté.
       Sur la page de développement (`/dev/`, build `CHANNEL=dev`), un badge orange « Développement »
-      s'affiche entre ☰ et la version (décision du 31/10).
+      s'affiche au milieu de la barre (décision du 31/10).
+      Le menu propose aussi **Thème sombre** (par défaut) / **Thème clair** (gris clairs) ; le choix est
+      gardé sur le téléphone, sinon le réglage du système s'applique (décision du 31/10).
 - [x] **Aide** (menu ☰) en trois parties : Format de séance, Connexion de la montre (dépannage),
       Vie privée (ce qui est gardé sur le téléphone : dernière séance collée, plafond FC, choix de la
-      voix ; rien n'est envoyé).
+      voix, thème ; rien n'est envoyé).
 - [x] **Navigateurs sans Bluetooth web** : « Connecter la montre » explique pourquoi et quoi faire
       (iPhone / iPad, Brave sans le flag, Firefox, Samsung Internet, navigateur intégré à une app,
       page non sécurisée, autre navigateur). Dans ces cas « Démarrer » ne propose pas la montre et
