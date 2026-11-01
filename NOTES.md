@@ -88,6 +88,9 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
   - Unités gérées et pas des paliers : `km/h` → 0,5 ; `%` → 0,5 ; `niv` / niveau → 1 ; `W` → 10 ;
     `rpm` → 5 ; allure en `m:ss` (`6:00 → 5:30 min/km`) → 0:10. Autre unité sans `par` : affichée
     telle quelle, sans guidage.
+  - Sans `par`, l'écart par défaut est **multiplié** (x2, x3…) si besoin pour que chaque palier dure au
+    moins **20 s** (v26.11.01 : `Marche | 1:00 | 2 → 6 %` donnait 9 paliers de 6,7 s → maintenant 2 / 4 / 6 %,
+    20 s chacun). Avec `par`, l'écart demandé est toujours respecté.
   - Nombre de paliers = |B − A| / pas + 1, chacun de même durée. Ex. `4 → 5,5 km/h` sur 5:00 →
     4 / 4,5 / 5 / 5,5, un palier toutes les 1:15 ; `5,5 → 3 km/h` sur 5:00 → 6 paliers de 0:50.
   - Option **`par S`** (v26.11.01) : écart entre deux paliers, toute unité (`3 → 5 km/h par 1` → 3 / 4 / 5 ;

@@ -53,8 +53,15 @@ function parseOver(s: string): number {
   return NaN;
 }
 
-/** Returns a ramp when the info is "A → B unit [par S] [en D]" with a usable increment, else null. */
-export function parseRamp(info: string): Ramp | null {
+/** Without "par", levels last at least this long (s): the default increment is enlarged if needed. */
+export const MIN_AUTO_LEVEL = 20;
+
+/**
+ * Returns a ramp when the info is "A → B unit [par S] [en D]" with a usable increment, else null.
+ * `stepDur` (timed step duration, s): without "par", the default increment of the unit is multiplied
+ * so that each level lasts at least MIN_AUTO_LEVEL seconds ("2 → 6 %" over 1:00 → 2, 4, 6 %).
+ */
+export function parseRamp(info: string, stepDur?: number): Ramp | null {
   let rest = info.replace(/−/g, "-").trim();
   let inc = NaN;
   let over: number | null = null;
@@ -81,6 +88,18 @@ export function parseRamp(info: string): Ramp | null {
     const rule = a.clock ? (/min\s*\/\s*km|\/\s*km|\/\s*100\s*m/i.test(unit) ? CLOCK_INC : NaN) : UNIT_INC.find(([re]) => re.test(unit))?.[1];
     if (!rule) return null;
     inc = rule;
+    const time = Math.min(over ?? stepDur ?? 0, stepDur ?? Infinity);
+    if (time > 0) {
+      // Same level timing as rampAt(): whole step = time / levels, "en D" = D / (levels - 1).
+      const range = Math.abs(b.v - a.v);
+      const fits = (k: number) => {
+        const n = Math.ceil(range / (rule * k) - 1e-9) + 1;
+        return (over ? time / (n - 1) : time / n) >= MIN_AUTO_LEVEL - 1e-9 || n <= 2;
+      };
+      let k = 1;
+      while (!fits(k)) k++;
+      inc = Math.round(rule * k * 100) / 100;
+    }
   }
   const levels = Math.ceil(Math.abs(b.v - a.v) / inc - 1e-9) + 1;
   if (levels < 2 || levels > MAX_LEVELS) return null;

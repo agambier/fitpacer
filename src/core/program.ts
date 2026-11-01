@@ -142,7 +142,7 @@ export function parseProgram(text: string): Program {
     const infos = [p[2] || "", p[3] || ""].filter(Boolean);
     if (amt.kind === "time")
       for (const info of infos) {
-        const r = parseRamp(info);
+        const r = parseRamp(info, amt.dur);
         if (r?.over && r.over > amt.dur)
           errors.push(where + "la progression « " + info + " » dure plus longtemps que l’étape (" + fmtClock(amt.dur) + ").");
       }
@@ -162,7 +162,7 @@ export function parseProgram(text: string): Program {
         steps.push({
           ...it,
           rep,
-          ramps: it.kind === "time" ? it.infos.map(parseRamp) : it.infos.map(() => null),
+          ramps: it.kind === "time" ? it.infos.map((info) => parseRamp(info, "dur" in it ? (it.dur as number) : undefined)) : it.infos.map(() => null),
           isRest: REST_RE.test(it.name),
           isCooldown: COOLDOWN_RE.test(it.name),
           label: it.name,

@@ -111,6 +111,21 @@ describe("ramps", () => {
     expect(rampAt(r, 180, 300)).toMatchObject({ value: 5, nextAt: null });
     expect(rampAt(r, 290, 300)).toMatchObject({ value: 5, nextAt: null });
   });
+  it("without « par », enlarges the default increment so that levels last at least 20 s", () => {
+    // 2 → 6 % over 1:00: 0,5 % would give 9 levels of 6,7 s → 2, 4, 6 % (20 s each)
+    const p = parseProgram("Marche | 1:00 | 5 km/h | 2 → 6 %");
+    expect(p.steps[0].ramps[1]).toMatchObject({ inc: 2, levels: 3 });
+    expect(rampAt(p.steps[0].ramps[1]!, 25, 60)).toMatchObject({ value: 4, nextAt: 40 });
+    // long enough: default increment kept
+    expect(parseProgram("Chauffe | 5:00 | 4 → 5,5 km/h").steps[0].ramps[0]).toMatchObject({ inc: 0.5, levels: 4 });
+    expect(parseProgram("Montée | 4:30 | 2 → 6 %").steps[0].ramps[0]).toMatchObject({ inc: 0.5, levels: 9 }); // 30 s levels
+    // "en": the progression time counts
+    expect(parseProgram("Chauffe | 5:00 | 3 → 5 km/h en 1:00").steps[0].ramps[0]).toMatchObject({ inc: 1, levels: 3 });
+    // explicit "par" is always respected
+    expect(parseProgram("Marche | 1:00 | 2 → 6 % par 0,5").steps[0].ramps[0]).toMatchObject({ inc: 0.5, levels: 9 });
+    // very short step: a single jump at mid-step
+    expect(parseProgram("Sprint | 0:20 | 8 → 12 km/h").steps[0].ramps[0]).toMatchObject({ levels: 2 });
+  });
   it("reports a progression longer than its step", () => {
     const p = parseProgram("Marche | 2:00 | 3 → 5 km/h en 3:00");
     expect(p.errors[0]).toMatch(/^Ligne 1 : la progression « 3 → 5 km\/h en 3:00 » dure plus longtemps que l’étape \(2:00\)\.$/);
