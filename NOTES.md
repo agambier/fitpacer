@@ -118,6 +118,8 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
 - [x] **Partage de fichiers** (commun au bilan et aux consignes) : Copier / Partager (Web Share API
       niveau 2 avec fichier) / Télécharger (Blob + lien `download`) ; boutons masqués si non supportés.
 - [x] **PWA** : manifest, icônes, installable, hors ligne, polices locales.
+- [x] **Icône** (v26.11.01) : cœur rouge traversé par un tracé de rythme cardiaque, ondes de battement
+      de part et d'autre ; fond sombre `#101C26`. Source : `public/favicon.svg` (PNG dérivés).
 
 Explicitement **hors MVP** : comptes, sync, historique, envoi automatique à Claude, GPS, iOS.
 
