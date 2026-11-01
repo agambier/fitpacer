@@ -186,6 +186,7 @@ td.r, th.r { text-align: right; }
 .dialog.info .dbtns { margin-top: 18px; }
 .dialog.info .dbtns .primary { margin: 0; }
 .dialog.info h2.center { text-align: center; }
+.dialog.info .relVer { font-weight: 600; color: var(--muted); margin: 14px 0 6px; }
 .aboutIcon.small { width: 64px; height: 64px; border-radius: 15px; margin-top: 0; }
 .dbtns .primary { margin: 0; order: -1; }
 .dbtns .ghost { padding: 14px; font-size: 17px; }

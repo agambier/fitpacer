@@ -134,6 +134,11 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
       saisie à la main ou générée par Claude, guidage, rapport de fin à transmettre à Claude. Boutons « C'est
       parti » et « Consignes pour Claude ». Mémorisée dès l'affichage (`fitpacer.welcomed` dans `localStorage`,
       partagé entre version stable et dev) : ne réapparaît jamais, quelle que soit la façon de la fermer.
+- [x] **Quoi de neuf ?** (v26.11.01) : après une mise à jour, une fenêtre résume les nouveautés en langage
+      simple (`src/core/whatsnew.ts`, une entrée par version). Une seule fois par version : dernière version vue
+      dans `fitpacer.version` (`fitpacer.version.dev` pour l'app de développement, pour que passer de l'une à
+      l'autre ne la réaffiche pas). Premier lancement : bienvenue seulement. Revenir à une version plus ancienne :
+      rien. Aussi accessible dans le menu ☰ → « Quoi de neuf ? » (3 dernières versions).
 - [x] **PWA** : manifest, icônes, installable, hors ligne, polices locales.
 - [x] **Icône** (v26.11.01) : cœur rouge traversé par un tracé de rythme cardiaque, ondes de battement
       de part et d'autre ; fond sombre `#101C26`. Source : `public/favicon.svg` (PNG dérivés).

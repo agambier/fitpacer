@@ -12,7 +12,7 @@ Le comportement du prototype fait foi tant que `NOTES.md` ne dit pas autre chose
 
 - **Aucun backend, aucun compte, aucun appel réseau** pour les données. Tout tourne dans le navigateur.
 - **Pas de stockage de séances/historique.** Seules exceptions tolérées en `localStorage` (confort) :
-  dernier texte collé, plafond FC, voix on/off, thème sombre/clair, fenêtre de bienvenue déjà vue. Toujours via
+  dernier texte collé, plafond FC, voix on/off, thème sombre/clair, fenêtre de bienvenue déjà vue, dernière version vue (« Quoi de neuf ? »). Toujours via
   `device/store.ts`. Toute nouvelle donnée stockée doit être ajoutée à la section « Vie privée » de l'aide.
 - **Fonctionne hors ligne** une fois installée (service worker, assets précachés, polices auto-hébergées —
   pas de Google Fonts en CDN).
@@ -67,6 +67,7 @@ src/
     journal.ts       # ligne de journal, analyses FC, export Markdown
     speech.ts        # textes des annonces vocales
     instructions.ts  # consignes pour Claude (source unique du format)
+    whatsnew.ts      # textes de « Quoi de neuf ? » par version, choix bienvenue / nouveautés au lancement
     format.ts        # formats FR (nombres, durées, dates)
   device/            # navigateur : Bluetooth FC, bips/vibration/wake lock, voix, partage, stockage
 tests/               # Vitest
@@ -102,8 +103,12 @@ Format **`vAA.MM.XX`** (année et mois sur deux chiffres, XX = numéro de versio
 - Ne jamais retirer `-dev` ni changer de numéro sans que l'utilisateur l'ait dit.
 - Pendant le développement : on ne pousse **que** sur la branche `ccr-*` de la session → déployé sur la
   page de développement (`/fitpacer/dev/`). La page stable n'est jamais touchée.
+- **« Quoi de neuf ? »** : dès la première modification d'une version, ajouter/compléter son entrée en tête de
+  `src/core/whatsnew.ts` (numéro sans `-dev`), en langage simple pour un utilisateur lambda (pas de jargon,
+  pas de détails techniques). La fenêtre s'affiche une fois après chaque mise à jour (un test vérifie
+  que l'entrée de la version courante existe).
 - Quand l'utilisateur dit que la version est stable (cela vaut autorisation de pousser sur `main`) :
-  retirer `-dev`, ajouter sa section dans `CHANGELOG.md`, committer sur la branche `ccr-*`, puis
+  retirer `-dev`, vérifier l'entrée de `src/core/whatsnew.ts`, ajouter sa section dans `CHANGELOG.md`, committer sur la branche `ccr-*`, puis
   fusionner dans `main` et pousser `main`. Le push sur `main` déploie automatiquement la page stable,
   et `.github/workflows/release.yml` crée le tag `vAA.MM.XX` et la release GitHub (l'environnement de
   Claude ne peut pas pousser de tag lui-même).

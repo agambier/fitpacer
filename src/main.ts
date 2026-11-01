@@ -15,6 +15,7 @@ import { exportFileName, exportMarkdown, hrPerStep, hrStats, journalLine, RPE_TX
 import { finishAnnouncement, hrAlertAnnouncement, rampAnnouncement, resumeAnnouncement, stepAnnouncement } from "./core/speech";
 import { APP_VERSION, IS_DEV_BUILD } from "./version";
 import { claudeInstructions, FORMAT_VERSION } from "./core/instructions";
+import { launchPopup, notesSince, RELEASES } from "./core/whatsnew";
 import { store } from "./device/store";
 import { keepAwake, releaseAwake, sounds, unlockAudio } from "./device/feedback";
 import { say, setVoiceEnabled, unlockVoice, voiceEnabled, voiceSupported } from "./device/voice";
@@ -174,10 +175,36 @@ $("welcomeClaude").addEventListener("click", () => {
   welcome.close();
   $<HTMLDialogElement>("claudeDialog").showModal();
 });
-if (store.get("fitpacer.welcomed", "") !== "1" && typeof welcome.showModal === "function") {
-  store.set("fitpacer.welcomed", "1"); // set as soon as shown: never shown again, however it is closed
-  welcome.showModal();
-  welcome.scrollTop = 0; // the focused button is at the bottom: keep the start of the text visible
+/* ---------- "Quoi de neuf ?" popup, shown once after each update ---------- */
+const whatsNew = $<HTMLDialogElement>("whatsNewDialog");
+function showWhatsNew(releases: typeof RELEASES) {
+  const box = $("whatsNewList");
+  box.replaceChildren();
+  for (const r of releases) {
+    box.append(el("p", "relVer", "Version " + r.version));
+    const ul = el("ul", "");
+    for (const it of r.items) ul.append(el("li", "", it.replace(/« /g, "«\u00a0").replace(/ »/g, "\u00a0»")));
+    box.append(ul);
+  }
+  whatsNew.showModal();
+  whatsNew.scrollTop = 0;
+}
+$("whatsNewBtn").addEventListener("click", () => {
+  setMenu(false);
+  showWhatsNew(RELEASES.slice(0, 3));
+});
+// Stable and dev apps share localStorage: each channel records its own version.
+const versionKey = "fitpacer.version" + (IS_DEV_BUILD ? ".dev" : "");
+if (typeof welcome.showModal === "function") {
+  const seen = store.get(versionKey, "");
+  const popup = launchPopup(seen, store.get("fitpacer.welcomed", "") === "1", APP_VERSION);
+  // Recorded as soon as shown: never shown again, however the popup is closed.
+  store.set("fitpacer.welcomed", "1");
+  store.set(versionKey, APP_VERSION);
+  if (popup === "welcome") {
+    welcome.showModal();
+    welcome.scrollTop = 0; // the focused button is at the bottom: keep the start of the text visible
+  } else if (popup === "whatsnew") showWhatsNew(notesSince(seen, APP_VERSION));
 }
 /* ---------- Theme (dark / light) ---------- */
 const themeItems = menu.querySelectorAll<HTMLButtonElement>("[data-theme-choice]");
