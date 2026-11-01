@@ -238,7 +238,7 @@ td.r, th.r { text-align: right; }
 
 /* Step HR range: gauge and status. */
 .zone { margin: 14px 0 4px; }
-.zone .zt { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.zone .zt { display: flex; justify-content: space-between; align-items: flex-end; align-items: last baseline; gap: 8px; } /* status on the line of the range, just above the gauge */
 .zone .k { color: var(--muted); font-size: 14px; }
 .zone .rng { font: 700 26px/1.1 "Barlow Condensed", Barlow, sans-serif; }
 .zone .st { white-space: nowrap; font: 700 18px/1.1 "Barlow Condensed", Barlow, sans-serif; text-align: right; color: var(--muted); }
