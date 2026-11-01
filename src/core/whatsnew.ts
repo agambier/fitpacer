@@ -16,6 +16,7 @@ export const RELEASES: ReleaseNotes[] = [
       "L’IA peut indiquer l’objectif de la séance (par exemple « endurance en côte »). Il s’affiche sous le titre avant de commencer, et il est rappelé dans le fichier de fin de séance. Pensez à redonner les « Consignes pour l’IA » à votre assistant pour qu’il l’ajoute.",
       "Nouvel encadré « Avant de commencer » : le sport à lancer sur votre montre (rappelé à voix haute au départ) et une liste de choses à vérifier, à cocher.",
       "Quand l’IA recommande la ceinture cardio, l’app vous demande si vous la portez, et le note dans le rapport de séance.",
+      "Pendant la séance, le temps écoulé indique aussi la part de la séance déjà faite, en pourcentage (« 1:10 · 13 % »).",
     ],
   },
   {

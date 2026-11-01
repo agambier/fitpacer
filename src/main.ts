@@ -560,8 +560,10 @@ function renderLive() {
   $("ramp").hidden = slope === null;
   $("spacer").hidden = slope !== null;
   if (slope !== null) $("rampPath").setAttribute("d", "M0 58 L400 58 L400 " + (58 - Math.min(56, Math.max(2, slope * 4))) + " Z");
-  $("elapsed").textContent = fmtClock(sess.elapsed());
-  $("left").textContent = "reste ≈ " + fmtClock(sess.remaining());
+  const spent = sess.elapsed();
+  const left = sess.remaining();
+  $("elapsed").textContent = fmtClock(spent) + " · " + Math.round((100 * spent) / Math.max(1, left + spent)) + " %";
+  $("left").textContent = "reste ≈ " + fmtClock(left);
 }
 
 function flashStage() {
