@@ -77,6 +77,8 @@ export class Session {
   readonly startWall: number;
   endWall = 0;
   stoppedByUser = false;
+  /** Answer to "chest strap worn?" (asked only when the workout recommends it), null if not asked. */
+  strap: boolean | null = null;
 
   private monoStart: number;
   private pausedTotal = 0;

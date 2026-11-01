@@ -45,6 +45,24 @@
   <section class="screen" id="edit">
     <h1 id="planTitle">Programme</h1>
     <div class="goal" id="goal" hidden><span class="k">Objectif</span><p id="goalTxt"></p></div>
+    <div class="prep" id="prep" hidden>
+      <span class="k">Avant de commencer</span>
+      <div class="watch" id="prepWatch" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="3"/><path d="M9 6l.6-3h4.8l.6 3M9 18l.6 3h4.8l.6-3M12 9.5V12l1.5 1.5"/></svg>
+        <div><div class="s">Sport à lancer sur la montre</div><b id="watchName"></b><i id="watchAlt"></i></div>
+      </div>
+      <div class="strap" id="strap" hidden>
+        <div class="shead">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/><path d="M5.5 11.5h3l1.5-2.5 2 5 1.5-2.5h5"/></svg>
+          <div><b>Ceinture cardio recommandée</b><div class="s">Portez-vous la ceinture ? La réponse est transmise à l’IA.</div></div>
+        </div>
+        <div class="seg" role="radiogroup" aria-label="Ceinture cardio portée ?">
+          <button type="button" id="strapYes" role="radio" aria-checked="false">Oui, je la porte</button>
+          <button type="button" id="strapNo" role="radio" aria-checked="false">Non</button>
+        </div>
+      </div>
+      <ul id="prepList"></ul>
+    </div>
     <div class="srcHead">
       <label for="src">Étapes de la séance</label>
       <div class="row">
@@ -148,7 +166,7 @@
       <li><b>Repos</b> : <code>Repos | 1:30</code>, l’exercice suivant est annoncé.</li>
       <li><b>Bloc répété</b> : <code>x3 {</code> (ou <code>3x {</code>) … <code>}</code></li>
       <li><b>Plage de FC d’une étape</b> : <code>FC 120-145</code> dans n’importe quelle case après la quantité (<code>Marche rapide | 10:00 | 6 km/h | 3 % | FC 120-145</code>). L’app affiche la plage, indique si vous êtes dedans et vous le rappelle à voix haute si vous en sortez plus de 15 s.</li>
-      <li><b>En tête</b> : <code>titre: …</code>, <code>type: salle</code> ou <code>maison</code>, et <code>fc max: 155</code> : la FC max de la séance, au-dessus de laquelle l’app donne l’alerte (bandeau rouge, bips, voix), quelle que soit la plage de l’étape. Elle est fixée dans la séance et ne se modifie pas dans l’app ; si une plage d’étape va plus haut, la FC max prend cette valeur. <code>#</code> pour un commentaire.</li>
+      <li><b>En tête</b> : <code>titre: …</code>, <code>type: salle</code> ou <code>maison</code>, <code>objectif: …</code> (affiché sous le titre), <code>montre: Marche sur tapis (Treadmill walking)</code> (sport à lancer sur la montre, rappelé à voix haute au démarrage), <code>avant: …</code> (une ligne par chose à vérifier avant de commencer, à cocher), <code>ceinture: recommandée</code> (l’app demande si vous portez la ceinture cardio et le note dans le rapport), et <code>fc max: 155</code> : la FC max de la séance, au-dessus de laquelle l’app donne l’alerte (bandeau rouge, bips, voix), quelle que soit la plage de l’étape. Elle est fixée dans la séance et ne se modifie pas dans l’app ; si une plage d’étape va plus haut, la FC max prend cette valeur. <code>#</code> pour un commentaire.</li>
     </ul>
   </details>
   <details>
@@ -227,6 +245,7 @@
 </dialog>
 <dialog class="dialog" id="confirmDialog" aria-labelledby="confirmQ">
   <p class="dq" id="confirmQ"></p>
+  <p class="dsub" id="confirmSub" hidden></p>
   <div class="dbtns">
     <button class="primary" id="confirmYes" type="button"></button>
     <button class="ghost" id="confirmNo" type="button"></button>

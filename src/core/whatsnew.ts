@@ -14,6 +14,8 @@ export const RELEASES: ReleaseNotes[] = [
       "En fin de séance, la courbe de fréquence cardiaque est plus grande et montre quatre repères : la limite prévue dans la séance, votre maximum, votre moyenne et votre minimum.",
       "Quand la montre perd le signal quelques secondes (par exemple une chute soudaine à 49), le point est entouré sur la courbe et la valeur est suivie d’un « ? ». Ces erreurs ne sont pas comptées dans le résumé envoyé à l’IA.",
       "L’IA peut indiquer l’objectif de la séance (par exemple « endurance en côte »). Il s’affiche sous le titre avant de commencer, et il est rappelé dans le fichier de fin de séance. Pensez à redonner les « Consignes pour l’IA » à votre assistant pour qu’il l’ajoute.",
+      "Nouvel encadré « Avant de commencer » : le sport à lancer sur votre montre (rappelé à voix haute au départ) et une liste de choses à vérifier, à cocher.",
+      "Quand l’IA recommande la ceinture cardio, l’app vous demande si vous la portez, et le note dans le rapport de séance.",
     ],
   },
   {

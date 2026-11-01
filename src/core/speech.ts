@@ -115,3 +115,6 @@ export const hrZoneAnnouncement = (dir: "low" | "high", z: HrZone) =>
   dir === "high" ? "Fréquence cardiaque au-dessus de " + z.hi + " : ralentissez." : "Fréquence cardiaque sous " + z.lo + " : accélérez.";
 
 export const hrAlertAnnouncement = (cap: number) => "Fréquence cardiaque au-dessus de " + fmtNum(cap) + " : ralentissez, récupérez.";
+
+/** "Pensez à lancer Marche sur tapis sur la montre." (French name only, see splitWatch). */
+export const watchReminder = (name: string) => (name ? "Pensez à lancer " + name + " sur la montre." : "");

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseAmount, parseDur, parseProgram, sessionHrMax } from "../src/core/program";
+import { parseAmount, parseDur, parseProgram, sessionHrMax, splitWatch } from "../src/core/program";
 import { parseRamp, rampAt, rampValue, rampValueTxt } from "../src/core/ramp";
 import { claudeInstructions, EXAMPLE_HOME, EXAMPLE_TREADMILL } from "../src/core/instructions";
 import { example } from "./helpers";
@@ -154,6 +154,16 @@ describe("HR max and step HR ranges", () => {
     expect(parseProgram("titre: T\nfc max: 155\nA | 1:00").hrMax).toBe(155);
     expect(parseProgram("titre: T\nObjectif : endurance, FC stable\nA | 1:00")).toMatchObject({ goal: "endurance, FC stable", errors: [] });
     expect(parseProgram("A | 1:00").goal).toBe("");
+  });
+
+  it("reads the watch sport, the checklist and the chest strap", () => {
+    const p = parseProgram("montre: Marche sur tapis (Treadmill walking)\navant: clé du tapis\nAvant : eau\nceinture: recommandée\nA | 1:00");
+    expect(p).toMatchObject({ watch: "Marche sur tapis (Treadmill walking)", before: ["clé du tapis", "eau"], strap: true, errors: [] });
+    expect(splitWatch(p.watch)).toEqual({ name: "Marche sur tapis", alt: "Treadmill walking" });
+    expect(splitWatch("Course")).toEqual({ name: "Course", alt: "" });
+    expect(parseProgram("ceinture cardio: non\nA | 1:00")).toMatchObject({ strap: false, errors: [] });
+    expect(parseProgram("ceinture: peut-être\nA | 1:00").errors[0]).toMatch(/^Ligne 1 : Ceinture illisible/);
+    expect(parseProgram("A | 1:00")).toMatchObject({ watch: "", before: [], strap: false });
     expect(parseProgram("FC max : 160 bpm\nA | 1:00").hrMax).toBe(160);
     expect(parseProgram("A | 1:00").hrMax).toBeNull();
     expect(parseProgram("fc max: beaucoup\nA | 1:00").errors[0]).toMatch(/^Ligne 1 : FC max illisible/);

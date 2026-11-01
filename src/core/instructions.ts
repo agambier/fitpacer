@@ -6,6 +6,9 @@ export const FORMAT_VERSION = "v1";
 export const EXAMPLE_TREADMILL = `titre: Tapis incliné 35 min
 type: salle
 objectif: endurance en côte, FC stable entre 120 et 135 sur les marches
+montre: Marche sur tapis (Treadmill walking)
+avant: clé de sécurité du tapis attachée à la ceinture
+avant: bouteille d'eau à portée de main
 fc max: 150
 Chauffe | 5:00 | 4 → 5,5 km/h | 0 % | monter progressivement
 x5 {
@@ -17,6 +20,9 @@ Retour au calme | 5:00 | 5,5 → 3 km/h par 1 en 3:00 | 0 %`;
 export const EXAMPLE_HOME = `titre: Maison pompes, gainage, corde
 type: maison
 objectif: renforcement du haut du corps et du gainage, sans aller à l'échec
+montre: Renforcement musculaire (Strength training)
+ceinture: recommandée
+avant: tapis de sol, corde à sauter réglée à la bonne longueur
 fc max: 150
 Échauffement | 3:00 | | | rotations d’épaules, montées de genoux sur place
 x3 {
@@ -52,6 +58,7 @@ Lignes venant de l'app FitPacer :
 - FC : min/moy/max en bpm (sans les décrochements brefs du capteur), ou « FC non reçue »
 - poids : « 82,4 kg » ou « – » ; tour de taille : « 94 cm » ou « – »
 - remarque : mon commentaire libre, puis éventuellement ces segments calculés par l'app, dans cet ordre :
+    « ceinture cardio portée » ou « sans ceinture cardio (recommandée) »  (si la séance la recommandait)
     « montre non connectée : pas de FC (ni dérive ni récupération) »  ou
     « FC partielle : reçue <durée> sur <durée> (montre déconnectée) »  — la FC est alors absente ou incomplète
     « décrochement capteur FC ignoré : <FC> à <temps de séance> »  ou
@@ -76,6 +83,7 @@ Conserve ces lignes telles quelles ; tu peux compléter la remarque avec les don
 export const EXAMPLE_SHORT = `titre: Tapis court
 type: salle
 objectif: reprise en douceur, FC entre 120 et 135 sur les marches
+montre: Marche sur tapis (Treadmill walking)
 fc max: 150
 Chauffe | 3:00 | 4 → 5 km/h | 0 %
 x2 {
@@ -98,6 +106,7 @@ export const EXAMPLE_EXPORT = [
   "- Début : 2026-10-31 11:02:14 (heure locale, UTC+1) — Fin : 11:14:44 — Durée active : 11:40 — Durée totale (pauses incluses) : 12:30",
   "- Type : salle — FC max de la séance : 150 — Capteur FC : Suunto Race — FC min/moy/max : 92/122/138",
   "- Objectif : reprise en douceur, FC entre 120 et 135 sur les marches",
+  "- Sport sur la montre : Marche sur tapis (Treadmill walking)",
   "- Ressenti : 7/10 (Dur) — Poids : – — Tour de taille : –",
   "- Commentaire : jambes lourdes",
   "- Arrêtée avant la fin : non",
@@ -150,6 +159,7 @@ export const EXAMPLE_EXPORT = [
   "titre: Tapis court",
   "type: salle",
   "objectif: reprise en douceur, FC entre 120 et 135 sur les marches",
+  "montre: Marche sur tapis (Treadmill walking)",
   "fc max: 150",
   "Chauffe | 3:00 | 4 → 5 km/h | 0 %",
   "x2 {",
@@ -193,6 +203,9 @@ En-tête :
 titre: <titre court>
 type: salle   (ou maison)
 objectif: <but de la séance en une phrase courte, facultatif>
+montre: <sport à lancer sur ma montre : nom français (nom anglais)>
+ceinture: recommandée   (seulement si la ceinture cardio est utile pour cette séance)
+avant: <une chose à préparer ou vérifier avant de commencer>   (autant de lignes que nécessaire)
 fc max: <FC max de la séance, en bpm>
 
 Puis une étape par ligne :
@@ -218,6 +231,15 @@ Nom | quantité | info 1 | info 2 | note
 - Objectif (facultatif mais conseillé) : une seule ligne, en langage simple (ex. « objectif: endurance
   en côte, FC stable entre 120 et 135 »). L'app l'affiche sous le titre avant la séance et le rappelle
   dans le fichier de fin de séance.
+- Montre (conseillé) : le sport à lancer sur ma montre pour enregistrer la séance, avec le nom exact du
+  menu de la montre si tu le connais, en français puis en anglais entre parenthèses
+  (« montre: Marche sur tapis (Treadmill walking) »). L'app l'affiche et me le rappelle à voix haute au démarrage.
+- Avant (facultatif, une ligne par point) : conditions d'exécution à vérifier avant de démarrer — matériel,
+  réglages de départ, sécurité, posture, hydratation (« avant: clé de sécurité du tapis attachée »).
+  L'app en fait une liste à cocher. Reste court : 2 à 5 lignes.
+- Ceinture (facultatif) : « ceinture: recommandée » si une ceinture cardio est nettement plus fiable que
+  le poignet pour cette séance (fractionné, renforcement des bras, corde…). L'app me demande si je la
+  porte et l'écrit dans le rapport (« ceinture cardio portée » / « sans ceinture cardio (recommandée) »).
 - FC max (obligatoire) : « fc max: 155 » dans l'en-tête, choisie selon mon profil et le but de la
   séance. Au-dessus, l'app donne l'alerte (bandeau rouge, bips, voix) pendant toute la séance, quelle que
   soit la plage de l'étape. Je ne peux pas la modifier dans l'app : sans elle, aucune alerte.

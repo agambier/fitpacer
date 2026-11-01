@@ -9,11 +9,11 @@ import { hrChart } from "./hrchart";
 import { registerSW } from "virtual:pwa-register";
 
 import { fmtClock, fmtLong } from "./core/format";
-import { amountTxt, hrZoneTxt, paramLabel, parseProgram, sessionHrMax, weight, type HrZone, type Program } from "./core/program";
+import { amountTxt, hrZoneTxt, paramLabel, parseProgram, sessionHrMax, splitWatch, weight, type HrZone, type Program } from "./core/program";
 import { rampValueTxt } from "./core/ramp";
 import { RAMP_COUNTDOWN_MIN_LEN, Session, zoneState, type Sample, type SessionEvent } from "./core/session";
 import { exportFileName, exportMarkdown, hrGlitches, hrPerStep, hrStats, journalLine, RPE_TXT, activeDuration, type Feedback } from "./core/journal";
-import { finishAnnouncement, hrAlertAnnouncement, hrZoneAnnouncement, rampAnnouncement, resumeAnnouncement, stepAnnouncement } from "./core/speech";
+import { finishAnnouncement, hrAlertAnnouncement, hrZoneAnnouncement, rampAnnouncement, resumeAnnouncement, stepAnnouncement, watchReminder } from "./core/speech";
 import { APP_VERSION, IS_DEV_BUILD } from "./version";
 import { claudeInstructions, FORMAT_VERSION } from "./core/instructions";
 import { launchPopup, notesSince, RELEASES } from "./core/whatsnew";
@@ -46,14 +46,17 @@ function show(id: "edit" | "run" | "done") {
 }
 
 /** Yes/no question in the app's own popup (not the browser's confirm()). Resolves false if dismissed. */
-function askConfirm(question: string, yes: string, no: string): Promise<boolean> {
+/** Resolves null when dismissed without answering (Esc, back button). */
+function askConfirm(question: string, yes: string, no: string, sub = ""): Promise<boolean | null> {
   const d = $<HTMLDialogElement>("confirmDialog");
   if (typeof d.showModal !== "function") return Promise.resolve(confirm(question));
   $("confirmQ").textContent = question;
+  $("confirmSub").textContent = sub;
+  $("confirmSub").hidden = !sub;
   $("confirmYes").textContent = yes;
   $("confirmNo").textContent = no;
   return new Promise((resolve) => {
-    let answer = false;
+    let answer: boolean | null = null;
     const pick = (v: boolean) => () => { answer = v; d.close(); };
     const yesB = $("confirmYes"), noB = $("confirmNo");
     const onYes = pick(true), onNo = pick(false);
@@ -104,12 +107,51 @@ function renderCapInfo() {
   box.replaceChildren(left, el("b", "num", c.value + " bpm"));
 }
 
+/* "Avant de commencer": watch sport, chest strap question, checklist (ticks are not stored). */
+let strapAnswer: boolean | null = null;
+const ticked = new Set<string>();
+function renderPrep() {
+  $("prep").hidden = !prog.watch && !prog.strap && !prog.before.length;
+  $("prepWatch").hidden = !prog.watch;
+  const w = splitWatch(prog.watch);
+  $("watchName").textContent = w.name;
+  $("watchAlt").textContent = w.alt;
+  $("strap").hidden = !prog.strap;
+  renderStrap();
+  $("prepList").replaceChildren(
+    ...prog.before.map((t) => {
+      const li = el("li");
+      li.classList.toggle("on", ticked.has(t));
+      li.setAttribute("role", "checkbox");
+      li.setAttribute("aria-checked", String(ticked.has(t)));
+      li.tabIndex = 0;
+      li.append(el("span", "bx"), el("span", "", t));
+      li.addEventListener("click", () => {
+        if (ticked.has(t)) ticked.delete(t);
+        else ticked.add(t);
+        renderPrep();
+      });
+      return li;
+    }),
+  );
+}
+function renderStrap() {
+  $("strap").classList.toggle("done", strapAnswer != null);
+  ([["strapYes", true], ["strapNo", false]] as const).forEach(([id, v]) => {
+    $(id).classList.toggle("on", strapAnswer === v);
+    $(id).setAttribute("aria-checked", String(strapAnswer === v));
+  });
+}
+$("strapYes").addEventListener("click", () => { strapAnswer = strapAnswer === true ? null : true; renderStrap(); });
+$("strapNo").addEventListener("click", () => { strapAnswer = strapAnswer === false ? null : false; renderStrap(); });
+
 function refreshPlan() {
   prog = parseProgram(src.value);
   store.set("fitpacer.text", src.value);
   $("planTitle").textContent = prog.title;
   $("goal").hidden = !prog.goal;
   $("goalTxt").textContent = prog.goal;
+  renderPrep();
   const errs = $("errors");
   errs.replaceChildren(...prog.errors.map((e) => el("li", "", e)));
   const plan = $("plan");
@@ -541,7 +583,8 @@ function handle(events: SessionEvent[]) {
           sounds.step();
           flashStage();
         }
-        say(stepAnnouncement(prog.steps[e.idx], prog.steps[e.idx + 1]), { interrupt: true, delay: e.announce ? 500 : 0 });
+        say((startReminder ? startReminder + " " : "") + stepAnnouncement(prog.steps[e.idx], prog.steps[e.idx + 1]), { interrupt: true, delay: e.announce ? 500 : 0 });
+        startReminder = "";
         break;
       case "ramp": {
         const s = prog.steps[e.idx];
@@ -584,6 +627,8 @@ function loop() {
 }
 setInterval(loop, 200);
 
+/** Said once with the first step announcement: "Pensez à lancer … sur la montre." */
+let startReminder = "";
 function startSession() {
   showMsg([
     monitor.supported ? "" : "Séance sans FC : ce navigateur ne permet pas de connecter la montre (détails : bouton « Connecter la montre »).",
@@ -597,15 +642,29 @@ function startSession() {
   sounds.start();
   runSource = src.value;
   sess = new Session(prog, clock);
+  sess.strap = prog.strap ? strapAnswer : null;
+  // Asked again for each session: reset the answer and the checklist.
+  strapAnswer = null;
+  ticked.clear();
+  renderPrep();
+  startReminder = watchReminder(splitWatch(prog.watch).name);
   handle(sess.tick());
 }
 
 const watchDialog = $<HTMLDialogElement>("watchDialog");
-$("startBtn").addEventListener("click", () => {
+$("startBtn").addEventListener("click", async () => {
   refreshPlan();
   if (!prog.steps.length || prog.errors.length) return;
   unlockAudio();
   unlockVoice();
+  // Chest strap recommended and not answered in "Avant de commencer": ask now (dismissed = not started).
+  if (prog.strap && strapAnswer == null) {
+    const a = await askConfirm("Portez-vous la ceinture cardio ?", "Oui, je la porte", "Non, démarrer sans",
+      "Elle est recommandée pour cette séance. La réponse figurera dans le rapport envoyé à l’IA.");
+    if (a == null) return;
+    strapAnswer = a;
+    renderStrap();
+  }
   // Watch not connected: ask before starting (Bluetooth chooser needs this user gesture).
   if (monitor.supported && btBtn.dataset.s !== "on" && typeof watchDialog.showModal === "function") {
     watchDialog.showModal();

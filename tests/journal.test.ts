@@ -222,3 +222,21 @@ describe("sensor dropouts", () => {
       .toContain("FC min/moy/max : 110/110/110 (décrochements brefs du capteur exclus)");
   });
 });
+
+describe("chest strap", () => {
+  const fb0 = { rpe: 5, comment: "", weight: "", waist: "" };
+  const run = (strap: boolean | null, text = "ceinture: recommandée\nA | 1:00") => {
+    const { sess, clock } = start(parseProgram(text));
+    sess.strap = strap;
+    advance(sess, clock, 70);
+    return sess;
+  };
+  it("journal remark and export say whether the strap was worn", () => {
+    expect(journalLine(run(true), fb0).split(" | ")[8]).toMatch(/^ceinture cardio portée ; /);
+    expect(journalLine(run(false), fb0).split(" | ")[8]).toMatch(/^sans ceinture cardio \(recommandée\) ; /);
+    expect(exportMarkdown(run(true), fb0, { source: "", device: "Polar", appVersion: "" })).toContain("Capteur FC : Polar — Ceinture cardio : oui (recommandée par la séance)");
+  });
+  it("nothing when the workout does not recommend it", () => {
+    expect(journalLine(run(null, "A | 1:00"), fb0)).not.toMatch(/ceinture/);
+  });
+});

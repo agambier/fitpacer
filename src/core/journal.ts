@@ -77,6 +77,12 @@ export function hrDropoutSegment(sess: Session): string | null {
   return eps.length === 1 ? "décrochement capteur FC ignoré : " + txt[0] : "décrochements capteur FC ignorés : " + eps.length + " (" + txt.join(", ") + ")";
 }
 
+/** "ceinture cardio portée" / "sans ceinture cardio (recommandée)", only when the workout recommends it. */
+export function strapSegment(sess: Session): string | null {
+  if (!sess.program.strap || sess.strap == null) return null;
+  return sess.strap ? "ceinture cardio portée" : "sans ceinture cardio (recommandée)";
+}
+
 /** Mean HR of the samples with lo <= t < hi, or null when fewer than 3 samples. */
 function meanBetween(samples: Sample[], lo: number, hi: number): number | null {
   const xs = samples.filter((s) => s.t >= lo && s.t < hi).map((s) => s.hr);
@@ -302,7 +308,7 @@ export function journalLine(sess: Session, fb: Feedback): string {
   const statuses = stepStatuses(sess);
   const content = [...doneContent(p.steps, statuses), ...deviations(sess, statuses)];
   const st = hrStats(cleanSamples(sess.samples));
-  const remark = [clean(fb.comment), hrWarning(sess) || "", hrDropoutSegment(sess) || "", ...hrDrift(sess), hrRecovery(sess) || "", ...hrZoneSegments(sess)].filter(Boolean).join(" ; ");
+  const remark = [clean(fb.comment), strapSegment(sess) || "", hrWarning(sess) || "", hrDropoutSegment(sess) || "", ...hrDrift(sess), hrRecovery(sess) || "", ...hrZoneSegments(sess)].filter(Boolean).join(" ; ");
   return [
     fmtDateFr(new Date(sess.startWall)),
     p.type,
@@ -365,9 +371,11 @@ export function exportMarkdown(sess: Session, fb: Feedback, meta: ExportMeta): s
     ? "absente de la séance (pas d'alerte)"
     : cap.value + (cap.raisedBy ? " (relevée par la plage FC de " + cap.raisedBy.label + " ; fc max: " + p.hrMax + " dans la séance)" : "");
   L.push("- Type : " + p.type + " — FC max de la séance : " + capTxt + " — Capteur FC : " + (meta.device || "aucun") +
+    (p.strap ? " — Ceinture cardio : " + (sess.strap == null ? "non renseigné" : sess.strap ? "oui" : "non") + " (recommandée par la séance)" : "") +
     " — FC min/moy/max : " + (st ? st.min + "/" + st.avg + "/" + st.max : "FC non reçue") +
     (hrGlitches(sess.samples).length ? " (décrochements brefs du capteur exclus)" : ""));
   if (p.goal) L.push("- Objectif : " + p.goal);
+  if (p.watch) L.push("- Sport sur la montre : " + p.watch);
   const warn = hrWarning(sess);
   if (warn) L.push("- ⚠️ " + warn.charAt(0).toUpperCase() + warn.slice(1) + ". Les données de FC de cette séance sont incomplètes : se fier au fichier .fit de la montre s'il existe.");
   L.push("- Ressenti : " + (fb.rpe ? fb.rpe + "/10 (" + RPE_TXT[fb.rpe] + ")" : "non noté") + " — Poids : " + measure(fb.weight, "kg") +

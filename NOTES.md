@@ -199,6 +199,9 @@ Explicitement **hors MVP** : comptes, sync, historique, envoi automatique à Cla
 titre: Tapis incliné 35 min
 type: salle
 objectif: endurance en côte, FC stable entre 120 et 135 sur les marches
+montre: Marche sur tapis (Treadmill walking)
+avant: clé de sécurité du tapis attachée à la ceinture
+avant: bouteille d'eau à portée de main
 fc max: 150
 # commentaire ignoré
 Chauffe | 5:00 | 4 → 5,5 km/h | 0 % | monter progressivement
@@ -213,6 +216,18 @@ Retour au calme | 5:00 | -0,5 km/h / 30 s | 0 % | finir à 3 km/h environ
 - **Objectif** (facultatif, v26.11.03) : `objectif: …` dans l'en-tête, une ligne. Affiché sous le titre sur
   l'écran du programme (encadré « Objectif »), rappelé dans le fichier exporté (« - Objectif : … », sous la
   ligne « Type »). Pas dans la ligne de journal (format inchangé). Absent : rien ne s'affiche.
+- **Avant de commencer** (facultatif, v26.11.03), encadré sous l'objectif, absent si aucune des lignes :
+  - `montre: Marche sur tapis (Treadmill walking)` : sport à lancer sur la montre (français, anglais entre
+    parenthèses). Carte avec icône ; rappel vocal au démarrage, collé à la 1re annonce (« Pensez à lancer
+    Marche sur tapis sur la montre. »). Fichier exporté : « - Sport sur la montre : … ».
+  - `avant: …` (répétable) : conditions d'exécution, liste à cocher. Cases non enregistrées, remises à
+    zéro à chaque démarrage.
+  - `ceinture: recommandée` (aussi `oui`, `conseillée`, `obligatoire` ; `non`/`facultative` = sans effet) :
+    l'app ne peut pas savoir seule si la FC vient d'une ceinture (la montre la relaie). Question Oui/Non dans
+    l'encadré ; sans réponse, question au clic sur « Démarrer » (fermer la fenêtre = ne pas démarrer).
+    Réponse non mémorisée, redemandée à chaque séance. Journal : segment « ceinture cardio portée » /
+    « sans ceinture cardio (recommandée) » en tête des segments de l'app ; fichier exporté : « Ceinture
+    cardio : oui|non (recommandée par la séance) » sur la ligne du capteur.
 - **FC max de la séance** (décision du 01/11, v26.11.02) : `fc max: 155` dans l'en-tête (aussi
   `FC max : 155 bpm`, `fréquence cardiaque max: …`). Écrite par Claude, **non modifiable dans l'app**
   (l'ancien champ « Plafond de FC » et sa sauvegarde `fitpacer.cap` sont supprimés). Au-dessus : alerte
@@ -330,6 +345,7 @@ Lignes venant de l'app FitPacer :
 - FC : min/moy/max en bpm (sans les décrochements brefs du capteur), ou « FC non reçue »
 - poids : « 82,4 kg » ou « – » ; tour de taille : « 94 cm » ou « – »
 - remarque : mon commentaire libre, puis éventuellement ces segments calculés par l'app, dans cet ordre :
+    « ceinture cardio portée » ou « sans ceinture cardio (recommandée) »  (si la séance la recommandait)
     « montre non connectée : pas de FC (ni dérive ni récupération) »  ou
     « FC partielle : reçue <durée> sur <durée> (montre déconnectée) »  — la FC est alors absente ou incomplète
     « décrochement capteur FC ignoré : <FC> à <temps de séance> »  ou
