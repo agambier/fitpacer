@@ -61,10 +61,107 @@ ${EXAMPLE_JOURNAL_TREADMILL}
 ${EXAMPLE_JOURNAL_HOME}
 
 Conserve ces lignes telles quelles ; tu peux compléter la remarque avec les données de la montre
-(distance, kcal, effet d'entraînement…) en les ajoutant à la fin, après « ; ».
+(distance, kcal, effet d'entraînement…) en les ajoutant à la fin, après « ; ».`;
 
-Je peux aussi te donner le fichier « fitpacer-….md » exporté par l'app avec le fichier .fit de ma
-montre Suunto : aligne-les grâce aux heures de début et de fin de chaque étape.`;
+// Short session used to show Claude the file exported at the end of a session.
+export const EXAMPLE_SHORT = `titre: Tapis court
+type: salle
+Chauffe | 3:00 | 4 → 5 km/h | 0 %
+x2 {
+  Marche | 2:00 | 5,5 km/h | 7 %
+  Montée | 1:00 | 5,5 km/h | 9 %
+}
+Retour au calme | 3:00 | 5 → 3 km/h | 0 %`;
+
+// Export of EXAMPLE_SHORT as produced by the app, HR samples shortened ("…").
+// Kept in sync by tests/instructions.test.ts.
+export const EXAMPLE_EXPORT = [
+  "# FitPacer — Tapis court — 31/10/2026 11:02",
+  "",
+  "## Ligne de journal",
+  "",
+  "31/10/2026 | salle | 11 min | Tapis court : Chauffe 3 min (4 → 5 km/h, 0 %) ; Marche 2x2 min (5,5 km/h, 7 %) ; Montée 1 min (5,5 km/h, 9 %) ; Retour au calme 3 min (5 → 3 km/h, 0 %) ; écourté : Montée (tour 2) 0:40/1:00 ; pause ajoutée par l'utilisateur : Marche (tour 1) 50 s (FC 125→118) | 92/122/138 | ressenti 7/10 | – | – | jambes lourdes ; dérive FC Marche ~126→135 ; récup FC 138→126 en 1 min, 103 en 3 min",
+  "",
+  "## Séance",
+  "",
+  "- Début : 2026-10-31 11:02:14 (heure locale, UTC+1) — Fin : 11:14:44 — Durée active : 11:40 — Durée totale (pauses incluses) : 12:30",
+  "- Type : salle — Plafond FC : 150 — Capteur FC : Suunto Race — FC min/moy/max : 92/122/138",
+  "- Ressenti : 7/10 (Dur) — Poids : – — Tour de taille : –",
+  "- Commentaire : jambes lourdes",
+  "- Arrêtée avant la fin : non",
+  "- Pauses ajoutées par l'utilisateur (bouton Pause, au moins 10 s, hors repos du programme) : 1, total 50 s (non comptées dans la durée active)",
+  "",
+  "## Étapes",
+  "",
+  "Heures locales. Statut : fait / écourté / sauté / arrêt (étape en cours quand la séance a été terminée). Les étapes jamais atteintes sont listées à la fin.",
+  "",
+  "| # | Tour | Étape | Prévu | Consignes | Début | Fin | Durée | Statut | FC moy | FC max |",
+  "|---|------|-------|-------|-----------|-------|-----|-------|--------|--------|--------|",
+  "| 1 |  | Chauffe | 3:00 | 4 → 5 km/h, 0 % | 11:02:14 | 11:05:14 | 3:00 | fait | 107 | 122 |",
+  "| 2 | 1/2 | Marche | 2:00 | 5,5 km/h, 7 % | 11:05:14 | 11:08:04 | 2:00 | fait | 125 | 128 |",
+  "| | | *pause ajoutée par l'utilisateur* | | FC 125→118 | 11:06:14 | 11:07:04 | 0:50 | pause | | |",
+  "| 3 | 1/2 | Montée | 1:00 | 5,5 km/h, 9 % | 11:08:04 | 11:09:04 | 1:00 | fait | 129 | 130 |",
+  "| 4 | 2/2 | Marche | 2:00 | 5,5 km/h, 7 % | 11:09:04 | 11:11:04 | 2:00 | fait | 133 | 136 |",
+  "| 5 | 2/2 | Montée | 1:00 | 5,5 km/h, 9 % | 11:11:04 | 11:11:44 | 0:40 | écourté | 137 | 138 |",
+  "| 6 |  | Retour au calme | 3:00 | 5 → 3 km/h, 0 % | 11:11:44 | 11:14:44 | 3:00 | fait | 120 | 138 |",
+  "",
+  "## FC par exercice",
+  "",
+  "| Exercice | FC moy | FC max |",
+  "|---|---|---|",
+  "| Chauffe (4 → 5 km/h, 0 %) | 107 | 122 |",
+  "| Marche (5,5 km/h, 7 %) | 129 | 136 |",
+  "| Montée (5,5 km/h, 9 %) | 132 | 138 |",
+  "| Retour au calme (5 → 3 km/h, 0 %) | 120 | 138 |",
+  "",
+  "## Analyses FC",
+  "",
+  "- dérive FC Marche ~126→135",
+  "- récup FC 138→126 en 1 min, 103 en 3 min",
+  "",
+  "## Fréquence cardiaque (toutes les 5 s)",
+  "",
+  "```csv",
+  "heure,fc,etape",
+  "11:02:14,92,1",
+  "11:02:19,93,1",
+  "11:02:24,94,1",
+  "…",
+  "11:14:34,104,6",
+  "11:14:39,103,6",
+  "```",
+  "",
+  "## Programme collé",
+  "",
+  "```",
+  "titre: Tapis court",
+  "type: salle",
+  "Chauffe | 3:00 | 4 → 5 km/h | 0 %",
+  "x2 {",
+  "  Marche | 2:00 | 5,5 km/h | 7 %",
+  "  Montée | 1:00 | 5,5 km/h | 9 %",
+  "}",
+  "Retour au calme | 3:00 | 5 → 3 km/h | 0 %",
+  "```",
+].join("\n");
+
+export const EXPORT_RULES = `Je peux aussi te donner le fichier « fitpacer-….md » que l'app me fait télécharger en fin de
+séance. Il commence par la ligne de journal, puis détaille la séance :
+- Séance : heures de début et de fin, durée active (sans mes pauses) et totale, capteur FC, ressenti,
+  commentaire, pauses que j'ai ajoutées ;
+- Étapes : une ligne par étape dans l'ordre où je les ai faites (tour, prévu, consignes, heures de début et
+  de fin, durée réelle, statut fait / écourté / sauté / arrêt, FC moyenne et max), avec mes pauses
+  ajoutées (FC au début et à la fin de la pause) ;
+- FC par exercice (tous les tours regroupés), puis les analyses FC (dérive, récupération) ;
+- FC toutes les 5 s (heure, FC, numéro de l'étape dans le tableau) et le programme collé.
+Sers-t'en pour voir comment s'est passé chaque exercice (FC qui monte d'un tour à l'autre, étape écourtée
+ou sautée, pause prise à un moment précis) et pour adapter la séance suivante. Si je te donne aussi le
+fichier .fit de ma montre Suunto, aligne-les grâce aux heures de début et de fin de chaque étape.
+
+Exemple de fichier (relevé de FC raccourci : « … ») :
+~~~markdown
+${EXAMPLE_EXPORT}
+~~~`;
 
 export function claudeInstructions(): string {
   return `# Consignes FitPacer pour Claude (Format FitPacer ${FORMAT_VERSION})
@@ -115,5 +212,9 @@ ${EXAMPLE_HOME}
 ## Après la séance
 
 ${JOURNAL_RULES}
+
+## Fichier exporté en fin de séance
+
+${EXPORT_RULES}
 `;
 }

@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { parseProgram } from "../src/core/program";
-import { journalLine } from "../src/core/journal";
+import { exportMarkdown, journalLine } from "../src/core/journal";
 import {
-  claudeInstructions, EXAMPLE_HOME, EXAMPLE_JOURNAL_HOME, EXAMPLE_JOURNAL_TREADMILL, EXAMPLE_TREADMILL,
+  claudeInstructions, EXAMPLE_EXPORT, EXAMPLE_HOME, EXAMPLE_JOURNAL_HOME, EXAMPLE_JOURNAL_TREADMILL, EXAMPLE_SHORT, EXAMPLE_TREADMILL,
 } from "../src/core/instructions";
 import { advance, start } from "./helpers";
+
+process.env.TZ = "Europe/Paris"; // the export shows local times
 
 // The journal examples shown to Claude must be exactly what the app produces.
 describe("journal examples in the Claude instructions", () => {
@@ -36,5 +38,31 @@ describe("journal examples in the Claude instructions", () => {
   it("are included in the instructions", () => {
     expect(claudeInstructions()).toContain(EXAMPLE_JOURNAL_TREADMILL);
     expect(claudeInstructions()).toContain(EXAMPLE_JOURNAL_HOME);
+  });
+});
+
+describe("export example in the Claude instructions", () => {
+  it("is the app export, HR samples shortened", () => {
+    const { sess, clock } = start(parseProgram(EXAMPLE_SHORT));
+    const hr = (t: number) =>
+      t < 180 ? 92 + Math.round(t / 6) : t < 520 ? Math.round(122 + ((t - 180) / 340) * 16) : Math.max(100, Math.round(138 - (t - 520) / 5));
+    advance(sess, clock, 4 * 60, hr);
+    const p0 = clock.ms;
+    sess.pause();
+    advance(sess, clock, 50, () => Math.round(130 - (clock.ms - p0) / 4000));
+    sess.resume();
+    while (sess.state !== "finished") {
+      if (sess.step.label === "Montée (tour 2)") { advance(sess, clock, 40, hr); sess.next(); continue; }
+      advance(sess, clock, 1, hr);
+    }
+    const md = exportMarkdown(sess, { rpe: 7, comment: "jambes lourdes", weight: "", waist: "" }, { source: EXAMPLE_SHORT, cap: 150, device: "Suunto Race" });
+    // drop the HR samples elided by "…" in the example
+    const lines = md.trimEnd().split("\n");
+    const csv = lines.flatMap((l, i) => (/^\d\d:\d\d:\d\d,\d+,\d+$/.test(l) ? [i] : []));
+    const kept = lines.filter((_, i) => !csv.slice(3, -2).includes(i));
+    kept.splice(csv[0] + 3, 0, "…");
+    expect(EXAMPLE_EXPORT).toBe(kept.join("\n"));
+    expect(claudeInstructions()).toContain(EXAMPLE_EXPORT);
+    expect(parseProgram(EXAMPLE_SHORT).errors).toEqual([]);
   });
 });
