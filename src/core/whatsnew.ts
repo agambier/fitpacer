@@ -10,7 +10,7 @@ export const RELEASES: ReleaseNotes[] = [
   {
     version: "v26.11.02",
     items: [
-      "Les « Consignes pour Claude » montrent maintenant deux exemples de compte rendu de séance (la ligne du journal), pour que Claude comprenne encore mieux ce que l’app lui renvoie.",
+      "Les « Consignes pour Claude » montrent maintenant des exemples de ce que l’app lui renvoie : la ligne du journal, et le fichier téléchargé en fin de séance avec le détail de chaque exercice. Claude comprend ainsi mieux comment s’est passée votre séance.",
     ],
   },
   {

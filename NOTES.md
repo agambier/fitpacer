@@ -310,6 +310,12 @@ Conserve ces lignes telles quelles ; tu peux compléter la remarque avec les don
 (distance, kcal, effet d'entraînement…) en les ajoutant à la fin, après « ; ».
 ```
 
+Les consignes ont ensuite une section « Fichier exporté en fin de séance » (`EXPORT_RULES` dans
+`src/core/instructions.ts`) : ce que contient le fichier `fitpacer-….md` (séance, tableau des étapes,
+FC par exercice, analyses FC, FC toutes les 5 s, programme collé), comment s'en servir, alignement avec
+le .fit de la montre, et un exemple complet généré par l'app sur une séance courte (relevé FC raccourci
+par « … »), vérifié par `tests/instructions.test.ts` (v26.11.02).
+
 ## Export du résultat (MVP)
 
 Je lance **toujours** un exercice sur ma Suunto pendant la séance : la montre produit son propre
