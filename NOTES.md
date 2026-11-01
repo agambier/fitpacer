@@ -109,7 +109,7 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
   - Seuils et règles regroupés dans un module pur et testé (`journal/`).
 - [x] **Consignes pour Claude** : dans le menu ☰, une fenêtre « Consignes pour Claude »
       avec trois boutons **Copier**, **Partager**, **Télécharger** (fichier
-      `fitpacer-consignes-claude.md`, repli `.txt`). Contenu = texte prêt à coller dans les
+      `fitpacer-consignes-claude.md` ; partagé en `.txt`). Contenu = texte prêt à coller dans les
       instructions du projet Claude : rôle (Claude propose la séance), format de séance complet
       (en-tête, étapes, chrono vs répétitions, repos, progressions `A → B`, blocs `xN { }`, règles :
       toujours finir par un retour au calme, pas de ``` ni de `---`), puis le bloc « journal ».
@@ -117,15 +117,19 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
       source unique dans le code, la même que l'aide affichée et les tests.
 - [x] **Partage de fichiers** (commun au bilan et aux consignes) : Copier / Partager (Web Share API
       niveau 2 avec fichier) / Télécharger (Blob + lien `download`) ; boutons masqués si non supportés.
+      Partage toujours en `.txt` / `text/plain`, en **un seul** appel à `share()` : Android refuse les `.md`
+      et n'autorise qu'un partage par appui (un 2e essai échoue → c'était un téléchargement silencieux,
+      corrigé en v26.11.01). Si le partage échoue : téléchargement + message sur le bouton.
 - [x] **Charger un fichier** (v26.11.01) : bouton « Charger » à côté de Coller / Effacer (trois boutons
       visibles plutôt qu'un menu ⋯, décision du 01/11).
+      Fichier texte (.txt, .md), 200 ko max. Filtre `accept` obligatoire : sans lui, Android propose aussi
+      l'enregistrement audio / la caméra et le navigateur demande l'accès au micro. Rien n'est stocké en
+      plus : le texte chargé devient simplement le « dernier texte collé ».
 - [x] **Boutons icônes** (v26.11.01, décision du 01/11) : Charger (dossier), Coller (presse-papiers),
       Effacer (corbeille) à droite du libellé « Étapes de la séance » ; au bilan, Copier (deux feuilles),
       Partager (trois points reliés), Télécharger (flèche vers le bas) à droite de « Ligne pour le journal » ;
       mêmes icônes dans « Consignes pour Claude ». Icônes seules (SVG en ligne, `aria-label` + `title`),
-      coche verte 2 s après une copie réussie. Fichier texte (.txt, .md…), 200 ko max, sans
-      filtre de type (les sélecteurs Android grisent les .md et certaines pièces jointes). Rien n'est stocké
-      en plus : le texte chargé devient simplement le « dernier texte collé ».
+      coche verte 2 s après une copie réussie.
 - [x] **PWA** : manifest, icônes, installable, hors ligne, polices locales.
 - [x] **Icône** (v26.11.01) : cœur rouge traversé par un tracé de rythme cardiaque, ondes de battement
       de part et d'autre ; fond sombre `#101C26`. Source : `public/favicon.svg` (PNG dérivés).

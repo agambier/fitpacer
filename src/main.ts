@@ -104,7 +104,8 @@ $("pasteBtn").addEventListener("click", async () => {
   }
 });
 // Load a workout from a file on the phone (cloud drive, e-mail attachment, download…).
-// No `accept` filter: Android pickers grey out .md / attachments whose MIME type is unknown.
+// The `accept` filter matters: without it, Android offers audio/camera capture and the browser
+// asks for the microphone permission.
 const fileIn = $("fileIn") as HTMLInputElement;
 $("loadBtn").addEventListener("click", () => fileIn.click());
 fileIn.addEventListener("change", async () => {
@@ -197,9 +198,10 @@ $("instrCopy").addEventListener("click", async (e) => {
   const ok = await copyText(claudeInstructions());
   flashIcon(e.currentTarget as HTMLElement, ok, "Copie impossible");
 });
-$("instrShare").addEventListener("click", async () => {
+$("instrShare").addEventListener("click", async (e) => {
+  const b = e.currentTarget as HTMLElement;
   const r = await shareText(instrName, claudeInstructions(), "Consignes FitPacer pour Claude");
-  if (r === "unsupported") downloadText(instrName, claudeInstructions());
+  if (r === "unsupported") { downloadText(instrName, claudeInstructions()); flashIcon(b, false, "Partage refusé : téléchargé"); }
 });
 $("instrDownload").addEventListener("click", () => downloadText(instrName, claudeInstructions()));
 if (!canShareFiles()) {
@@ -600,10 +602,11 @@ $("copyBtn").addEventListener("click", async (e) => {
   const ok = await copyText($<HTMLTextAreaElement>("journal").value, $<HTMLTextAreaElement>("journal"));
   flashIcon(e.currentTarget as HTMLElement, ok, "Sélectionnée, copiez-la");
 });
-$("shareBtn").addEventListener("click", async () => {
+$("shareBtn").addEventListener("click", async (e) => {
   if (!finished) return;
+  const b = e.currentTarget as HTMLElement;
   const r = await shareText(exportFileName(finished), exportText(), "Séance FitPacer");
-  if (r === "unsupported") downloadText(exportFileName(finished), exportText());
+  if (r === "unsupported") { downloadText(exportFileName(finished), exportText()); flashIcon(b, false, "Partage refusé : téléchargé"); }
 });
 $("downloadBtn").addEventListener("click", () => {
   if (finished) downloadText(exportFileName(finished), exportText());

@@ -26,19 +26,19 @@ export function canShareFiles(): boolean {
   }
 }
 
-/** Shares a Markdown file, falling back to .txt when markdown is refused. */
+/**
+ * Shares the text as a .txt file (WhatsApp, Gmail, Drive…). Android refuses .md files, and a page gets a
+ * single share() per tap, so there is exactly one attempt, with the plain-text type every target accepts.
+ */
 export async function shareText(name: string, text: string, title: string): Promise<"ok" | "cancel" | "unsupported"> {
-  const candidates = [makeFile(name, text, "text/markdown"), makeFile(name.replace(/\.md$/, ".txt"), text, "text/plain")];
-  for (const f of candidates) {
-    try {
-      if (!navigator.canShare?.({ files: [f] })) continue;
-      await navigator.share({ files: [f], title });
-      return "ok";
-    } catch (e) {
-      if ((e as Error).name === "AbortError") return "cancel";
-    }
+  const f = makeFile(name.replace(/\.md$/, ".txt"), text, "text/plain");
+  try {
+    if (!navigator.canShare?.({ files: [f] })) return "unsupported";
+    await navigator.share({ files: [f], title });
+    return "ok";
+  } catch (e) {
+    return (e as Error).name === "AbortError" ? "cancel" : "unsupported";
   }
-  return "unsupported";
 }
 
 export function downloadText(name: string, text: string) {
