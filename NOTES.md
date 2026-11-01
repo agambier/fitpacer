@@ -27,7 +27,8 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
 - [x] Écran **Séance** : nom + n° de répétition (2/5), paramètres (vitesse, pente…), note, gros chrono
       (orange sur les 10 dernières s), mode répétitions avec bouton « Fait ✓ », visuel de pente,
       « Ensuite », barre de segments, temps écoulé / restant, courbe FC, Préc. / Pause / Suiv.,
-      « Terminer la séance ».
+      « Terminer la séance » : bouton fixé en bas de l'écran, contour et texte rouges (`--hot`), toujours
+      visible (v26.11.02 ; avant : simple lien souligné). Confirmation demandée avant d'arrêter.
 - [x] Écran **Bilan** : stats, courbe, tableau FC par étape, RPE, commentaire, ligne de journal, « Copier ».
 - [x] **Reprise après pause** : si la voix est active, « Reprendre » répète les consignes de l'étape
       en cours (temps restant, palier actuel des progressions, note ; pour un repos : l'exercice suivant).

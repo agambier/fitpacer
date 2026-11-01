@@ -168,7 +168,16 @@ input[type=number], input[type=text] { width: 96px; background: var(--surface); 
 .ctrls button { border: 0; border-radius: 10px; padding: 16px 8px; background: var(--surface); font: 700 20px/1 "Barlow Condensed", Barlow, sans-serif; }
 .ctrls .go { background: var(--ramp); color: #fff; }
 .ctrls button:disabled { background: var(--surface); color: var(--muted); opacity: .5; cursor: not-allowed; }
-.stop { justify-self: center; background: none; border: 0; color: var(--muted); text-decoration: underline; padding: 10px; font-size: 15px; }
+/* "Terminer la séance": always visible at the bottom of the screen, red outline (ends the session, confirmation asked). */
+#run { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+.stop {
+  position: fixed; z-index: 4; left: 16px; right: 16px; bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  max-width: 608px; margin: 0 auto; padding: 14px 8px; border-radius: 10px;
+  background: var(--surface); border: 2px solid var(--hot); color: var(--hot);
+  font: 700 20px/1 "Barlow Condensed", Barlow, sans-serif;
+  box-shadow: 0 0 0 12px var(--bg); /* hides content scrolling underneath */
+}
+.stop:active { background: color-mix(in srgb, var(--hot) 18%, var(--surface)); }
 
 .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; }
 .stats div { background: var(--surface); border-radius: 10px; padding: 10px 12px; }

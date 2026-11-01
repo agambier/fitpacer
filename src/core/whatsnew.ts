@@ -11,6 +11,7 @@ export const RELEASES: ReleaseNotes[] = [
     version: "v26.11.02",
     items: [
       "Les « Consignes pour Claude » montrent maintenant des exemples de ce que l’app lui renvoie : la ligne du journal, et le fichier téléchargé en fin de séance avec le détail de chaque exercice. Claude comprend ainsi mieux comment s’est passée votre séance.",
+      "Pendant la séance, « Terminer la séance » est maintenant un vrai bouton, toujours visible en bas de l’écran.",
     ],
   },
   {
