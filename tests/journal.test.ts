@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { parseProgram } from "../src/core/program";
-import { exportFileName, exportMarkdown, hrDrift, hrRecovery, journalLine } from "../src/core/journal";
+import { exportFileName, exportMarkdown, fmtPause, hrDrift, hrRecovery, journalLine, pausesSegment } from "../src/core/journal";
 import { advance, example, start } from "./helpers";
 
 const fb = { rpe: 8, comment: "salle très chaude", weight: "82,4", waist: "" };
@@ -74,7 +74,9 @@ describe("markdown export", () => {
     expect(md).toContain("## Ligne de journal");
     expect(md).toContain(journalLine(sess, fb));
     expect(md).toMatch(/\| 1 \| {2}\| Chauffe \| 5:00 \|/);
-    expect(md).toContain("| pause |");
+    expect(md).toContain("| *pause ajoutée par l'utilisateur* |");
+    expect(md).toContain("- Pauses ajoutées par l'utilisateur (bouton Pause, hors repos du programme) : 1, total 30 s");
+    expect(journalLine(sess, fb)).toContain("pause ajoutée par l'utilisateur : Chauffe 30 s");
     expect(md).toContain("heure,fc,etape");
     expect(md).toContain("Jamais atteintes : 2. Marche (tour 1), 3. Montée (tour 1)");
     expect(md).toContain("Montée | 1:00 | 5,5 km/h | 9 %");
@@ -102,5 +104,35 @@ describe("missing HR", () => {
     const { sess, clock } = start(parseProgram("A | 2:00"));
     advance(sess, clock, 121, () => 120);
     expect(journalLine(sess, { rpe: 5, comment: "", weight: "", waist: "" }).split(" | ")[8]).toBe("–");
+  });
+});
+
+describe("pauses added by the user", () => {
+  it("formats pause durations", () => {
+    expect(fmtPause(45)).toBe("45 s");
+    expect(fmtPause(180)).toBe("3 min");
+    expect(fmtPause(190)).toBe("3 min 10");
+    expect(fmtPause(65)).toBe("1 min 05");
+  });
+  it("lists each pause with its step and the total, active duration unchanged", () => {
+    const { sess, clock } = start(parseProgram("Marche | 2:00\nRepos | 0:30\nCorde | 1:00"));
+    advance(sess, clock, 60);
+    sess.pause();
+    advance(sess, clock, 80);
+    sess.resume();
+    advance(sess, clock, 100);
+    sess.pause();
+    advance(sess, clock, 45);
+    sess.resume();
+    advance(sess, clock, 60);
+    expect(pausesSegment(sess)).toBe("pauses ajoutées par l'utilisateur : 2 (Marche 1 min 20, Corde 45 s), total 2 min 05");
+    const line = journalLine(sess, fb).split(" | ");
+    expect(line[2]).toBe("3 min"); // 3:30 of effort, pauses excluded
+    expect(line[3]).toMatch(/; pauses ajoutées par l'utilisateur : 2 \(Marche 1 min 20, Corde 45 s\), total 2 min 05$/);
+  });
+  it("adds nothing without pause", () => {
+    const { sess, clock } = start(parseProgram("Marche | 1:00"));
+    advance(sess, clock, 70);
+    expect(pausesSegment(sess)).toBe("");
   });
 });

@@ -135,7 +135,33 @@ export function doneContent(steps: Step[], statuses: StepStatus[]): string[] {
   );
 }
 
-/** "sauté : …", "écourté : …", "non fait (arrêt) : …" (rests ignored). */
+/** Pause length in the journal: "45 s", "3 min", "3 min 10". */
+export function fmtPause(sec: number): string {
+  const s = Math.max(1, Math.round(sec));
+  if (s < 60) return s + " s";
+  const m = Math.floor(s / 60);
+  return m + " min" + (s % 60 ? " " + String(s % 60).padStart(2, "0") : "");
+}
+
+/** Pauses added by the user with the Pause button: duration (s) and step where it happened. */
+export function userPauses(sess: Session): { sec: number; idx: number }[] {
+  return sess.pauses.map((pz) => ({ sec: ((pz.wall1 || sess.endWall) - pz.wall0) / 1000, idx: pz.idx }));
+}
+
+/**
+ * "pause ajoutée par l'utilisateur : Marche (tour 2) 1 min 20" or
+ * "pauses ajoutées par l'utilisateur : 2 (Marche (tour 2) 1 min 20, Montée (tour 3) 1 min 50), total 3 min 10".
+ */
+export function pausesSegment(sess: Session): string {
+  const pz = userPauses(sess);
+  if (!pz.length) return "";
+  const each = pz.map((p) => sess.program.steps[p.idx].label + " " + fmtPause(p.sec));
+  if (pz.length === 1) return "pause ajoutée par l'utilisateur : " + each[0];
+  const total = pz.reduce((a, p) => a + p.sec, 0);
+  return "pauses ajoutées par l'utilisateur : " + pz.length + " (" + each.join(", ") + "), total " + fmtPause(total);
+}
+
+/** "sauté : …", "écourté : …", "non fait (arrêt) : …" (rests ignored), then the pauses added by the user. */
 export function deviations(sess: Session, statuses: StepStatus[]): string[] {
   const steps = sess.program.steps;
   const out: string[] = [];
@@ -154,6 +180,8 @@ export function deviations(sess: Session, statuses: StepStatus[]): string[] {
   });
   if (notDone.size)
     out.push("non fait (arrêt) : " + [...notDone].map(([n, c]) => n + (c > 1 ? " x" + c : "")).join(", "));
+  const pz = pausesSegment(sess);
+  if (pz) out.push(pz);
   return out;
 }
 
@@ -246,7 +274,10 @@ export function exportMarkdown(sess: Session, fb: Feedback, meta: ExportMeta): s
   L.push("- Ressenti : " + (fb.rpe ? fb.rpe + "/10 (" + RPE_TXT[fb.rpe] + ")" : "non noté") + " — Poids : " + measure(fb.weight, "kg") +
     " — Tour de taille : " + measure(fb.waist, "cm"));
   L.push("- Commentaire : " + (clean(fb.comment) || "–"));
-  L.push("- Arrêtée avant la fin : " + (sess.stoppedByUser ? "oui" : "non"), "");
+  L.push("- Arrêtée avant la fin : " + (sess.stoppedByUser ? "oui" : "non"));
+  const pz = userPauses(sess);
+  L.push("- Pauses ajoutées par l'utilisateur (bouton Pause, hors repos du programme) : " +
+    (pz.length ? pz.length + ", total " + fmtPause(pz.reduce((a, p) => a + p.sec, 0)) + " (non comptées dans la durée active)" : "aucune"), "");
 
   L.push("## Étapes", "");
   L.push("Heures locales. Statut : fait / écourté / sauté / arrêt (étape en cours quand la séance a été terminée). Les étapes jamais atteintes sont listées à la fin.", "");
@@ -277,7 +308,7 @@ export function exportMarkdown(sess: Session, fb: Feedback, meta: ExportMeta): s
     const w1 = pz.wall1 || sess.endWall;
     rows.push({
       wall: pz.wall0,
-      line: "| | | *pause* | | | " + fmtTime(new Date(pz.wall0)) + " | " + fmtTime(new Date(w1)) + " | " + fmtClock((w1 - pz.wall0) / 1000) + " | pause | | |",
+      line: "| | | *pause ajoutée par l'utilisateur* | | | " + fmtTime(new Date(pz.wall0)) + " | " + fmtTime(new Date(w1)) + " | " + fmtClock((w1 - pz.wall0) / 1000) + " | pause | | |",
     });
   });
   rows.sort((a, b) => a.wall - b.wall).forEach((r) => L.push(r.line));

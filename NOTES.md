@@ -231,10 +231,14 @@ Corde 6x30 s ; Étirements 4 min`
   - `écourté : …` — étape chronométrée quittée avec « Suiv. » entre 20 % et 90 % de sa durée ;
     on indique le temps fait sur le temps prévu.
   - `non fait (arrêt) : …` — étapes jamais atteintes parce que j'ai touché « Terminer la séance ».
+  - `pause ajoutée par l'utilisateur : <étape> <durée>` ou, s'il y en a plusieurs,
+    `pauses ajoutées par l'utilisateur : <n> (<étape> <durée>, …), total <durée>` — pauses prises avec le
+    bouton Pause (les repos du programme n'en sont pas). Durées : `45 s`, `3 min`, `3 min 10`.
+    La colonne **durée** reste le temps d'effort réel, **sans** ces pauses (décision du 01/11, v26.11.01).
   - Les repos sautés ou écourtés ne sont pas signalés (sans intérêt pour l'analyse).
   - Chaque étape est repérée par son tour quand elle est dans un bloc répété.
   Ex. : `… ; Corde 5x30 s ; Étirements 4 min ; sauté : Corde (tour 3, 2e) ; écourté : Planche (tour 3)
-  0:18/0:30 ; non fait (arrêt) : –`
+  0:18/0:30 ; pauses ajoutées par l'utilisateur : 2 (Marche (tour 2) 1 min 20, Corde (tour 3, 1re) 45 s), total 2 min 05`
 
 ### Consignes « journal » à donner à Claude
 
@@ -248,9 +252,12 @@ jj/mm/aaaa | type | durée | contenu et perfs | FC min/moy/max | ressenti x/10 |
 
 Lignes venant de l'app FitPacer :
 - type : salle ou maison
+- durée : temps d'effort réel, sans les pauses que j'ai ajoutées (le temps de ces pauses est indiqué dans le contenu)
 - contenu : « titre : étapes réalisées » (passages comptés avec la lettre x : « Pompes 3x10 rép »), suivi de « (arrêtée avant la fin) » si la séance a été interrompue,
   puis éventuellement les écarts au programme : « sauté : … », « écourté : … (fait/prévu) »,
-  « non fait (arrêt) : … » (étapes repérées par leur tour, ex. « Corde (tour 3, 2e) »)
+  « non fait (arrêt) : … » (étapes repérées par leur tour, ex. « Corde (tour 3, 2e) »),
+  « pause ajoutée par l'utilisateur : Marche (tour 2) 1 min 20 » ou « pauses ajoutées par l'utilisateur :
+  2 (…), total 3 min 10 » : pauses que j'ai prises en plus du programme, avec l'étape en cours
 - FC : min/moy/max en bpm, ou « FC non reçue »
 - poids : « 82,4 kg » ou « – » ; tour de taille : « 94 cm » ou « – »
 - remarque : mon commentaire libre, puis éventuellement ces segments calculés par l'app, dans cet ordre :
@@ -294,7 +301,8 @@ même contenu en `.txt` / `text/plain`). Contenu :
 |---|------|-------|-------|-----------|-------|-----|-------|--------|--------|--------|
 | 1 | | Chauffe | 5:00 | 4 → 5,5 km/h, 0 % | 11:02:14 | 11:07:14 | 5:00 | fait | 92 | 104 |
 | … |
-Statut : fait / sauté / écourté / non fait (arrêt) ; pauses indiquées en ligne « pause » avec début/fin.
+Statut : fait / sauté / écourté / non fait (arrêt) ; pauses du bouton Pause indiquées en ligne
+« pause ajoutée par l'utilisateur » avec début/fin, et récapitulées dans « Séance » (nombre, total).
 
 ## Fréquence cardiaque (toutes les 5 s)
 heure,fc,etape
