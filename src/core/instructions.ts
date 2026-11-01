@@ -67,7 +67,7 @@ Nom | quantité | info 1 | info 2 | note
 
 - Seuls le nom et la quantité sont obligatoires. Laisse une case vide si besoin : « Planche | 30s | | | respirer ».
 - Quantité chronométrée : 4:00, 45s, 5 (minutes). L'app enchaîne seule à la fin du chrono.
-- Quantité en répétitions : 10 rép, 12 rép par bras, 8 rép par côté, max. L'app attend que je
+- Quantité en répétitions : 10 rép (ou 10x), 12 rép par bras, 8 rép par côté, max. L'app attend que je
   touche « Fait » : n'utilise les répétitions que pour un exercice qui se compte (pompes, squats…).
 - Infos : vitesse (5,5 km/h), pente (7 %), charge (6 kg), niveau (niv 8), puissance (120 W),
   cadence (85 rpm) ou une consigne courte (rythme facile).

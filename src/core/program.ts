@@ -81,7 +81,7 @@ export function parseAmount(input: string): Amount | null {
   const s = input.trim();
   let m: RegExpMatchArray | null;
   if ((m = s.match(/^max(?:imum)?\b\.?\s*(.*)$/i))) return { kind: "reps", reps: "Max", extra: m[1].trim() };
-  if ((m = s.match(/^(\d+)\s*(?:r[ée]p(?:[ée]titions?|s)?|reps?|x)(?![a-zà-ÿ])\.?\s*(.*)$/i)))
+  if ((m = s.match(/^(\d+)\s*(?:r[ée]p(?:[ée]titions?|s)?|reps?|[x×])(?![a-zà-ÿ])\.?\s*(.*)$/i)))
     return { kind: "reps", reps: m[1], extra: m[2].trim() };
   const d = parseDur(s);
   if (d > 0) return { kind: "time", dur: d };
@@ -136,7 +136,7 @@ export function parseProgram(text: string): Program {
     const p = line.split("|").map((x) => x.trim());
     const amt = parseAmount(p[1] || "");
     if (!p[0]) { errors.push(where + "nom d’étape manquant."); return; }
-    if (!amt) { errors.push(where + "quantité illisible (« " + (p[1] || "") + " »). Exemples : 4:00, 45s, 10 rép, max."); return; }
+    if (!amt) { errors.push(where + "quantité illisible (« " + (p[1] || "") + " »). Exemples : 4:00, 45s, 10 rép, 10x, max."); return; }
     const infos = [p[2] || "", p[3] || ""].filter(Boolean);
     const note = p.slice(4).filter(Boolean).join(" ; ");
     stack[stack.length - 1].items.push({ name: p[0], infos, note, ...amt } as RawStep);
