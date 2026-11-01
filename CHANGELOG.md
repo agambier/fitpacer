@@ -3,6 +3,29 @@
 Format `vAA.MM.XX` (voir `CLAUDE.md`). Seules les versions stables figurent ici : chaque section sert
 de texte à la release GitHub créée automatiquement.
 
+## v26.11.01
+
+**Nouveautés à l’écran**
+- Nouvelle icône : un cœur qui bat, traversé par un tracé de rythme cardiaque (aussi dans « À propos »).
+- Fenêtre de bienvenue au premier lancement, et fenêtre « Quoi de neuf ? » après chaque mise à jour (une section par version si plusieurs ont été sautées ; aussi dans le menu ☰).
+- Boutons en icônes : ouvrir un fichier, coller, effacer (programme) ; copier, partager, télécharger (bilan et consignes pour Claude).
+- Les questions « Terminer la séance ? » et « Effacer la séance ? » s’affichent dans une fenêtre de l’app.
+
+**Programme**
+- Nouveau bouton pour ouvrir une séance depuis un fichier texte du téléphone (.txt, .md : e-mail, téléchargement, cloud).
+- Répétitions : `x10` (forme de référence) ; `10x` et `10 rép` restent acceptés. Plus de caractère spécial `×`, nulle part.
+- Progressions : option `par` pour l’écart entre paliers (`3 → 5 km/h par 1`, toute unité), option `en` pour atteindre la valeur d’arrivée avant la fin de l’étape (`3 → 5 km/h en 3:00`), allures `6:00 → 5:30 min/km`. Sans `par`, chaque palier dure au moins 20 s.
+
+**Séance**
+- Bips 5-4-3-2-1 en fin d’étape (au lieu de 3-2-1), et aussi avant chaque palier, dont le compte à rebours passe en orange à 10 s.
+- Pendant un repos, la voix lit aussi ses consignes (et à la reprise après une pause) ; le bouton Pause y est désactivé.
+- En pause : grand compteur « En pause depuis ».
+
+**Bilan**
+- Pauses ajoutées avec le bouton Pause (10 s ou plus) notées dans la ligne de journal et le fichier : étape, durée, total, et FC au début et à la fin si la montre est connectée.
+- Ligne de journal : nombre de passages écrit avec la lettre x (`Pompes 3x10 rép`).
+- Le bouton Partager ouvre bien le menu de partage d’Android (fichier .txt) ; le bouton Charger ne demande plus l’accès au micro.
+
 ## v26.10.04
 
 **Barre de menu**
