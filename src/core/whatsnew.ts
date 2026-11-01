@@ -8,6 +8,12 @@ export interface ReleaseNotes {
 
 export const RELEASES: ReleaseNotes[] = [
   {
+    version: "v26.11.03",
+    items: [
+      "Pour les exercices en répétitions (pompes, abdos…), la voix annonce simplement l’exercice, sans répéter à chaque fois « Touchez Fait quand c’est terminé ».",
+    ],
+  },
+  {
     version: "v26.11.02",
     items: [
       "Les « Consignes pour l’IA » (le menu s’appelait « Consignes pour Claude ») montrent maintenant des exemples de ce que l’app lui renvoie : la ligne du journal, et le fichier téléchargé en fin de séance avec le détail de chaque exercice. L’IA comprend ainsi mieux comment s’est passée votre séance.",

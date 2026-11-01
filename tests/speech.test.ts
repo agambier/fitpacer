@@ -21,7 +21,7 @@ describe("speech", () => {
     const p = parseProgram("Montée | 1:00 | 5,5 km/h | 9 %\nPompes | 10 rép\nRepos | 1:30\nPlanche | 30s\nRepos | 10s\nDead bug | 8 rép par côté");
     const [mont, pomp, rep, , rep10] = p.steps;
     expect(stepAnnouncement(mont, pomp)).toBe("Montée. 1 minute. 5,5 kilomètres heure, pente 9 pour cent.");
-    expect(stepAnnouncement(pomp, rep)).toBe("Pompes. 10 répétitions. Touchez Fait quand c'est terminé.");
+    expect(stepAnnouncement(pomp, rep)).toBe("Pompes. 10 répétitions.");
     expect(stepAnnouncement(rep, p.steps[3])).toBe("Repos, 1 minute 30. Ensuite : Planche, 30 secondes.");
     expect(stepAnnouncement(rep10, p.steps[5])).toBe("Repos. Ensuite : Dead bug.");
   });
@@ -45,7 +45,7 @@ describe("speech", () => {
     expect(resumeAnnouncement(ch, po, 200, [4.5, null])).toBe(
       "On reprend. Chauffe. encore 3 minutes 20. 4,5 kilomètres heure, pente 0 pour cent. monter progressivement.",
     );
-    expect(resumeAnnouncement(po, re, 0, [])).toBe("On reprend. Pompes. 10 répétitions. Touchez Fait quand c'est terminé.");
+    expect(resumeAnnouncement(po, re, 0, [])).toBe("On reprend. Pompes. 10 répétitions.");
     expect(resumeAnnouncement(re, pl, 45, [])).toBe("On reprend. Repos, encore 45 secondes. Ensuite : Planche, 30 secondes.");
   });
 });

@@ -33,7 +33,6 @@ export function sayInfo(info: string): string {
   return /pour cent/.test(t) ? "pente " + t : t;
 }
 
-const REPS_DONE = "Touchez Fait quand c'est terminé.";
 
 function amountPhrase(s: Step): string {
   if (s.kind === "time") return sayDuration(s.dur);
@@ -70,7 +69,8 @@ export function stepAnnouncement(s: Step, next: Step | undefined): string {
   }
   const infos = s.infos.map(sayInfo).join(", ");
   const base = s.name + ". " + amountPhrase(s) + "." + (infos ? " " + infos + "." : "") + (s.hr ? " " + sayZone(s.hr) : "");
-  if (s.kind === "reps") return base + " " + (s.note ? s.note + ". " : "") + REPS_DONE;
+  // Rep steps wait for "Fait": no reminder, users know the button.
+  if (s.kind === "reps") return base + (s.note ? " " + s.note + "." : "");
   const budget = s.dur - COUNTDOWN - 1; // finish before the 5-4-3-2-1 beeps
   const full = base + (s.note ? " " + s.note + "." : "");
   if (fits(full, budget)) return full;
@@ -103,7 +103,7 @@ export function resumeAnnouncement(s: Step, next: Step | undefined, remaining: n
     .join(", ");
   const amount = s.kind === "time" ? left : amountPhrase(s);
   const base = "On reprend. " + s.name + ". " + amount + "." + (infos ? " " + infos + "." : "") + (s.note ? " " + s.note + "." : "");
-  return s.kind === "reps" ? base + " " + REPS_DONE : base;
+  return base;
 }
 
 export const finishAnnouncement = () => "Séance terminée. Bravo !";

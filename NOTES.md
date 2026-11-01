@@ -61,8 +61,9 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
   - **Étape chronométrée** (`4:00`, `45s`…) : nom + durée + infos.
     Ex. « Montée, 1 minute, 5,5 kilomètres heure, pente 9 pour cent. »
     Le chrono passe tout seul à l'étape suivante, avec les bips 5-4-3-2-1 (3-2-1 avant v26.11.01).
-  - **Étape en répétitions** (`x10`, `max`…) : nom + nombre + rappel du bouton.
-    Ex. « Pompes, 10 répétitions. Touchez Fait quand c'est terminé. »
+  - **Étape en répétitions** (`x10`, `max`…) : nom + nombre (+ infos et note).
+    Ex. « Pompes, 10 répétitions. » (le rappel « Touchez Fait quand c'est terminé » a été retiré en v26.11.03 :
+    l'utilisateur connaît le bouton, la phrase répétée était pénible).
     Pas de compte à rebours : l'étape attend que je touche **« Fait ✓ »** (gros bouton vert) avant de
     passer à la suite (le temps passé est affiché, « En cours depuis 0:35 »).
   - Annoncer aussi la note de l'étape si elle existe (« monter progressivement »).
