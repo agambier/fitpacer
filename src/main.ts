@@ -80,24 +80,24 @@ function flashIcon(b: HTMLElement, ok: boolean, failTxt: string) {
 const src = $<HTMLTextAreaElement>("src");
 src.value = store.get("fitpacer.text", store.get("guidee.texte", ""));
 let prog: Program = parseProgram("");
-/** HR alert threshold of the current session (written by Claude in the workout), or null. */
+/** HR alert threshold of the current session (written in the workout by the AI), or null. */
 const capValue = (p: Program = sess?.program ?? prog) => sessionHrMax(p).value;
-const NO_CAP_MSG = "FC max absente de la séance : pas d’alerte de FC trop haute. Demandez à Claude d’ajouter la ligne « fc max: … ».";
+const NO_CAP_MSG = "FC max absente de la séance : pas d’alerte de FC trop haute. Demandez à l’IA d’ajouter la ligne « fc max: … ».";
 
-/** Session HR max box on the program screen (read-only: written by Claude in the workout). */
+/** Session HR max box on the program screen (read-only: written in the workout). */
 function renderCapInfo() {
   const box = $("capInfo");
   box.hidden = !prog.steps.length;
   const c = sessionHrMax(prog);
   box.classList.toggle("missing", c.value == null);
   if (c.value == null) {
-    box.replaceChildren(el("span", "", "FC max absente de la séance"), el("span", "h", "Pas d’alerte de FC trop haute. Demandez à Claude d’ajouter la ligne « fc max: … »."));
+    box.replaceChildren(el("span", "", "FC max absente de la séance"), el("span", "h", "Pas d’alerte de FC trop haute. Demandez à l’IA d’ajouter la ligne « fc max: … »."));
     return;
   }
   const t = el("span", "", "FC max de la séance");
   const h = el("span", "h", c.raisedBy
     ? "Relevée par la plage FC de « " + c.raisedBy.name + " » (fc max: " + prog.hrMax + " dans la séance). Alerte au-dessus."
-    : "Alerte au-dessus. Fixée par Claude dans la séance.");
+    : "Alerte au-dessus. Fixée dans la séance.");
   const left = el("span");
   left.append(t, h);
   box.replaceChildren(left, el("b", "num", c.value + " bpm"));
@@ -134,7 +134,7 @@ $("pasteBtn").addEventListener("click", async () => {
   try {
     const t = await navigator.clipboard.readText();
     if (!t.trim()) {
-      showMsg("Le presse-papiers est vide. Copiez d’abord la séance dans la conversation avec Claude.");
+      showMsg("Le presse-papiers est vide. Copiez d’abord la séance dans la conversation avec l’IA.");
       return;
     }
     src.value = t.trim();
@@ -281,14 +281,14 @@ document.querySelectorAll<HTMLDialogElement>("dialog.info").forEach((d) => {
 });
 $("aboutFmt").textContent = "Format FitPacer " + FORMAT_VERSION;
 $("fmtVersion").textContent = "Format FitPacer " + FORMAT_VERSION + ".";
-const instrName = "fitpacer-consignes-claude.md";
+const instrName = "fitpacer-consignes-ia.md";
 $("instrCopy").addEventListener("click", async (e) => {
   const ok = await copyText(claudeInstructions());
   flashIcon(e.currentTarget as HTMLElement, ok, "Copie impossible");
 });
 $("instrShare").addEventListener("click", async (e) => {
   const b = e.currentTarget as HTMLElement;
-  const r = await shareText(instrName, claudeInstructions(), "Consignes FitPacer pour Claude");
+  const r = await shareText(instrName, claudeInstructions(), "Consignes FitPacer pour l’IA");
   if (r === "unsupported") { downloadText(instrName, claudeInstructions()); flashIcon(b, false, "Partage refusé : téléchargé"); }
 });
 $("instrDownload").addEventListener("click", () => downloadText(instrName, claudeInstructions()));

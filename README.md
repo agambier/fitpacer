@@ -1,8 +1,8 @@
 # FitPacer
 
-FitPacer guides you during a workout session : PWA compagnon qui cadence une séance préparée par Claude
+FitPacer guides you during a workout session : PWA compagnon qui cadence une séance préparée par une IA (Claude, ChatGPT…)
 (chrono, répétitions, progressions de vitesse/pente, voix, bips), affiche la FC de la montre en
-Bluetooth et produit la ligne de journal + un fichier détaillé à redonner à Claude.
+Bluetooth et produit la ligne de journal + un fichier détaillé à redonner à l'IA.
 
 - Specs produit : [`NOTES.md`](NOTES.md) — consignes de dev : [`CLAUDE.md`](CLAUDE.md)
 - Exemples de séances : [`examples/`](examples)

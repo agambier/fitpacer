@@ -1,4 +1,4 @@
-// "Consignes pour Claude": the text the user pastes into the Claude project instructions.
+// "Consignes pour l'IA": the text the user pastes into the instructions of their AI assistant (Claude project, custom GPT…).
 // Single source of truth for the workout format and the journal format.
 
 export const FORMAT_VERSION = "v1";
@@ -171,7 +171,7 @@ ${EXAMPLE_EXPORT}
 ~~~`;
 
 export function claudeInstructions(): string {
-  return `# Consignes FitPacer pour Claude (Format FitPacer ${FORMAT_VERSION})
+  return `# Consignes FitPacer pour l'IA (Format FitPacer ${FORMAT_VERSION})
 
 J'utilise l'app FitPacer pour mes séances à la maison et en salle. C'est toi qui me proposes la
 séance, adaptée à mon journal d'entraînement, puis tu m'en donnes la description au format

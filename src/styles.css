@@ -228,7 +228,7 @@ td.r, th.r { text-align: right; }
 .dialog.info summary { font-weight: 600; font-size: 17px; cursor: pointer; }
 .dialog.info details[open] summary { margin-bottom: 8px; }
 
-/* Session HR max (program screen): read-only, written by Claude in the workout. */
+/* Session HR max (program screen): read-only, written in the workout. */
 .capInfo { margin: 14px 0 0; padding: 10px 12px; background: var(--surface); border-radius: 8px; display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
 .capInfo > span { display: grid; gap: 2px; }
 .capInfo b { white-space: nowrap; font: 700 24px/1 "Barlow Condensed", Barlow, sans-serif; }

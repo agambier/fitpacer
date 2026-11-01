@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#101C26">
-<meta name="description" content="FitPacer vous cadence pendant une séance préparée par Claude.">
+<meta name="description" content="FitPacer vous cadence pendant une séance préparée par une IA.">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <title>FitPacer</title>
@@ -21,7 +21,7 @@
   <button class="menuBtn" id="menuBtn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="menu" aria-label="Menu">☰</button>
   <nav class="menu" id="menu" role="menu" hidden>
     <button type="button" role="menuitem" data-open="helpDialog">Aide</button>
-    <button type="button" role="menuitem" data-open="claudeDialog">Consignes pour Claude</button>
+    <button type="button" role="menuitem" data-open="claudeDialog">Consignes pour l’IA</button>
     <button type="button" role="menuitem" class="subToggle" id="themeBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="themeMenu">Thème</button>
     <div class="submenu" id="themeMenu" role="menu" aria-label="Thème" hidden>
       <button type="button" role="menuitemradio" class="themeItem" data-theme-choice="dark" aria-checked="false">Sombre</button>
@@ -53,7 +53,7 @@
       </div>
     </div>
     <input type="file" id="fileIn" accept=".txt,.md,.markdown,.text,text/plain,text/markdown" hidden>
-    <textarea id="src" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="Collez ici la séance préparée par Claude, ou chargez un fichier texte (.txt, .md)."></textarea>
+    <textarea id="src" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="Collez ici la séance préparée par l’IA, ou chargez un fichier texte (.txt, .md)."></textarea>
     <ul class="errors" id="errors"></ul>
     <div class="capInfo" id="capInfo" hidden></div>
     <ul class="plan num" id="plan"></ul>
@@ -125,7 +125,7 @@
       </div>
     </div>
     <textarea id="journal" readonly></textarea>
-    <p class="help">Copiez la ligne, ou partagez / téléchargez le fichier. Le fichier contient la ligne de journal, le détail horodaté des étapes et la FC : donnez-le à Claude avec le fichier .fit de la montre.</p>
+    <p class="help">Copiez la ligne, ou partagez / téléchargez le fichier. Le fichier contient la ligne de journal, le détail horodaté des étapes et la FC : donnez-le à l’IA avec le fichier .fit de la montre.</p>
     <button class="primary" id="againBtn" type="button">Revenir au programme</button>
   </section>
 </main>
@@ -143,7 +143,7 @@
       <li><b>Repos</b> : <code>Repos | 1:30</code>, l’exercice suivant est annoncé.</li>
       <li><b>Bloc répété</b> : <code>x3 {</code> (ou <code>3x {</code>) … <code>}</code></li>
       <li><b>Plage de FC d’une étape</b> : <code>FC 120-145</code> dans n’importe quelle case après la quantité (<code>Marche rapide | 10:00 | 6 km/h | 3 % | FC 120-145</code>). L’app affiche la plage, indique si vous êtes dedans et vous le rappelle à voix haute si vous en sortez plus de 15 s.</li>
-      <li><b>En tête</b> : <code>titre: …</code>, <code>type: salle</code> ou <code>maison</code>, et <code>fc max: 155</code> : la FC max de la séance, au-dessus de laquelle l’app donne l’alerte (bandeau rouge, bips, voix), quelle que soit la plage de l’étape. Elle est fixée par Claude et ne se modifie pas dans l’app ; si une plage d’étape va plus haut, la FC max prend cette valeur. <code>#</code> pour un commentaire.</li>
+      <li><b>En tête</b> : <code>titre: …</code>, <code>type: salle</code> ou <code>maison</code>, et <code>fc max: 155</code> : la FC max de la séance, au-dessus de laquelle l’app donne l’alerte (bandeau rouge, bips, voix), quelle que soit la plage de l’étape. Elle est fixée dans la séance et ne se modifie pas dans l’app ; si une plage d’étape va plus haut, la FC max prend cette valeur. <code>#</code> pour un commentaire.</li>
     </ul>
   </details>
   <details>
@@ -171,14 +171,14 @@
   <h2 id="welcomeT" class="center">Bienvenue dans FitPacer</h2>
   <p>FitPacer vous accompagne pendant vos séances de sport, à la maison ou en salle : chrono, répétitions, vitesse et pente, annonces vocales, bips, et fréquence cardiaque de votre montre.</p>
   <ul>
-    <li><b>Préparez la séance</b> : écrivez-la vous-même, ou demandez à Claude de la générer (bouton ci-dessous pour lui apprendre le format). Collez-la ou chargez-la depuis un fichier.</li>
+    <li><b>Préparez la séance</b> : écrivez-la vous-même, ou demandez à une IA (Claude, ChatGPT…) de la générer (bouton ci-dessous pour lui apprendre le format). Collez-la ou chargez-la depuis un fichier.</li>
     <li><b>Faites la séance</b> : l’app vous guide étape par étape.</li>
-    <li><b>Transmettez le rapport</b> : à la fin, l’app fournit un rapport (ligne de journal et fichier détaillé) à envoyer à Claude, pour qu’il suive vos progrès et prépare la suite.</li>
+    <li><b>Transmettez le rapport</b> : à la fin, l’app fournit un rapport (ligne de journal et fichier détaillé) à envoyer à l’IA, pour qu’elle suive vos progrès et prépare la suite.</li>
   </ul>
   <p class="help">Tout reste sur votre téléphone. L’aide est dans le menu ☰.</p>
   <div class="dbtns">
     <button class="primary" type="button" data-close>C’est parti</button>
-    <button class="ghost" type="button" id="welcomeClaude">Consignes pour Claude</button>
+    <button class="ghost" type="button" id="welcomeClaude">Consignes pour l’IA</button>
   </div>
 </dialog>
 
@@ -190,8 +190,8 @@
 </dialog>
 
 <dialog class="dialog info" id="claudeDialog" aria-labelledby="claudeT">
-  <h2 id="claudeT">Consignes pour Claude</h2>
-  <p>À coller dans les instructions de votre projet Claude, pour qu’il propose ses séances au format FitPacer et tienne le journal au bon format. <span id="fmtVersion"></span></p>
+  <h2 id="claudeT">Consignes pour l’IA</h2>
+  <p>À coller dans les instructions de votre IA (projet Claude, GPT personnalisé…), pour qu’elle propose ses séances au format FitPacer et tienne le journal au bon format. <span id="fmtVersion"></span></p>
   <div class="row actions">
     <button class="ghost iconBtn strong" id="instrCopy" type="button" aria-label="Copier" title="Copier"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4.5A1.5 1.5 0 0 1 3 13.5v-9A1.5 1.5 0 0 1 4.5 3h9A1.5 1.5 0 0 1 15 4.5V5"/></svg></button>
     <button class="ghost iconBtn" id="instrShare" type="button" aria-label="Partager" title="Partager"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.75"/><circle cx="6" cy="12" r="2.75"/><circle cx="18" cy="19" r="2.75"/><path d="M8.4 13.4l7.2 4.2M15.6 6.4l-7.2 4.2"/></svg></button>
@@ -209,7 +209,7 @@
     <dt>Format de séance</dt><dd id="aboutFmt"></dd>
     <dt>Code source</dt><dd><a href="https://github.com/agambier/fitpacer" target="_blank" rel="noopener">github.com/agambier/fitpacer</a></dd>
   </dl>
-  <p class="help">FitPacer vous cadence pendant les séances préparées par Claude. Aucune donnée n’est envoyée ni conservée : tout reste sur le téléphone.</p>
+  <p class="help">FitPacer vous cadence pendant les séances préparées par une IA. Aucune donnée n’est envoyée ni conservée : tout reste sur le téléphone.</p>
   <button class="primary" type="button" data-close>Fermer</button>
 </dialog>
 

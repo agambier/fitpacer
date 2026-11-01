@@ -134,9 +134,9 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
     Étape « retour au calme » reconnue par son nom (`Retour au calme`, `Récup…`, `Étirements`…) ;
     à défaut, la dernière étape.
   - Seuils et règles regroupés dans un module pur et testé (`journal/`).
-- [x] **Consignes pour Claude** : dans le menu ☰, une fenêtre « Consignes pour Claude »
+- [x] **Consignes pour l'IA** (« Consignes pour Claude » avant v26.11.02) : dans le menu ☰, une fenêtre « Consignes pour l'IA »
       avec trois boutons **Copier**, **Partager**, **Télécharger** (fichier
-      `fitpacer-consignes-claude.md` ; partagé en `.txt`). Contenu = texte prêt à coller dans les
+      `fitpacer-consignes-ia.md`, avant v26.11.02 `fitpacer-consignes-claude.md` ; partagé en `.txt`). Contenu = texte prêt à coller dans les
       instructions du projet Claude : rôle (Claude propose la séance), format de séance complet
       (en-tête, étapes, chrono vs répétitions, repos, progressions `A → B`, blocs `xN { }`, règles :
       toujours finir par un retour au calme, pas de ``` ni de `---`), puis le bloc « journal »
@@ -181,6 +181,11 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
 Explicitement **hors MVP** : comptes, sync, historique, envoi automatique à Claude, GPS, iOS.
 
 ## Format de séance (contrat avec Claude)
+
+> Décision du 01/11 (v26.11.02) : **les textes de l'app ne citent plus Claude** mais « l'IA » / « une IA »
+> (d'autres assistants, ChatGPT par exemple, peuvent préparer les séances). Seuls des exemples entre
+> parenthèses le nomment (« une IA (Claude, ChatGPT…) »). Dans ces notes, « Claude » désigne l'IA de
+> conversation qui prépare les séances.
 
 ```
 titre: Tapis incliné 35 min

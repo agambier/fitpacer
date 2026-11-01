@@ -16,7 +16,7 @@ export default defineConfig({
       manifest: {
         name: isDev ? "FitPacer DEV" : "FitPacer",
         short_name: isDev ? "FitPacer DEV" : "FitPacer",
-        description: "Vous cadence pendant une séance préparée par Claude.",
+        description: "Vous cadence pendant une séance préparée par une IA.",
         lang: "fr",
         start_url: ".",
         scope: ".",

@@ -10,10 +10,10 @@ export const RELEASES: ReleaseNotes[] = [
   {
     version: "v26.11.02",
     items: [
-      "Les « Consignes pour Claude » montrent maintenant des exemples de ce que l’app lui renvoie : la ligne du journal, et le fichier téléchargé en fin de séance avec le détail de chaque exercice. Claude comprend ainsi mieux comment s’est passée votre séance.",
+      "Les « Consignes pour l’IA » (le menu s’appelait « Consignes pour Claude ») montrent maintenant des exemples de ce que l’app lui renvoie : la ligne du journal, et le fichier téléchargé en fin de séance avec le détail de chaque exercice. L’IA comprend ainsi mieux comment s’est passée votre séance.",
       "Pendant la séance, « Terminer la séance » est maintenant un vrai bouton, toujours visible en bas de l’écran.",
-      "La FC max de la séance est maintenant choisie par Claude dans la séance (ligne « fc max: … ») et ne se règle plus dans l’app. Au-dessus, un bandeau rouge s’affiche, en plus des bips et de la voix.",
-      "Claude peut donner une plage de fréquence cardiaque pour un exercice (par exemple entre 120 et 145). Pendant l’exercice, une jauge montre si vous êtes dedans, et une voix vous dit d’accélérer ou de ralentir si vous en sortez plus de 15 secondes.",
+      "La FC max est maintenant écrite dans la séance (ligne « fc max: … ») et ne se règle plus dans l’app. Au-dessus, un bandeau rouge s’affiche, en plus des bips et de la voix.",
+      "L’IA peut donner une plage de fréquence cardiaque pour un exercice (par exemple entre 120 et 145). Pendant l’exercice, une jauge montre si vous êtes dedans, et une voix vous dit d’accélérer ou de ralentir si vous en sortez plus de 15 secondes.",
       "Le rapport de fin de séance indique le temps passé dans chaque plage de fréquence cardiaque.",
     ],
   },
@@ -29,7 +29,7 @@ export const RELEASES: ReleaseNotes[] = [
       "Pendant les repos, la voix lit aussi les consignes du programme (par exemple « allongé sur le dos »).",
       "Pendant un repos, le bouton Pause est désactivé : le repos est déjà une pause.",
       "En pause, un grand compteur indique depuis combien de temps vous êtes arrêté.",
-      "Les pauses de plus de 10 secondes que vous prenez avec le bouton Pause sont notées dans le rapport de fin de séance (où et combien de temps), pour que Claude en tienne compte. Si la montre est connectée, la fréquence cardiaque au début et à la fin de la pause est notée aussi.",
+      "Les pauses de plus de 10 secondes que vous prenez avec le bouton Pause sont notées dans le rapport de fin de séance (où et combien de temps), pour que l’IA en tienne compte. Si la montre est connectée, la fréquence cardiaque au début et à la fin de la pause est notée aussi.",
       "Les questions comme « Terminer la séance ? » s’affichent dans une fenêtre de l’app, plus lisible.",
       "Le bouton Partager propose bien vos applications (WhatsApp, Gmail…) pour envoyer le rapport de séance.",
       "Une fenêtre de bienvenue pour découvrir l’app, et cette fenêtre « Quoi de neuf ? » à chaque nouvelle version.",
