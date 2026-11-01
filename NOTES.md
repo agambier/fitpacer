@@ -150,6 +150,10 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
       versions ont été sautées : une version = liste simple ; plusieurs = une section déroulante par version
       (la plus récente ouverte). Revenir à une version plus ancienne :
       rien. Aussi accessible dans le menu ☰ → « Quoi de neuf ? » (3 dernières versions).
+- [x] **Questions dans une fenêtre de l'app** (v26.11.01) : plus de `confirm()` du navigateur. « Effacer la
+      séance affichée ? » (Oui, effacer / Non, garder) et « Terminer la séance maintenant ? » (Oui, terminer /
+      Non, continuer) utilisent la même fenêtre que « La montre n'est pas connectée ». Seule exception, imposée
+      par le navigateur : l'avertissement quand on quitte ou recharge la page pendant une séance.
 - [x] **PWA** : manifest, icônes, installable, hors ligne, polices locales.
 - [x] **Icône** (v26.11.01) : cœur rouge traversé par un tracé de rythme cardiaque, ondes de battement
       de part et d'autre ; fond sombre `#101C26`. Source : `public/favicon.svg` (PNG dérivés).

@@ -44,6 +44,28 @@ function show(id: "edit" | "run" | "done") {
   window.scrollTo(0, 0);
 }
 
+/** Yes/no question in the app's own popup (not the browser's confirm()). Resolves false if dismissed. */
+function askConfirm(question: string, yes: string, no: string): Promise<boolean> {
+  const d = $<HTMLDialogElement>("confirmDialog");
+  if (typeof d.showModal !== "function") return Promise.resolve(confirm(question));
+  $("confirmQ").textContent = question;
+  $("confirmYes").textContent = yes;
+  $("confirmNo").textContent = no;
+  return new Promise((resolve) => {
+    let answer = false;
+    const pick = (v: boolean) => () => { answer = v; d.close(); };
+    const yesB = $("confirmYes"), noB = $("confirmNo");
+    const onYes = pick(true), onNo = pick(false);
+    yesB.addEventListener("click", onYes);
+    noB.addEventListener("click", onNo);
+    d.addEventListener("close", () => {
+      yesB.removeEventListener("click", onYes);
+      noB.removeEventListener("click", onNo);
+      resolve(answer);
+    }, { once: true });
+    d.showModal();
+  });
+}
 const CHECK_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 /** Feedback on an icon button: a check mark when it worked, otherwise a short text, then the icon again. */
 function flashIcon(b: HTMLElement, ok: boolean, failTxt: string) {
@@ -126,8 +148,8 @@ fileIn.addEventListener("change", async () => {
   showMsg("");
   window.scrollTo(0, 0);
 });
-$("clearBtn").addEventListener("click", () => {
-  if (src.value.trim() && !confirm("Effacer la séance affichée ?")) return;
+$("clearBtn").addEventListener("click", async () => {
+  if (src.value.trim() && !(await askConfirm("Effacer la séance affichée ?", "Oui, effacer", "Non, garder"))) return;
   src.value = "";
   refreshPlan();
   src.focus();
@@ -553,8 +575,9 @@ $("prevBtn").addEventListener("click", () => {
   sess.prev();
   handle(sess.tick());
 });
-$("stopBtn").addEventListener("click", () => {
-  if (!sess || !confirm("Terminer la séance maintenant ?")) return;
+$("stopBtn").addEventListener("click", async () => {
+  if (!sess || !(await askConfirm("Terminer la séance maintenant ?", "Oui, terminer", "Non, continuer"))) return;
+  if (!sess) return;
   sess.stop();
   handle(sess.tick());
 });
