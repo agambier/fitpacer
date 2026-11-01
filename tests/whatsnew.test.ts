@@ -17,7 +17,7 @@ describe("whats new", () => {
   it("lists the versions newer than the one seen", () => {
     expect(notesSince("v26.10.04", "v26.11.01-dev").map((r) => r.version)).toEqual(["v26.11.01"]);
     expect(notesSince("v26.11.01", "v26.11.01")).toEqual([]);
-    expect(notesSince("", "v26.11.01").length).toBe(RELEASES.length);
+    expect(notesSince("", APP_VERSION).length).toBe(RELEASES.length);
   });
   it("chooses the popup at launch", () => {
     expect(launchPopup("", false, "v26.11.01")).toBe("welcome");

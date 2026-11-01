@@ -25,6 +25,13 @@ x3 {
 }
 Étirements | 4:00 | | | pectoraux, épaules, mollets`;
 
+// Journal lines produced by the app for the two examples above (kept in sync by tests/instructions.test.ts).
+export const EXAMPLE_JOURNAL_TREADMILL =
+  "31/10/2026 | salle | 35 min | Tapis incliné 35 min : Chauffe 5 min (4 → 5,5 km/h, 0 %) ; Marche 5x4 min (5,5 km/h, 7 %) ; Montée 5x1 min (5,5 km/h, 9 %) ; Retour au calme 5 min (5,5 → 3 km/h par 1 en 3:00, 0 %) ; pause ajoutée par l'utilisateur : Marche (tour 2) 1 min 20 (FC 128→112) | 95/127/140 | ressenti 7/10 | 82,4 kg | – | salle chaude ; dérive FC Marche ~124→138 ; récup FC 140→133 en 1 min, 107 en 5 min";
+
+export const EXAMPLE_JOURNAL_HOME =
+  "31/10/2026 | maison | 19 min | Maison pompes, gainage, corde : Échauffement 3 min ; Pompes 3x10 rép ; Planche 2x30 s ; Dead bug 2x8 rép par côté ; Étirements 4 min ; sauté : Dead bug (tour 3) ; écourté : Planche (tour 2) 0:18/0:30 | FC non reçue | ressenti 6/10 | – | – | montre non connectée : pas de FC (ni dérive ni récupération)";
+
 export const JOURNAL_RULES = `Journal d'entraînement — format (9 colonnes, séparateur « | », ne jamais changer l'ordre) :
 jj/mm/aaaa | type | durée | contenu et perfs | FC min/moy/max | ressenti x/10 | poids | tour de taille | remarque
 
@@ -46,6 +53,13 @@ Lignes venant de l'app FitPacer :
     « dérive FC <étape> ~<FC début>→<FC fin> »   (une par étape concernée)
     « récup FC <FC fin d'effort>→<FC à 1 min> en 1 min, <FC finale> en <n> min »
   Les segments sont séparés par « ; ». « – » si rien.
+
+Exemples de lignes produites par l'app (une ligne par séance) :
+- séance tapis avec la montre, une pause ajoutée pendant le 2e tour :
+${EXAMPLE_JOURNAL_TREADMILL}
+- séance maison sans la montre, un Dead bug sauté et une Planche écourtée :
+${EXAMPLE_JOURNAL_HOME}
+
 Conserve ces lignes telles quelles ; tu peux compléter la remarque avec les données de la montre
 (distance, kcal, effet d'entraînement…) en les ajoutant à la fin, après « ; ».
 

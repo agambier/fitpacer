@@ -138,7 +138,9 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
       `fitpacer-consignes-claude.md` ; partagé en `.txt`). Contenu = texte prêt à coller dans les
       instructions du projet Claude : rôle (Claude propose la séance), format de séance complet
       (en-tête, étapes, chrono vs répétitions, repos, progressions `A → B`, blocs `xN { }`, règles :
-      toujours finir par un retour au calme, pas de ``` ni de `---`), puis le bloc « journal ».
+      toujours finir par un retour au calme, pas de ``` ni de `---`), puis le bloc « journal »
+      avec deux exemples de lignes de journal (tapis avec montre et pause ; maison sans montre, avec
+      étape sautée et écourtée), générés par l'app et vérifiés par `tests/instructions.test.ts` (v26.11.02).
       Version du format indiquée en tête (`Format FitPacer v1`) ; le texte est généré depuis une
       source unique dans le code, la même que l'aide affichée et les tests.
 - [x] **Partage de fichiers** (commun au bilan et aux consignes) : Copier / Partager (Web Share API
@@ -298,6 +300,12 @@ Lignes venant de l'app FitPacer :
     « dérive FC <étape> ~<FC début>→<FC fin> »   (une par étape concernée)
     « récup FC <FC fin d'effort>→<FC à 1 min> en 1 min, <FC finale> en <n> min »
   Les segments sont séparés par « ; ». « – » si rien.
+Exemples de lignes produites par l'app (une ligne par séance) :
+- séance tapis avec la montre, une pause ajoutée pendant le 2e tour :
+31/10/2026 | salle | 35 min | Tapis incliné 35 min : Chauffe 5 min (4 → 5,5 km/h, 0 %) ; Marche 5x4 min (5,5 km/h, 7 %) ; Montée 5x1 min (5,5 km/h, 9 %) ; Retour au calme 5 min (5,5 → 3 km/h par 1 en 3:00, 0 %) ; pause ajoutée par l'utilisateur : Marche (tour 2) 1 min 20 (FC 128→112) | 95/127/140 | ressenti 7/10 | 82,4 kg | – | salle chaude ; dérive FC Marche ~124→138 ; récup FC 140→133 en 1 min, 107 en 5 min
+- séance maison sans la montre, un Dead bug sauté et une Planche écourtée :
+31/10/2026 | maison | 19 min | Maison pompes, gainage, corde : Échauffement 3 min ; Pompes 3x10 rép ; Planche 2x30 s ; Dead bug 2x8 rép par côté ; Étirements 4 min ; sauté : Dead bug (tour 3) ; écourté : Planche (tour 2) 0:18/0:30 | FC non reçue | ressenti 6/10 | – | – | montre non connectée : pas de FC (ni dérive ni récupération)
+
 Conserve ces lignes telles quelles ; tu peux compléter la remarque avec les données de la montre
 (distance, kcal, effet d'entraînement…) en les ajoutant à la fin, après « ; ».
 ```

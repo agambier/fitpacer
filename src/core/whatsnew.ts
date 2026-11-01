@@ -8,6 +8,12 @@ export interface ReleaseNotes {
 
 export const RELEASES: ReleaseNotes[] = [
   {
+    version: "v26.11.02",
+    items: [
+      "Les « Consignes pour Claude » montrent maintenant deux exemples de compte rendu de séance (la ligne du journal), pour que Claude comprenne encore mieux ce que l’app lui renvoie.",
+    ],
+  },
+  {
     version: "v26.11.01",
     items: [
       "Nouvelle icône : un cœur qui bat, traversé par un tracé de rythme cardiaque.",
