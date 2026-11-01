@@ -31,8 +31,13 @@ export interface Sample {
   idx: number;
 }
 
+/** Beeps during the last seconds of a timed step, and before a level change: 5-4-3-2-1. */
+export const COUNTDOWN = 5;
+/** No countdown before level changes closer than this (seconds): it would beep all the time. */
+export const RAMP_COUNTDOWN_MIN_LEN = 15;
+
 export type SessionEvent =
-  | { type: "countdown"; n: number }
+  | { type: "countdown"; n: number; ramp?: boolean }
   | { type: "step"; idx: number; announce: boolean }
   | { type: "ramp"; idx: number; changes: { info: number; value: number }[] }
   | { type: "hrAlert"; hr: number }
@@ -66,6 +71,7 @@ export class Session {
   private stepStart = 0;
   private stepWall = 0;
   private lastCountdown: number | null = null;
+  private lastRampCountdown: string | null = null;
   private rampLevels: number[] = [];
   private lastSampleSec = -1;
   private lastAlert = -Infinity;
@@ -97,6 +103,21 @@ export class Session {
     let r = Math.max(0, (s.kind === "time" ? s.dur : REP_GUESS) - this.stepElapsed());
     for (let k = this.idx + 1; k < this.program.steps.length; k++) r += weight(this.program.steps[k]);
     return r;
+  }
+
+  /**
+   * Seconds left before the next level change (the earliest one if several progressions), when it is
+   * within COUNTDOWN and levels last long enough (RAMP_COUNTDOWN_MIN_LEN) for a countdown to make sense.
+   */
+  rampCountdown(): { n: number; at: number } | null {
+    const el = this.stepElapsed();
+    let best: { n: number; at: number } | null = null;
+    for (const st of this.rampStates()) {
+      if (!st || st.nextAt == null || st.len < RAMP_COUNTDOWN_MIN_LEN) continue;
+      const n = Math.ceil(st.nextAt - el);
+      if (n >= 1 && n <= COUNTDOWN && (!best || st.nextAt < best.at)) best = { n, at: st.nextAt };
+    }
+    return best;
   }
 
   /** Current level of each ramp of the current step. */
@@ -182,9 +203,18 @@ export class Session {
           this.leave("fait", true);
         } else {
           const sec = Math.ceil(rem);
-          if (sec <= 3 && this.lastCountdown !== sec) {
+          if (sec <= COUNTDOWN && this.lastCountdown !== sec) {
             this.lastCountdown = sec;
             this.events.push({ type: "countdown", n: sec });
+          }
+          // Countdown before the next level of a progression; the step countdown has priority.
+          const next = this.rampCountdown();
+          if (next && sec > COUNTDOWN) {
+            const key = next.at + ":" + next.n;
+            if (this.lastRampCountdown !== key) {
+              this.lastRampCountdown = key;
+              this.events.push({ type: "countdown", n: next.n, ramp: true });
+            }
           }
           const changes: { info: number; value: number }[] = [];
           this.rampStates().forEach((st, i) => {
@@ -227,6 +257,7 @@ export class Session {
     this.stepStart = at;
     this.stepWall = this.clock.wall();
     this.lastCountdown = null;
+    this.lastRampCountdown = null;
     this.rampLevels = this.step.ramps.map(() => 0);
     this.events.push({ type: "step", idx: i, announce });
   }

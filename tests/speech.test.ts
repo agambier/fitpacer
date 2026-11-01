@@ -12,6 +12,10 @@ describe("speech", () => {
     expect(sayInfo("9 %")).toBe("pente 9 pour cent");
     expect(sayInfo("4 → 5,5 km/h")).toBe("de 4 à 5,5 kilomètres heure");
     expect(sayInfo("-0,5 km/h / 30 s")).toBe("moins 0,5 kilomètres heure toutes les 30 secondes");
+    expect(sayInfo("3 → 5 km/h par 1 en 3:00")).toBe("de 3 à 5 kilomètres heure par paliers de 1 en 3 minutes");
+    expect(sayInfo("2 → 6 % en 2:30")).toBe("pente de 2 à 6 pour cent en 2 minutes 30");
+    expect(sayInfo("6:00 → 5:30 min/km")).toBe("de 6 minutes à 5 minutes 30 au kilomètre");
+    expect(rampAnnouncement([{ ramp: parseRamp("6:00 → 5:30 min/km")!, value: 340 }])).toBe("Passez à 5 minutes 40 au kilomètre.");
   });
   it("announces steps by kind", () => {
     const p = parseProgram("Montée | 1:00 | 5,5 km/h | 9 %\nPompes | 10 rép\nRepos | 1:30\nPlanche | 30s\nRepos | 10s\nDead bug | 8 rép par côté");

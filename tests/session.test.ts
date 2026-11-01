@@ -15,7 +15,10 @@ describe("Session", () => {
     const ramps = ev.filter((e) => e.type === "ramp");
     // warm-up 4 levels (3 changes) + cool-down 6 levels (5 changes)
     expect(ramps).toHaveLength(8);
-    expect(ev.filter((e) => e.type === "countdown")).toHaveLength(12 * 3);
+    const cd = ev.filter((e) => e.type === "countdown");
+    // 5-4-3-2-1 at the end of each step, and before each level change (levels of 75 s and 50 s)
+    expect(cd.filter((e) => !(e as { ramp?: boolean }).ramp)).toHaveLength(12 * 5);
+    expect(cd.filter((e) => (e as { ramp?: boolean }).ramp)).toHaveLength(8 * 5);
   });
 
   it("waits for Fait on repetition steps and logs skips", () => {

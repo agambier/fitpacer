@@ -97,6 +97,7 @@ export function paramLabel(v: string): string {
   if (/rpm|tr\s*\/\s*min/i.test(v)) return "Cadence";
   if (/\d\s*w\b|watts?/i.test(v)) return "Puissance";
   if (/niv/i.test(v)) return "Niveau";
+  if (/min\s*\/\s*km/i.test(v)) return "Allure";
   return "Consigne";
 }
 
@@ -139,6 +140,12 @@ export function parseProgram(text: string): Program {
     if (!p[0]) { errors.push(where + "nom d’étape manquant."); return; }
     if (!amt) { errors.push(where + "quantité illisible (« " + (p[1] || "") + " »). Exemples : 4:00, 45s, x10, max."); return; }
     const infos = [p[2] || "", p[3] || ""].filter(Boolean);
+    if (amt.kind === "time")
+      for (const info of infos) {
+        const r = parseRamp(info);
+        if (r?.over && r.over > amt.dur)
+          errors.push(where + "la progression « " + info + " » dure plus longtemps que l’étape (" + fmtClock(amt.dur) + ").");
+      }
     const note = p.slice(4).filter(Boolean).join(" ; ");
     stack[stack.length - 1].items.push({ name: p[0], infos, note, ...amt } as RawStep);
   });

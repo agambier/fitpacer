@@ -2,6 +2,7 @@
 import { fmtNum } from "./format";
 import { rampValueTxt, type Ramp } from "./ramp";
 import type { Step } from "./program";
+import { COUNTDOWN } from "./session";
 
 /** 90 -> "1 minute 30", 45 -> "45 secondes", 300 -> "5 minutes" */
 export function sayDuration(sec: number): string {
@@ -15,7 +16,11 @@ export function sayDuration(sec: number): string {
 /** Makes an info readable by the speech engine. */
 export function sayInfo(info: string): string {
   let t = info
-    .replace(/(-?\d+(?:[.,]\d+)?)\s*(?:→|->)\s*/g, "de $1 à ")
+    .replace(/\s+en\s+(\d+):(\d{2})\b/gi, (_, m, s) => " en " + sayDuration(+m * 60 + +s))
+    .replace(/\s+par\s+(?=\d)/gi, " par paliers de ")
+    .replace(/\b(\d+):(\d{2})(?=\s*(?:→|->|min\s*\/\s*km|\/\s*km|$|\s))/g, (_, m, s) => sayDuration(+m * 60 + +s))
+    .replace(/min\s*\/\s*km/gi, "au kilomètre")
+    .replace(/(-?\d+(?:[.,]\d+)?(?: minutes?(?: \d+)?)?)\s*(?:→|->)\s*/g, "de $1 à ")
     .replace(/km\s*\/\s*h/gi, "kilomètres heure")
     .replace(/(\d)\s*%/g, "$1 pour cent")
     .replace(/\bkg\b/gi, "kilos")
@@ -57,16 +62,16 @@ export function stepAnnouncement(s: Step, next: Step | undefined): string {
     if (s.kind === "time" && s.dur < 15) {
       const short = "Repos." + (next ? " Ensuite : " + next.name + "." : "");
       const withInstr = "Repos." + instr + (next ? " Ensuite : " + next.name + "." : "");
-      return instr && fits(withInstr, s.dur - 4) ? withInstr : short;
+      return instr && fits(withInstr, s.dur - COUNTDOWN - 1) ? withInstr : short;
     }
     const full = "Repos, " + amountPhrase(s) + "." + instr + nextTxt;
     // The next exercise matters most: drop the rest instructions rather than overlap the 3-2-1 beeps.
-    return s.kind === "reps" || fits(full, s.dur - 4) ? full : "Repos, " + amountPhrase(s) + "." + nextTxt;
+    return s.kind === "reps" || fits(full, s.dur - COUNTDOWN - 1) ? full : "Repos, " + amountPhrase(s) + "." + nextTxt;
   }
   const infos = s.infos.map(sayInfo).join(", ");
   const base = s.name + ". " + amountPhrase(s) + "." + (infos ? " " + infos + "." : "");
   if (s.kind === "reps") return base + " " + (s.note ? s.note + ". " : "") + REPS_DONE;
-  const budget = s.dur - 4;
+  const budget = s.dur - COUNTDOWN - 1; // finish before the 5-4-3-2-1 beeps
   const full = base + (s.note ? " " + s.note + "." : "");
   if (fits(full, budget)) return full;
   if (fits(base, budget)) return base;

@@ -10,7 +10,7 @@ import { registerSW } from "virtual:pwa-register";
 import { fmtClock, fmtLong } from "./core/format";
 import { amountTxt, paramLabel, parseProgram, weight, type Program } from "./core/program";
 import { rampValueTxt } from "./core/ramp";
-import { Session, type Sample, type SessionEvent } from "./core/session";
+import { RAMP_COUNTDOWN_MIN_LEN, Session, type Sample, type SessionEvent } from "./core/session";
 import { exportFileName, exportMarkdown, hrPerStep, hrStats, journalLine, RPE_TXT, activeDuration, type Feedback } from "./core/journal";
 import { finishAnnouncement, hrAlertAnnouncement, rampAnnouncement, resumeAnnouncement, stepAnnouncement } from "./core/speech";
 import { APP_VERSION, IS_DEV_BUILD } from "./version";
@@ -441,8 +441,16 @@ function renderLive() {
     const box = $("params").querySelector<HTMLElement>('[data-k="' + k + '"]');
     if (!box) return;
     box.querySelector(".v")!.textContent = rampValueTxt(ramp, st.value);
-    box.querySelector(".r")!.textContent =
-      "→ " + rampValueTxt(ramp, ramp.to) + (st.nextAt != null ? " · palier dans " + fmtClock(Math.ceil(st.nextAt - el0)) : " · dernier palier");
+    const r = box.querySelector<HTMLElement>(".r")!;
+    if (st.nextAt != null) {
+      const left = st.nextAt - el0;
+      r.replaceChildren("→ " + rampValueTxt(ramp, ramp.to) + " · palier dans ", el("span", "rc num", fmtClock(Math.ceil(left))));
+      // Same as the main clock: amber during the last 10 s (when levels are long enough to count down).
+      r.classList.toggle("last", left <= 10 && st.len >= RAMP_COUNTDOWN_MIN_LEN);
+    } else {
+      r.textContent = "→ " + rampValueTxt(ramp, ramp.to) + " · dernier palier";
+      r.classList.remove("last");
+    }
   });
   const slope = currentSlope();
   $("ramp").hidden = slope === null;

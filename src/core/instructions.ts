@@ -10,7 +10,7 @@ x5 {
   Marche | 4:00 | 5,5 km/h | 7 %
   Montée | 1:00 | 5,5 km/h | 9 %
 }
-Retour au calme | 5:00 | 5,5 → 3 km/h | 0 %`;
+Retour au calme | 5:00 | 5,5 → 3 km/h par 1 en 3:00 | 0 %`;
 
 export const EXAMPLE_HOME = `titre: Maison pompes, gainage, corde
 type: maison
@@ -74,9 +74,13 @@ Nom | quantité | info 1 | info 2 | note
   touche « Fait » : n'utilise les répétitions que pour un exercice qui se compte (pompes, squats…).
 - Infos : vitesse (5,5 km/h), pente (7 %), charge (6 kg), niveau (niv 8), puissance (120 W),
   cadence (85 rpm) ou une consigne courte (rythme facile).
-- Progression : écris « départ → arrivée unité » (ex. 4 → 5,5 km/h, 5,5 → 3 km/h, 2 → 6 %).
-  L'app la découpe en paliers réguliers sur la durée de l'étape (0,5 km/h, 0,5 %, 1 niveau,
-  10 W, 5 rpm) et m'annonce chaque palier. N'écris pas de consigne du type « −0,5 km/h / 30 s ».
+- Progression : écris « départ → arrivée unité » (ex. 4 → 5,5 km/h, 5,5 → 3 km/h, 2 → 6 %,
+  6:00 → 5:30 min/km). L'app la découpe en paliers réguliers sur la durée de l'étape (0,5 km/h, 0,5 %,
+  1 niveau, 10 W, 5 rpm, 0:10 min/km) et m'annonce chaque palier. Deux options, facultatives :
+  « par 1 » fixe l'écart entre deux paliers (3 → 5 km/h par 1 : 3, 4, 5), obligatoire pour une autre
+  unité (10 → 20 kg par 2,5) ; « en 3:00 » fait la progression sur 3 min seulement, puis garde la
+  valeur d'arrivée jusqu'à la fin de l'étape (Chauffe | 5:00 | 3 → 5 km/h en 3:00).
+  N'écris pas de consigne du type « −0,5 km/h / 30 s ».
 - Repos : une étape nommée « Repos » avec une durée (Repos | 1:30). L'app annonce l'exercice suivant.
 - Répétition d'un bloc : « x3 { » (ou « 3x { ») sur une ligne, les étapes, puis « } » sur une ligne.
 - Note : courte, utile pendant l'effort (technique, respiration). Elle est lue à voix haute.

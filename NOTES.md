@@ -54,12 +54,12 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
       démarre (avec ou sans FC selon le résultat) ; Non → la séance démarre tout de suite sans montre.
 - [x] **FC Bluetooth** : connexion, affichage couleur (calme / proche du plafond / au-dessus / périmée),
       reconnexion automatique.
-- [x] **Retours** : bips (3-2-1, changement d'étape, fin, alerte FC), vibrations, écran maintenu allumé.
+- [x] **Retours** : bips (5-4-3-2-1, changement d'étape, fin, alerte FC), vibrations, écran maintenu allumé.
 - [x] **Annonce vocale** de chaque nouvelle étape (`speechSynthesis`, voix française), activable /
       désactivable (bouton dans l'en-tête, choix mémorisé). L'annonce dépend du type d'étape :
   - **Étape chronométrée** (`4:00`, `45s`…) : nom + durée + infos.
     Ex. « Montée, 1 minute, 5,5 kilomètres heure, pente 9 pour cent. »
-    Le chrono passe tout seul à l'étape suivante, avec les bips 3-2-1.
+    Le chrono passe tout seul à l'étape suivante, avec les bips 5-4-3-2-1 (3-2-1 avant v26.11.01).
   - **Étape en répétitions** (`x10`, `max`…) : nom + nombre + rappel du bouton.
     Ex. « Pompes, 10 répétitions. Touchez Fait quand c'est terminé. »
     Pas de compte à rebours : l'étape attend que je touche **« Fait ✓ »** (gros bouton vert) avant de
@@ -77,7 +77,7 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
     compteur dans le bouton, et l'état « en pause » saute aux yeux).
   - Pendant une étape de repos, le bouton **Pause est désactivé** : le repos est déjà une pause, on ne le
     prolonge pas (décision du 01/11, v26.11.01). « Suiv. » permet toujours de l'écourter.
-  - Une annonce ne doit jamais chevaucher les bips 3-2-1 : si elle est trop longue pour l'étape,
+  - Une annonce ne doit jamais chevaucher les bips 5-4-3-2-1 : si elle est trop longue pour l'étape,
     on raccourcit (nom seul) et on n'annonce pas la note.
   - Annonce de fin de séance ; alerte FC parlée (« Fréquence cardiaque au-dessus de 150 ») en plus du bip.
   - Les bips restent : la voix vient après le bip de changement d'étape, sans le remplacer.
@@ -86,13 +86,27 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
 - [x] **Progressions guidées** (étapes chronométrées uniquement) : une info de la forme
       `A → B unité` (ou `A -> B unité`) est une progression linéaire sur la durée de l'étape.
   - Unités gérées et pas des paliers : `km/h` → 0,5 ; `%` → 0,5 ; `niv` / niveau → 1 ; `W` → 10 ;
-    `rpm` → 5. Autre unité : affichée telle quelle, sans guidage.
+    `rpm` → 5 ; allure en `m:ss` (`6:00 → 5:30 min/km`) → 0:10. Autre unité sans `par` : affichée
+    telle quelle, sans guidage.
   - Nombre de paliers = |B − A| / pas + 1, chacun de même durée. Ex. `4 → 5,5 km/h` sur 5:00 →
     4 / 4,5 / 5 / 5,5, un palier toutes les 1:15 ; `5,5 → 3 km/h` sur 5:00 → 6 paliers de 0:50.
+  - Option **`par S`** (v26.11.01) : écart entre deux paliers, toute unité (`3 → 5 km/h par 1` → 3 / 4 / 5 ;
+    `10 → 20 kg par 2,5` ; `6:00 → 5:00 min/km par 0:15`). Unité répétée tolérée (`par 1 km/h`). Si l'écart
+    ne tombe pas juste, le dernier palier est la valeur d'arrivée (`3 → 5 par 0,75` → 3 / 3,75 / 4,5 / 5).
+  - Option **`en D`** (v26.11.01) : durée de la progression (`en 3:00`, `en 3 min`, `en 90 s`). La valeur
+    d'arrivée est atteinte à D puis gardée jusqu'à la fin de l'étape ; les paliers intermédiaires se
+    partagent D. Ex. `Chauffe | 5:00 | 3 → 5 km/h par 1 en 3:00` → 3 (1:30), 4 (1:30), 5 (2:00).
+    Sans `en` : comportement d'origine (chaque palier, le dernier compris, a la même durée).
+    `en` plus long que l'étape → erreur de lecture.
+  - Les deux options se combinent, dans n'importe quel ordre, à la fin de l'info.
   - Écran : la valeur **à régler maintenant** en gros (« 4,5 km/h »), et en petit la cible
     (« → 5,5 ») + « prochain palier dans 0:12 ».
   - À chaque palier : double bip court + vibration + voix « Passez à 5 kilomètres heure »
-    (ou « Pente 8 pour cent »). Pas de bips 3-2-1 avant un palier (seulement avant un changement d'étape).
+    (ou « Pente 8 pour cent »).
+  - Compte à rebours avant un palier (v26.11.01), comme le chrono principal : « palier dans 0:12 » passe en
+    orange à 10 s, bips 5-4-3-2-1 à 5 s. Le chrono de l'étape est prioritaire : pas de bips de palier
+    pendant les 5 dernières secondes de l'étape. Pas de compte à rebours (ni orange ni bips) si les
+    paliers durent moins de 15 s (ça bipperait sans arrêt).
   - Deux progressions dans la même étape (vitesse et pente) : chacune a ses paliers, annonces
     regroupées si elles tombent à la même seconde.
   - Étape en répétitions : pas de guidage, texte affiché tel quel.
@@ -184,7 +198,8 @@ Retour au calme | 5:00 | -0,5 km/h / 30 s | 0 % | finir à 3 km/h environ
   L'étape attend « Fait ✓ » (durée estimée 40 s pour les calculs).
 - **Infos** : texte libre, libellé déduit : `km/h` → Vitesse, `%` → Pente (+ visuel de rampe),
   `kg` → Charge, `rpm` / `tr/min` → Cadence, `W` → Puissance, `niv…` → Niveau, sinon Consigne.
-- **Progression** : `A → B unité` dans une info = l'app guide palier par palier (voir MVP).
+- **Progression** : `A → B unité [par S] [en D]` dans une info = l'app guide palier par palier (voir MVP :
+  `par` = écart entre paliers, `en` = durée de la progression, tous deux facultatifs).
   C'est la seule forme à utiliser pour une montée ou une descente de vitesse / pente ; une consigne
   du type `−0,5 km/h / 30 s` reste acceptée mais n'est qu'affichée.
 - **Répétition de bloc** : `x3 {` (ou `3x {`) … `}` ; imbrication possible.

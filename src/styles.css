@@ -134,6 +134,9 @@ input[type=number], input[type=text] { width: 96px; background: var(--surface); 
 .param .k { color: var(--muted); font-size: 14px; }
 .param .v { font-size: 36px; font-weight: 700; line-height: 1; }
 .param .r { color: var(--muted); font-size: 16px; margin-top: 2px; }
+.param .r .rc { font-weight: 700; }
+.param .r.last { color: var(--amber); font-weight: 600; }
+.param .r.last .rc { font-size: 20px; }
 .param.slope .v { color: var(--ramp); }
 .param.ramping .v { color: var(--amber); }
 .param.bump .v { animation: bump .8s ease-out; }
