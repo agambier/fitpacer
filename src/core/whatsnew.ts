@@ -19,7 +19,7 @@ export const RELEASES: ReleaseNotes[] = [
       "Pendant les repos, la voix lit aussi les consignes du programme (par exemple « allongé sur le dos »).",
       "Pendant un repos, le bouton Pause est désactivé : le repos est déjà une pause.",
       "En pause, un grand compteur indique depuis combien de temps vous êtes arrêté.",
-      "Les pauses de plus de 10 secondes que vous prenez avec le bouton Pause sont notées dans le rapport de fin de séance (où et combien de temps), pour que Claude en tienne compte.",
+      "Les pauses de plus de 10 secondes que vous prenez avec le bouton Pause sont notées dans le rapport de fin de séance (où et combien de temps), pour que Claude en tienne compte. Si la montre est connectée, la fréquence cardiaque au début et à la fin de la pause est notée aussi.",
       "Le bouton Partager propose bien vos applications (WhatsApp, Gmail…) pour envoyer le rapport de séance.",
       "Une fenêtre de bienvenue pour découvrir l’app, et cette fenêtre « Quoi de neuf ? » à chaque nouvelle version.",
     ],

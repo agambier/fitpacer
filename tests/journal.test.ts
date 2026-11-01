@@ -146,6 +146,22 @@ describe("pauses added by the user", () => {
     expect(md).toContain("| *pause courte (moins de 10 s, non comptée)* |");
     expect(md).toContain(": 1, total 10 s");
   });
+  it("notes the HR at the start and at the end of each counted pause", () => {
+    const { sess, clock } = start(parseProgram("Marche | 3:00\nCorde | 1:00"));
+    const hr = () => (clock.ms < 60_000 ? 148 : clock.ms < 120_000 ? 120 : 140); // falls during the pause
+    advance(sess, clock, 59.8, hr);
+    sess.pause();
+    advance(sess, clock, 60, hr);
+    sess.resume();
+    advance(sess, clock, 130, hr);
+    sess.pause();
+    advance(sess, clock, 20, () => null); // watch lost during the pause
+    sess.resume();
+    advance(sess, clock, 60);
+    expect(pausesSegment(sess)).toBe("pauses ajoutées par l'utilisateur : 2 (Marche 1 min (FC 148→120), Corde 20 s (FC 140→?)), total 1 min 20");
+    const md = exportMarkdown(sess, fb, { source: "", cap: 150, device: null });
+    expect(md).toContain("| *pause ajoutée par l'utilisateur* | | FC 148→120 |");
+  });
   it("adds nothing without pause", () => {
     const { sess, clock } = start(parseProgram("Marche | 1:00"));
     advance(sess, clock, 70);

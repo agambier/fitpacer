@@ -19,6 +19,9 @@ export interface StepLog {
 export interface PauseLog {
   wall0: number;
   wall1: number;
+  /** Heart rate when the pause started / ended (null if not received). */
+  hr0: number | null;
+  hr1: number | null;
   /** Step index when the pause started. */
   idx: number;
 }
@@ -72,6 +75,7 @@ export class Session {
   private stepWall = 0;
   private lastCountdown: number | null = null;
   private lastRampCountdown: string | null = null;
+  private liveHr: number | null = null;
   private rampLevels: number[] = [];
   private lastSampleSec = -1;
   private lastAlert = -Infinity;
@@ -130,14 +134,16 @@ export class Session {
     if (this.state !== "running") return;
     this.state = "paused";
     this.pausedAt = this.clock.mono();
-    this.pauses.push({ wall0: this.clock.wall(), wall1: 0, idx: this.idx });
+    this.pauses.push({ wall0: this.clock.wall(), wall1: 0, idx: this.idx, hr0: this.liveHr, hr1: null });
   }
 
   resume() {
     if (this.state !== "paused") return;
     this.pausedTotal += this.clock.mono() - this.pausedAt;
     this.state = "running";
-    this.pauses[this.pauses.length - 1].wall1 = this.clock.wall();
+    const pz = this.pauses[this.pauses.length - 1];
+    pz.wall1 = this.clock.wall();
+    pz.hr1 = this.liveHr;
   }
 
   /** "Fait ✓" on a repetition step. */
@@ -181,6 +187,7 @@ export class Session {
 
   /** Feeds the latest heart rate (or null when unavailable). */
   hr(bpm: number | null, cap: number) {
+    this.liveHr = bpm; // kept during pauses too: HR at the start / end of a pause
     if (this.state !== "running" || bpm == null) return;
     const t = this.elapsed();
     const sec = Math.floor(t);

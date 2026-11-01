@@ -148,9 +148,16 @@ export const MIN_USER_PAUSE = 10;
 
 const pauseSec = (sess: Session, pz: { wall0: number; wall1: number }) => ((pz.wall1 || sess.endWall) - pz.wall0) / 1000;
 
-/** Pauses added by the user with the Pause button (at least MIN_USER_PAUSE s): duration (s) and step. */
-export function userPauses(sess: Session): { sec: number; idx: number }[] {
-  return sess.pauses.map((pz) => ({ sec: pauseSec(sess, pz), idx: pz.idx })).filter((p) => p.sec >= MIN_USER_PAUSE);
+/** Pauses added by the user with the Pause button (at least MIN_USER_PAUSE s): duration (s), step, HR at start / end. */
+export function userPauses(sess: Session): { sec: number; idx: number; hr0: number | null; hr1: number | null }[] {
+  return sess.pauses
+    .map((pz) => ({ sec: pauseSec(sess, pz), idx: pz.idx, hr0: pz.hr0, hr1: pz.hr1 }))
+    .filter((p) => p.sec >= MIN_USER_PAUSE);
+}
+
+/** "FC 142→118", "FC 142→?" ; "" when no HR at all. */
+export function pauseHrTxt(p: { hr0: number | null; hr1: number | null }): string {
+  return p.hr0 == null && p.hr1 == null ? "" : "FC " + (p.hr0 ?? "?") + "→" + (p.hr1 ?? "?");
 }
 
 /**
@@ -160,7 +167,7 @@ export function userPauses(sess: Session): { sec: number; idx: number }[] {
 export function pausesSegment(sess: Session): string {
   const pz = userPauses(sess);
   if (!pz.length) return "";
-  const each = pz.map((p) => sess.program.steps[p.idx].label + " " + fmtPause(p.sec));
+  const each = pz.map((p) => sess.program.steps[p.idx].label + " " + fmtPause(p.sec) + (pauseHrTxt(p) ? " (" + pauseHrTxt(p) + ")" : ""));
   if (pz.length === 1) return "pause ajoutée par l'utilisateur : " + each[0];
   const total = pz.reduce((a, p) => a + p.sec, 0);
   return "pauses ajoutées par l'utilisateur : " + pz.length + " (" + each.join(", ") + "), total " + fmtPause(total);
@@ -311,10 +318,11 @@ export function exportMarkdown(sess: Session, fb: Feedback, meta: ExportMeta): s
   });
   sess.pauses.forEach((pz) => {
     const w1 = pz.wall1 || sess.endWall;
-    const what = pauseSec(sess, pz) >= MIN_USER_PAUSE ? "pause ajoutée par l'utilisateur" : "pause courte (moins de " + MIN_USER_PAUSE + " s, non comptée)";
+    const counted = pauseSec(sess, pz) >= MIN_USER_PAUSE;
+    const what = counted ? "pause ajoutée par l'utilisateur" : "pause courte (moins de " + MIN_USER_PAUSE + " s, non comptée)";
     rows.push({
       wall: pz.wall0,
-      line: "| | | *" + what + "* | | | " + fmtTime(new Date(pz.wall0)) + " | " + fmtTime(new Date(w1)) + " | " + fmtClock((w1 - pz.wall0) / 1000) + " | pause | | |",
+      line: "| | | *" + what + "* | | " + (counted ? pauseHrTxt(pz) : "") + " | " + fmtTime(new Date(pz.wall0)) + " | " + fmtTime(new Date(w1)) + " | " + fmtClock((w1 - pz.wall0) / 1000) + " | pause | | |",
     });
   });
   rows.sort((a, b) => a.wall - b.wall).forEach((r) => L.push(r.line));

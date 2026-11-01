@@ -34,8 +34,10 @@ Lignes venant de l'app FitPacer :
 - contenu : « titre : étapes réalisées » (passages comptés avec la lettre x : « Pompes 3x10 rép »), suivi de « (arrêtée avant la fin) » si la séance a été interrompue,
   puis éventuellement les écarts au programme : « sauté : … », « écourté : … (fait/prévu) »,
   « non fait (arrêt) : … » (étapes repérées par leur tour, ex. « Corde (tour 3, 2e) »),
-  « pause ajoutée par l'utilisateur : Marche (tour 2) 1 min 20 » ou « pauses ajoutées par l'utilisateur :
-  2 (…), total 3 min 10 » : pauses de 10 s ou plus que j'ai prises en plus du programme, avec l'étape en cours
+  « pause ajoutée par l'utilisateur : Marche (tour 2) 1 min 20 (FC 142→118) » ou « pauses ajoutées par
+  l'utilisateur : 2 (…), total 3 min 10 » : pauses de 10 s ou plus que j'ai prises en plus du programme,
+  avec l'étape en cours et, si la montre est connectée, la FC au début et à la fin de la pause (« ? » si
+  non reçue) : indice de ma récupération pendant ces pauses non prévues
 - FC : min/moy/max en bpm, ou « FC non reçue »
 - poids : « 82,4 kg » ou « – » ; tour de taille : « 94 cm » ou « – »
 - remarque : mon commentaire libre, puis éventuellement ces segments calculés par l'app, dans cet ordre :
