@@ -180,12 +180,20 @@ const whatsNew = $<HTMLDialogElement>("whatsNewDialog");
 function showWhatsNew(releases: typeof RELEASES) {
   const box = $("whatsNewList");
   box.replaceChildren();
-  for (const r of releases) {
-    box.append(el("p", "relVer", "Version " + r.version));
+  // A single window: one version is shown as is; several versions become collapsible sections,
+  // the newest one open.
+  releases.forEach((r, i) => {
     const ul = el("ul", "");
     for (const it of r.items) ul.append(el("li", "", it.replace(/« /g, "«\u00a0").replace(/ »/g, "\u00a0»")));
-    box.append(ul);
-  }
+    if (releases.length === 1) {
+      box.append(el("p", "relVer", "Version " + r.version), ul);
+      return;
+    }
+    const d = el("details", "");
+    d.open = i === 0;
+    d.append(el("summary", "", "Version " + r.version), ul);
+    box.append(d);
+  });
   whatsNew.showModal();
   whatsNew.scrollTop = 0;
 }

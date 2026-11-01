@@ -137,7 +137,9 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
 - [x] **Quoi de neuf ?** (v26.11.01) : après une mise à jour, une fenêtre résume les nouveautés en langage
       simple (`src/core/whatsnew.ts`, une entrée par version). Une seule fois par version : dernière version vue
       dans `fitpacer.version` (`fitpacer.version.dev` pour l'app de développement, pour que passer de l'une à
-      l'autre ne la réaffiche pas). Premier lancement : bienvenue seulement. Revenir à une version plus ancienne :
+      l'autre ne la réaffiche pas). Premier lancement : bienvenue seulement. Une seule fenêtre même si plusieurs
+      versions ont été sautées : une version = liste simple ; plusieurs = une section déroulante par version
+      (la plus récente ouverte). Revenir à une version plus ancienne :
       rien. Aussi accessible dans le menu ☰ → « Quoi de neuf ? » (3 dernières versions).
 - [x] **PWA** : manifest, icônes, installable, hors ligne, polices locales.
 - [x] **Icône** (v26.11.01) : cœur rouge traversé par un tracé de rythme cardiaque, ondes de battement
