@@ -43,12 +43,14 @@ function show(id: "edit" | "run" | "done") {
   window.scrollTo(0, 0);
 }
 
-/** Temporarily changes a button label ("Copié"). */
-function flashLabel(b: HTMLElement, txt: string) {
-  const orig = b.dataset.label || b.textContent || "";
-  b.dataset.label = orig;
-  b.textContent = txt;
-  setTimeout(() => (b.textContent = orig), 2500);
+const CHECK_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+/** Feedback on an icon button: a check mark when it worked, otherwise a short text, then the icon again. */
+function flashIcon(b: HTMLElement, ok: boolean, failTxt: string) {
+  const orig = b.dataset.icon || b.innerHTML;
+  b.dataset.icon = orig;
+  if (ok) { b.innerHTML = CHECK_ICON; b.classList.add("done"); }
+  else b.textContent = failTxt;
+  setTimeout(() => { b.innerHTML = orig; b.classList.remove("done"); }, 2000);
 }
 
 /* ---------- Editor ---------- */
@@ -193,7 +195,7 @@ $("fmtVersion").textContent = "Format FitPacer " + FORMAT_VERSION + ".";
 const instrName = "fitpacer-consignes-claude.md";
 $("instrCopy").addEventListener("click", async (e) => {
   const ok = await copyText(claudeInstructions());
-  flashLabel(e.currentTarget as HTMLElement, ok ? "Copié ✓" : "Copie impossible");
+  flashIcon(e.currentTarget as HTMLElement, ok, "Copie impossible");
 });
 $("instrShare").addEventListener("click", async () => {
   const r = await shareText(instrName, claudeInstructions(), "Consignes FitPacer pour Claude");
@@ -596,7 +598,7 @@ $("waist").addEventListener("input", (e) => {
 const exportText = () => exportMarkdown(finished!, fb, { source: runSource, appVersion: APP_VERSION, cap: capValue(), device: monitor.name });
 $("copyBtn").addEventListener("click", async (e) => {
   const ok = await copyText($<HTMLTextAreaElement>("journal").value, $<HTMLTextAreaElement>("journal"));
-  flashLabel(e.currentTarget as HTMLElement, ok ? "Ligne copiée ✓" : "Sélectionnée, copiez-la");
+  flashIcon(e.currentTarget as HTMLElement, ok, "Sélectionnée, copiez-la");
 });
 $("shareBtn").addEventListener("click", async () => {
   if (!finished) return;

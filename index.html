@@ -46,9 +46,9 @@
     <div class="srcHead">
       <label for="src">Étapes de la séance</label>
       <div class="row">
-        <button class="ghost" id="loadBtn" type="button">Charger</button>
-        <button class="ghost strong" id="pasteBtn" type="button">Coller</button>
-        <button class="ghost" id="clearBtn" type="button">Effacer</button>
+        <button class="ghost iconBtn" id="loadBtn" type="button" aria-label="Charger un fichier" title="Charger un fichier"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7.5V18a1.5 1.5 0 0 0 1.5 1.5h15A1.5 1.5 0 0 0 21 18V9a1.5 1.5 0 0 0-1.5-1.5h-8L9.5 5h-5A1.5 1.5 0 0 0 3 6.5z"/></svg></button>
+        <button class="ghost iconBtn strong" id="pasteBtn" type="button" aria-label="Coller" title="Coller"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="2.5" width="8" height="4" rx="1"/><path d="M16 4.5h2a2 2 0 0 1 2 2V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6.5a2 2 0 0 1 2-2h2"/></svg></button>
+        <button class="ghost iconBtn" id="clearBtn" type="button" aria-label="Effacer" title="Effacer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6h17M9 6V4h6v2M18.5 6l-1 14.5h-11L5.5 6M10 10.5v6M14 10.5v6"/></svg></button>
       </div>
     </div>
     <input type="file" id="fileIn" hidden>
@@ -106,14 +106,16 @@
       <div><label for="waist">Tour de taille (facultatif)</label>
         <div class="row"><input type="text" id="waist" inputmode="decimal" autocomplete="off" placeholder="94"> <span class="help inline">cm</span></div></div>
     </div>
-    <label for="journal">Ligne pour le journal</label>
-    <textarea id="journal" readonly></textarea>
-    <div class="row actions">
-      <button class="ghost strong" id="copyBtn" type="button">Copier la ligne</button>
-      <button class="ghost" id="shareBtn" type="button">Partager le fichier</button>
-      <button class="ghost" id="downloadBtn" type="button">Télécharger</button>
+    <div class="srcHead">
+      <label for="journal">Ligne pour le journal</label>
+      <div class="row">
+        <button class="ghost iconBtn strong" id="copyBtn" type="button" aria-label="Copier la ligne" title="Copier la ligne"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4.5A1.5 1.5 0 0 1 3 13.5v-9A1.5 1.5 0 0 1 4.5 3h9A1.5 1.5 0 0 1 15 4.5V5"/></svg></button>
+        <button class="ghost iconBtn" id="shareBtn" type="button" aria-label="Partager le fichier" title="Partager le fichier"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.75"/><circle cx="6" cy="12" r="2.75"/><circle cx="18" cy="19" r="2.75"/><path d="M8.4 13.4l7.2 4.2M15.6 6.4l-7.2 4.2"/></svg></button>
+        <button class="ghost iconBtn" id="downloadBtn" type="button" aria-label="Télécharger le fichier" title="Télécharger le fichier"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5v11.5M7 10l5 5 5-5M4.5 20.5h15"/></svg></button>
+      </div>
     </div>
-    <p class="help">Le fichier contient la ligne de journal, le détail horodaté des étapes et la FC : donnez-le à Claude avec le fichier .fit de la montre.</p>
+    <textarea id="journal" readonly></textarea>
+    <p class="help">Copiez la ligne, ou partagez / téléchargez le fichier. Le fichier contient la ligne de journal, le détail horodaté des étapes et la FC : donnez-le à Claude avec le fichier .fit de la montre.</p>
     <button class="primary" id="againBtn" type="button">Revenir au programme</button>
   </section>
 </main>
@@ -121,7 +123,7 @@
   <h2 id="helpT">Aide</h2>
   <details open>
     <summary>Format de séance</summary>
-    <p>Saisissez la séance, <b>Collez</b>-la depuis le presse-papiers ou <b>Chargez</b> un fichier texte (.txt, .md) du téléphone : téléchargement, cloud, pièce jointe d’un e-mail…</p>
+    <p>Saisissez la séance, collez-la depuis le presse-papiers (icône presse-papiers) ou chargez un fichier texte .txt ou .md du téléphone (icône dossier) : téléchargement, cloud, pièce jointe d’un e-mail…</p>
     <p>Une étape par ligne : <code>Nom | quantité | info 1 | info 2 | note</code></p>
     <ul>
       <li><b>Chronométrée</b> : <code>4:00</code>, <code>45s</code> ou <code>5</code> (minutes). L’étape suivante démarre seule.</li>
@@ -157,9 +159,9 @@
   <h2 id="claudeT">Consignes pour Claude</h2>
   <p>À coller dans les instructions de votre projet Claude, pour qu’il propose ses séances au format FitPacer et tienne le journal au bon format. <span id="fmtVersion"></span></p>
   <div class="row actions">
-    <button class="ghost strong" id="instrCopy" type="button">Copier</button>
-    <button class="ghost" id="instrShare" type="button">Partager</button>
-    <button class="ghost" id="instrDownload" type="button">Télécharger</button>
+    <button class="ghost iconBtn strong" id="instrCopy" type="button" aria-label="Copier" title="Copier"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4.5A1.5 1.5 0 0 1 3 13.5v-9A1.5 1.5 0 0 1 4.5 3h9A1.5 1.5 0 0 1 15 4.5V5"/></svg></button>
+    <button class="ghost iconBtn" id="instrShare" type="button" aria-label="Partager" title="Partager"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.75"/><circle cx="6" cy="12" r="2.75"/><circle cx="18" cy="19" r="2.75"/><path d="M8.4 13.4l7.2 4.2M15.6 6.4l-7.2 4.2"/></svg></button>
+    <button class="ghost iconBtn" id="instrDownload" type="button" aria-label="Télécharger" title="Télécharger"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5v11.5M7 10l5 5 5-5M4.5 20.5h15"/></svg></button>
   </div>
   <button class="primary" type="button" data-close>Fermer</button>
 </dialog>

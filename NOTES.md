@@ -118,7 +118,12 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
 - [x] **Partage de fichiers** (commun au bilan et aux consignes) : Copier / Partager (Web Share API
       niveau 2 avec fichier) / Télécharger (Blob + lien `download`) ; boutons masqués si non supportés.
 - [x] **Charger un fichier** (v26.11.01) : bouton « Charger » à côté de Coller / Effacer (trois boutons
-      visibles plutôt qu'un menu ⋯, décision du 01/11). Fichier texte (.txt, .md…), 200 ko max, sans
+      visibles plutôt qu'un menu ⋯, décision du 01/11).
+- [x] **Boutons icônes** (v26.11.01, décision du 01/11) : Charger (dossier), Coller (presse-papiers),
+      Effacer (corbeille) à droite du libellé « Étapes de la séance » ; au bilan, Copier (deux feuilles),
+      Partager (trois points reliés), Télécharger (flèche vers le bas) à droite de « Ligne pour le journal » ;
+      mêmes icônes dans « Consignes pour Claude ». Icônes seules (SVG en ligne, `aria-label` + `title`),
+      coche verte 2 s après une copie réussie. Fichier texte (.txt, .md…), 200 ko max, sans
       filtre de type (les sélecteurs Android grisent les .md et certaines pièces jointes). Rien n'est stocké
       en plus : le texte chargé devient simplement le « dernier texte collé ».
 - [x] **PWA** : manifest, icônes, installable, hors ligne, polices locales.
