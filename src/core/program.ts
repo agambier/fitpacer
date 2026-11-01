@@ -121,7 +121,7 @@ export function parseProgram(text: string): Program {
     let m: RegExpMatchArray | null;
     if ((m = line.match(/^titre\s*:\s*(.+)$/i))) { title = m[1].trim(); return; }
     if ((m = line.match(/^type\s*:\s*(.+)$/i))) { type = m[1].trim(); return; }
-    if ((m = line.match(/^(?:[x×]\s*(\d+)|(\d+)\s*[x×])\s*\{$/i))) {
+    if ((m = line.match(/^(?:x\s*(\d+)|(\d+)\s*x)\s*\{$/i))) {
       const blk: Block = { repeat: +(m[1] || m[2]), items: [] };
       if (blk.repeat < 1) { errors.push(where + "nombre de répétitions invalide."); }
       stack[stack.length - 1].items.push(blk);

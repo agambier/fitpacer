@@ -149,6 +149,7 @@ Retour au calme | 5:00 | -0,5 km/h / 30 s | 0 % | finir à 3 km/h environ
   C'est la seule forme à utiliser pour une montée ou une descente de vitesse / pente ; une consigne
   du type `−0,5 km/h / 30 s` reste acceptée mais n'est qu'affichée.
 - **Répétition de bloc** : `x3 {` (ou `3x {`) … `}` ; imbrication possible.
+- Aucun caractère spécial pour les répétitions : la lettre `x` uniquement (pas de `×`, décision du 01/11).
 - Lignes vides et lignes commençant par `#` ignorées.
 - Les étapes nommées `Repos…` / `Récup…` sont exclues du contenu de la ligne de journal.
 
@@ -164,7 +165,7 @@ Exemples réels de séances : dossier `examples/` (utilisés comme fixtures de t
 ### Ligne de journal produite
 
 ```
-31/10/2026 | salle | 35 min | Tapis incliné 35 min : Chauffe 5 min (4 → 5,5 km/h, 0 %) ; Marche 5×4 min (5,5 km/h, 7 %) ; … | 72/118/134 | ressenti 6/10 | – | – | salle chaude
+31/10/2026 | salle | 35 min | Tapis incliné 35 min : Chauffe 5 min (4 → 5,5 km/h, 0 %) ; Marche 5x4 min (5,5 km/h, 7 %) ; … | 72/118/134 | ressenti 6/10 | – | – | salle chaude
 ```
 
 Format du journal tenu par Claude (en-tête du journal) :
@@ -184,10 +185,12 @@ Observations sur le journal réel (Claude enrichit la ligne a posteriori) :
   type d'entrée parmi d'autres.
 
 Contenu réalisé, regroupé (repos exclus). Pour l'exemple maison :
-`Échauffement 3 min ; Corde douce 1 min (rythme facile) ; Pompes 3×10 rép ; Planche 3×30 s ;
-Planche latérale gauche 3×20 s ; Planche latérale droite 3×20 s ; Dead bug 3×8 rép par côté ;
-Corde 6×30 s ; Étirements 4 min`
-- Étapes en répétitions : l'objectif est recopié (`3×8 rép par côté`). Si je n'ai pas fait toutes
+`Échauffement 3 min ; Corde douce 1 min (rythme facile) ; Pompes 3x10 rép ; Planche 3x30 s ;
+Planche latérale gauche 3x20 s ; Planche latérale droite 3x20 s ; Dead bug 3x8 rép par côté ;
+Corde 6x30 s ; Étirements 4 min`
+- Pas de caractère spécial `×` : nombre de passages écrit avec la lettre `x` (`3x10 rép`, `Corde x2`)
+  (décision du 01/11 ; avant v26.11.01, l'app écrivait `3×10 rép`).
+- Étapes en répétitions : l'objectif est recopié (`3x8 rép par côté`). Si je n'ai pas fait toutes
   les répétitions, je le dis dans le commentaire.
 - Le contenu ne compte que ce qui a été **réellement fait**. Les écarts au programme sont ajoutés
   à la fin du contenu, en segments fixes (dans cet ordre, seulement s'ils existent) :
@@ -198,7 +201,7 @@ Corde 6×30 s ; Étirements 4 min`
   - `non fait (arrêt) : …` — étapes jamais atteintes parce que j'ai touché « Terminer la séance ».
   - Les repos sautés ou écourtés ne sont pas signalés (sans intérêt pour l'analyse).
   - Chaque étape est repérée par son tour quand elle est dans un bloc répété.
-  Ex. : `… ; Corde 5×30 s ; Étirements 4 min ; sauté : Corde (tour 3, 2e) ; écourté : Planche (tour 3)
+  Ex. : `… ; Corde 5x30 s ; Étirements 4 min ; sauté : Corde (tour 3, 2e) ; écourté : Planche (tour 3)
   0:18/0:30 ; non fait (arrêt) : –`
 
 ### Consignes « journal » à donner à Claude

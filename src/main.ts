@@ -69,7 +69,7 @@ function refreshPlan() {
   plan.replaceChildren(
     ...prog.steps.map((s) => {
       const li = el("li", s.isRest ? "rest" : "");
-      const a = el("span", "t" + (s.kind === "reps" ? " reps" : ""), s.kind === "time" ? fmtClock(s.dur) : s.reps === "Max" ? "max" : s.reps + "×");
+      const a = el("span", "t" + (s.kind === "reps" ? " reps" : ""), s.kind === "time" ? fmtClock(s.dur) : s.reps === "Max" ? "max" : s.reps + "x");
       const b = el("span", "d", s.name + (s.rep ? "  (" + s.rep.r + "/" + s.rep.n + ")" : "") + (s.kind === "reps" && s.extra ? ", " + s.extra : ""));
       const c = el("span", "s", s.infos.join(" · "));
       li.append(a, b, c);

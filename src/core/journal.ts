@@ -120,7 +120,7 @@ function plannedTxt(s: Step): string {
   return s.kind === "time" ? fmtDur(s.dur) : s.reps === "Max" ? "max" : s.reps + " rép" + (s.extra ? " " + s.extra : "");
 }
 
-/** Exercises actually done, grouped (rests excluded): "Marche 5×4 min (5,5 km/h, 7 %)". */
+/** Exercises actually done, grouped (rests excluded): "Marche 5x4 min (5,5 km/h, 7 %)". */
 export function doneContent(steps: Step[], statuses: StepStatus[]): string[] {
   const groups = new Map<string, { s: Step; n: number }>();
   steps.forEach((s, i) => {
@@ -131,7 +131,7 @@ export function doneContent(steps: Step[], statuses: StepStatus[]): string[] {
     groups.set(key, g);
   });
   return [...groups.values()].map(
-    ({ s, n }) => s.name + " " + (n > 1 ? n + "×" : "") + plannedTxt(s) + (s.infos.length ? " (" + s.infos.join(", ") + ")" : ""),
+    ({ s, n }) => s.name + " " + (n > 1 ? n + "x" : "") + plannedTxt(s) + (s.infos.length ? " (" + s.infos.join(", ") + ")" : ""),
   );
 }
 
@@ -153,7 +153,7 @@ export function deviations(sess: Session, statuses: StepStatus[]): string[] {
     if (statuses[i] === "arrêt" && !s.isRest) notDone.set(s.name, (notDone.get(s.name) || 0) + 1);
   });
   if (notDone.size)
-    out.push("non fait (arrêt) : " + [...notDone].map(([n, c]) => n + (c > 1 ? " ×" + c : "")).join(", "));
+    out.push("non fait (arrêt) : " + [...notDone].map(([n, c]) => n + (c > 1 ? " x" + c : "")).join(", "));
   return out;
 }
 

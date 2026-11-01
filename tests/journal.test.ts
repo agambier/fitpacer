@@ -18,7 +18,7 @@ describe("journal line", () => {
     expect(cols[1]).toBe("salle");
     expect(cols[2]).toBe("35 min");
     expect(cols[3]).toBe(
-      "Tapis incliné 35 min : Chauffe 5 min (4 → 5,5 km/h, 0 %) ; Marche 5×4 min (5,5 km/h, 7 %) ; Montée 5×1 min (5,5 km/h, 9 %) ; Retour au calme 5 min (5,5 → 3 km/h, 0 %)",
+      "Tapis incliné 35 min : Chauffe 5 min (4 → 5,5 km/h, 0 %) ; Marche 5x4 min (5,5 km/h, 7 %) ; Montée 5x1 min (5,5 km/h, 9 %) ; Retour au calme 5 min (5,5 → 3 km/h, 0 %)",
     );
     expect(cols[5]).toBe("ressenti 8/10");
     expect(cols[6]).toBe("82,4 kg");
@@ -42,9 +42,9 @@ describe("journal line", () => {
     expect(cols).toHaveLength(9);
     expect(cols[1]).toBe("maison");
     expect(cols[3]).toContain("Maison pompes, gainage, corde (arrêtée avant la fin) : ");
-    expect(cols[3]).toContain("Pompes 3×10 rép");
-    expect(cols[3]).toContain("Corde 5×30 s");
-    expect(cols[3]).toContain("Dead bug 3×8 rép par côté");
+    expect(cols[3]).toContain("Pompes 3x10 rép");
+    expect(cols[3]).toContain("Corde 5x30 s");
+    expect(cols[3]).toContain("Dead bug 3x8 rép par côté");
     expect(cols[3]).not.toContain("Repos");
     expect(cols[3]).toContain("sauté : Corde (tour 3, 2e)");
     expect(cols[3]).toMatch(/non fait \(arrêt\) : Étirements$/);
