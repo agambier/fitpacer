@@ -377,9 +377,7 @@ function renderZone() {
   mk.style.left = pc(hr!) + "%";
   const state = c != null && hr! > c ? "danger" : zoneState(hr!, z);
   box.className = "zone " + (state === "in" ? "ok" : state);
-  st.replaceChildren(
-    ...(state === "danger" ? ["FC max dépassée"] : state === "in" ? ["Dans la plage ✓"] : state === "low" ? ["En dessous", "accélérez"] : ["Au-dessus", "ralentissez"]).map((t) => el("span", "", t)),
-  );
+  st.textContent = state === "danger" ? "FC max dépassée" : state === "in" ? "Dans la plage ✓" : state === "low" ? "En dessous : accélérez" : "Au-dessus : ralentissez";
 }
 btBtn.addEventListener("click", async () => {
   if (btBtn.dataset.s === "on") return;

@@ -241,7 +241,7 @@ td.r, th.r { text-align: right; }
 .zone .zt { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
 .zone .k { color: var(--muted); font-size: 14px; }
 .zone .rng { font: 700 26px/1.1 "Barlow Condensed", Barlow, sans-serif; }
-.zone .st { display: grid; font: 700 18px/1.1 "Barlow Condensed", Barlow, sans-serif; text-align: right; color: var(--muted); }
+.zone .st { white-space: nowrap; font: 700 18px/1.1 "Barlow Condensed", Barlow, sans-serif; text-align: right; color: var(--muted); }
 .zone .bar { position: relative; height: 14px; margin-top: 8px; border-radius: 7px; background: var(--line); }
 .zone .in { position: absolute; top: 0; bottom: 0; border-radius: 7px; background: color-mix(in srgb, var(--ok) 45%, transparent); border: 2px solid var(--ok); }
 .zone .mk { position: absolute; top: -5px; width: 6px; height: 24px; margin-left: -3px; border-radius: 3px; background: var(--ink); box-shadow: 0 0 0 2px var(--surface); transition: left .4s; }
