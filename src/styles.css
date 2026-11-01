@@ -182,6 +182,7 @@ td.r, th.r { text-align: right; }
 .dbtns { display: grid; gap: 10px; }
 .dbtns .primary { margin: 0; order: -1; }
 .dbtns .ghost { padding: 14px; font-size: 17px; }
+.aboutIcon { display: block; width: 96px; height: 96px; margin: 4px auto 8px; border-radius: 22px; }
 .about { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 12px 0 0; }
 .about dt { color: var(--muted); }
 .about dd { margin: 0; font-weight: 600; }
