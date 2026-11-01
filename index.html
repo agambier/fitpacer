@@ -46,11 +46,13 @@
     <div class="srcHead">
       <label for="src">Étapes de la séance</label>
       <div class="row">
+        <button class="ghost" id="loadBtn" type="button">Charger</button>
         <button class="ghost strong" id="pasteBtn" type="button">Coller</button>
         <button class="ghost" id="clearBtn" type="button">Effacer</button>
       </div>
     </div>
-    <textarea id="src" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="Collez ici la séance préparée par Claude."></textarea>
+    <input type="file" id="fileIn" hidden>
+    <textarea id="src" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="Collez ici la séance préparée par Claude, ou chargez un fichier texte (.txt, .md)."></textarea>
     <ul class="errors" id="errors"></ul>
     <label for="cap">Plafond de FC (alerte au-dessus)</label>
     <div class="row"><input type="number" id="cap" min="90" max="220" step="1" inputmode="numeric"> <span class="help inline">bpm</span></div>
@@ -119,6 +121,7 @@
   <h2 id="helpT">Aide</h2>
   <details open>
     <summary>Format de séance</summary>
+    <p>Saisissez la séance, <b>Collez</b>-la depuis le presse-papiers ou <b>Chargez</b> un fichier texte (.txt, .md) du téléphone : téléchargement, cloud, pièce jointe d’un e-mail…</p>
     <p>Une étape par ligne : <code>Nom | quantité | info 1 | info 2 | note</code></p>
     <ul>
       <li><b>Chronométrée</b> : <code>4:00</code>, <code>45s</code> ou <code>5</code> (minutes). L’étape suivante démarre seule.</li>

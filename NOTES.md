@@ -7,7 +7,7 @@ me propose une séance adaptée et en génère la description au format FitPacer
 coller. L'app ne crée ni ne modifie jamais de séance.
 
 1. Dans une conversation, Claude génère une séance (maison, salle) au **format FitPacer** (ci-dessous).
-2. Je copie le texte et je le colle dans l'app (bouton « Coller »).
+2. Je copie le texte et je le colle dans l'app (bouton « Coller »), ou je charge un fichier texte reçu ou téléchargé (bouton « Charger »).
 3. L'app affiche le programme, je règle mon plafond de FC, je connecte ma montre (Suunto, partage FC
    en Bluetooth), je démarre.
 4. L'app me cadence : étape en cours, vitesse / pente / charge, compte à rebours ou nombre de
@@ -22,7 +22,7 @@ Les séances en extérieur restent sur la montre Suunto : hors périmètre.
 
 Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA installable :
 
-- [x] Écran **Programme** : zone de texte, Coller / Effacer, aide sur le format, erreurs de lecture
+- [x] Écran **Programme** : zone de texte, Charger (fichier texte du téléphone) / Coller / Effacer, aide sur le format, erreurs de lecture
       ligne par ligne, plafond FC, aperçu des étapes, durée estimée, « Démarrer ».
 - [x] Écran **Séance** : nom + n° de répétition (2/5), paramètres (vitesse, pente…), note, gros chrono
       (orange sur les 10 dernières s), mode répétitions avec bouton « Fait ✓ », visuel de pente,
@@ -117,6 +117,10 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
       source unique dans le code, la même que l'aide affichée et les tests.
 - [x] **Partage de fichiers** (commun au bilan et aux consignes) : Copier / Partager (Web Share API
       niveau 2 avec fichier) / Télécharger (Blob + lien `download`) ; boutons masqués si non supportés.
+- [x] **Charger un fichier** (v26.11.01) : bouton « Charger » à côté de Coller / Effacer (trois boutons
+      visibles plutôt qu'un menu ⋯, décision du 01/11). Fichier texte (.txt, .md…), 200 ko max, sans
+      filtre de type (les sélecteurs Android grisent les .md et certaines pièces jointes). Rien n'est stocké
+      en plus : le texte chargé devient simplement le « dernier texte collé ».
 - [x] **PWA** : manifest, icônes, installable, hors ligne, polices locales.
 - [x] **Icône** (v26.11.01) : cœur rouge traversé par un tracé de rythme cardiaque, ondes de battement
       de part et d'autre ; fond sombre `#101C26`. Source : `public/favicon.svg` (PNG dérivés).

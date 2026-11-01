@@ -101,6 +101,27 @@ $("pasteBtn").addEventListener("click", async () => {
     showMsg("Le navigateur n’autorise pas la lecture du presse-papiers. Faites un appui long dans la zone de texte, puis « Coller ».");
   }
 });
+// Load a workout from a file on the phone (cloud drive, e-mail attachment, download…).
+// No `accept` filter: Android pickers grey out .md / attachments whose MIME type is unknown.
+const fileIn = $("fileIn") as HTMLInputElement;
+$("loadBtn").addEventListener("click", () => fileIn.click());
+fileIn.addEventListener("change", async () => {
+  const f = fileIn.files?.[0];
+  fileIn.value = ""; // allow loading the same file again
+  if (!f) return;
+  if (f.size > 200_000) {
+    showMsg("Fichier trop gros pour une séance (" + Math.round(f.size / 1000) + " ko). Choisissez un fichier texte (.txt ou .md).");
+    return;
+  }
+  let t: string;
+  try { t = await f.text(); } catch { showMsg("Impossible de lire ce fichier."); return; }
+  if (/\0/.test(t)) { showMsg("Ce fichier n’est pas un fichier texte. Choisissez un fichier .txt ou .md."); return; }
+  if (!t.trim()) { showMsg("Le fichier « " + f.name + " » est vide."); return; }
+  src.value = t.replace(/^\uFEFF/, "").trim();
+  refreshPlan();
+  showMsg("");
+  window.scrollTo(0, 0);
+});
 $("clearBtn").addEventListener("click", () => {
   if (src.value.trim() && !confirm("Effacer la séance affichée ?")) return;
   src.value = "";

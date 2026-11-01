@@ -110,9 +110,10 @@ input[type=number], input[type=text] { width: 96px; background: var(--surface); 
 .primary:disabled { opacity: .45; cursor: not-allowed; }
 .ghost { background: none; border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; font-size: 15px; }
 .ghost.strong { border-color: var(--ramp); color: var(--ramp); font-weight: 600; }
-.srcHead { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; margin-top: 14px; }
+.srcHead { margin-top: 14px; }
 .srcHead label { margin: 0 0 6px; }
-.srcHead .row { margin-bottom: 6px; }
+.srcHead .row { margin-bottom: 8px; flex-wrap: nowrap; }
+.srcHead .row button { flex: 1; }
 .box { background: var(--surface); border-radius: 10px; padding: 12px 14px; margin-top: 12px; }
 .box summary { font-weight: 600; cursor: pointer; }
 
