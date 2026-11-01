@@ -141,8 +141,8 @@ Retour au calme | 5:00 | -0,5 km/h / 30 s | 0 % | finir à 3 km/h environ
 - Une étape par ligne : `Nom | quantité | info 1 | info 2 | note` (seuls nom et quantité obligatoires).
 - **Quantité chronométrée** : `4:00`, `45s`, `5` ou `5 min` (minutes). Virgule décimale acceptée.
 - **Quantité en répétitions** : `10 rép`, `12 rép par bras`, `max`. Forme courte `10x` (ou `10 x`,
-  `10×`, `12x par bras`), équivalente à `10 rép` ; affichée et recopiée dans le journal en `10 rép`. L'étape attend « Fait ✓ »
-  (durée estimée 40 s pour les calculs).
+  `10X`, `12x par bras`), équivalente à `10 rép` ; affichée et recopiée dans le journal en `10 rép`.
+  L'étape attend « Fait ✓ » (durée estimée 40 s pour les calculs).
 - **Infos** : texte libre, libellé déduit : `km/h` → Vitesse, `%` → Pente (+ visuel de rampe),
   `kg` → Charge, `rpm` / `tr/min` → Cadence, `W` → Puissance, `niv…` → Niveau, sinon Consigne.
 - **Progression** : `A → B unité` dans une info = l'app guide palier par palier (voir MVP).

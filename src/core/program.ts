@@ -81,7 +81,7 @@ export function parseAmount(input: string): Amount | null {
   const s = input.trim();
   let m: RegExpMatchArray | null;
   if ((m = s.match(/^max(?:imum)?\b\.?\s*(.*)$/i))) return { kind: "reps", reps: "Max", extra: m[1].trim() };
-  if ((m = s.match(/^(\d+)\s*(?:r[ée]p(?:[ée]titions?|s)?|reps?|[x×])(?![a-zà-ÿ])\.?\s*(.*)$/i)))
+  if ((m = s.match(/^(\d+)\s*(?:r[ée]p(?:[ée]titions?|s)?|reps?|x)(?![a-zà-ÿ])\.?\s*(.*)$/i)))
     return { kind: "reps", reps: m[1], extra: m[2].trim() };
   const d = parseDur(s);
   if (d > 0) return { kind: "time", dur: d };
