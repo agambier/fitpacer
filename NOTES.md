@@ -130,6 +130,10 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
       Partager (trois points reliés), Télécharger (flèche vers le bas) à droite de « Ligne pour le journal » ;
       mêmes icônes dans « Consignes pour Claude ». Icônes seules (SVG en ligne, `aria-label` + `title`),
       coche verte 2 s après une copie réussie.
+- [x] **Fenêtre de bienvenue** (v26.11.01) : au tout premier lancement uniquement. Explique l'app : séance
+      saisie à la main ou générée par Claude, guidage, rapport de fin à transmettre à Claude. Boutons « C'est
+      parti » et « Consignes pour Claude ». Mémorisée dès l'affichage (`fitpacer.welcomed` dans `localStorage`,
+      partagé entre version stable et dev) : ne réapparaît jamais, quelle que soit la façon de la fermer.
 - [x] **PWA** : manifest, icônes, installable, hors ligne, polices locales.
 - [x] **Icône** (v26.11.01) : cœur rouge traversé par un tracé de rythme cardiaque, ondes de battement
       de part et d'autre ; fond sombre `#101C26`. Source : `public/favicon.svg` (PNG dérivés).

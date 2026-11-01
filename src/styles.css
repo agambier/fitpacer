@@ -183,6 +183,10 @@ td.r, th.r { text-align: right; }
 .dialog::backdrop { background: rgba(0, 0, 0, .55); }
 .dq { font: 600 24px/1.2 "Barlow Condensed", Barlow, sans-serif; margin: 0 0 16px; }
 .dbtns { display: grid; gap: 10px; }
+.dialog.info .dbtns { margin-top: 18px; }
+.dialog.info .dbtns .primary { margin: 0; }
+.dialog.info h2.center { text-align: center; }
+.aboutIcon.small { width: 64px; height: 64px; border-radius: 15px; margin-top: 0; }
 .dbtns .primary { margin: 0; order: -1; }
 .dbtns .ghost { padding: 14px; font-size: 17px; }
 .aboutIcon { display: block; width: 96px; height: 96px; margin: 4px auto 8px; border-radius: 22px; }

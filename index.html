@@ -150,9 +150,25 @@
   <details>
     <summary>Vie privée</summary>
     <p>Aucun compte, aucun serveur : rien n’est envoyé sur Internet et aucune séance n’est conservée. Le résultat n’existe que le temps de le copier ou de le partager.</p>
-    <p>Seuls quelques réglages restent sur ce téléphone, pour votre confort : la dernière séance collée, le plafond de FC, le choix des annonces vocales et le thème (sombre ou clair).</p>
+    <p>Seuls quelques réglages restent sur ce téléphone, pour votre confort : la dernière séance collée, le plafond de FC, le choix des annonces vocales, le thème (sombre ou clair) et le fait que la fenêtre de bienvenue a déjà été vue.</p>
   </details>
   <button class="primary" type="button" data-close>Fermer</button>
+</dialog>
+
+<dialog class="dialog info" id="welcomeDialog" aria-labelledby="welcomeT">
+  <img class="aboutIcon small" src="/favicon.svg" alt="" width="64" height="64">
+  <h2 id="welcomeT" class="center">Bienvenue dans FitPacer</h2>
+  <p>FitPacer vous accompagne pendant vos séances de sport, à la maison ou en salle : chrono, répétitions, vitesse et pente, annonces vocales, bips, et fréquence cardiaque de votre montre.</p>
+  <ul>
+    <li><b>Préparez la séance</b> : écrivez-la vous-même, ou demandez à Claude de la générer (bouton ci-dessous pour lui apprendre le format). Collez-la ou chargez-la depuis un fichier.</li>
+    <li><b>Faites la séance</b> : l’app vous guide étape par étape.</li>
+    <li><b>Transmettez le rapport</b> : à la fin, l’app fournit un rapport (ligne de journal et fichier détaillé) à envoyer à Claude, pour qu’il suive vos progrès et prépare la suite.</li>
+  </ul>
+  <p class="help">Tout reste sur votre téléphone. L’aide est dans le menu ☰.</p>
+  <div class="dbtns">
+    <button class="primary" type="button" data-close>C’est parti</button>
+    <button class="ghost" type="button" id="welcomeClaude">Consignes pour Claude</button>
+  </div>
 </dialog>
 
 <dialog class="dialog info" id="claudeDialog" aria-labelledby="claudeT">

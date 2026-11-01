@@ -168,6 +168,17 @@ menu.querySelectorAll<HTMLButtonElement>("[data-open]").forEach((b) =>
     $<HTMLDialogElement>(b.dataset.open!).showModal();
   }),
 );
+/* ---------- Welcome popup, shown once on the very first launch ---------- */
+const welcome = $<HTMLDialogElement>("welcomeDialog");
+$("welcomeClaude").addEventListener("click", () => {
+  welcome.close();
+  $<HTMLDialogElement>("claudeDialog").showModal();
+});
+if (store.get("fitpacer.welcomed", "") !== "1" && typeof welcome.showModal === "function") {
+  store.set("fitpacer.welcomed", "1"); // set as soon as shown: never shown again, however it is closed
+  welcome.showModal();
+  welcome.scrollTop = 0; // the focused button is at the bottom: keep the start of the text visible
+}
 /* ---------- Theme (dark / light) ---------- */
 const themeItems = menu.querySelectorAll<HTMLButtonElement>("[data-theme-choice]");
 function showTheme() {
