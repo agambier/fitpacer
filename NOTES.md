@@ -72,6 +72,9 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
     « Repos, 1 minute 30. allongé sur le dos, bien respirer. Ensuite : planche, 30 secondes. »
     Si c'est trop long pour la durée du repos, on les saute : l'exercice suivant passe avant (v26.11.01).
     Idem à la reprise après pause.
+  - En pause (bouton Pause), un cadre orange recouvre l'étape : « En pause depuis 0:42 », gros compteur,
+    « Touchez « Reprendre » pour continuer » (décision du 01/11, v26.11.01 : plus lisible de loin qu'un
+    compteur dans le bouton, et l'état « en pause » saute aux yeux).
   - Pendant une étape de repos, le bouton **Pause est désactivé** : le repos est déjà une pause, on ne le
     prolonge pas (décision du 01/11, v26.11.01). « Suiv. » permet toujours de l'écourter.
   - Une annonce ne doit jamais chevaucher les bips 3-2-1 : si elle est trop longue pour l'étape,

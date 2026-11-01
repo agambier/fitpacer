@@ -397,6 +397,13 @@ function renderLive() {
   // A rest step is already a pause: it cannot be extended. "Reprendre" stays available if the
   // session was paused before reaching the rest.
   $<HTMLButtonElement>("pauseBtn").disabled = s.isRest && sess.state === "running";
+  // While paused: how long the pause has lasted, over the step.
+  const paused = sess.state === "paused";
+  $("pauseBox").hidden = !paused;
+  if (paused) {
+    const pz = sess.pauses[sess.pauses.length - 1];
+    $("pauseFor").textContent = fmtClock(Math.max(0, Math.floor((clock.wall() - pz.wall0) / 1000)));
+  }
   if (s.kind === "time") {
     const rem = s.dur - el0;
     $("clock").textContent = fmtClock(Math.ceil(rem - 0.001));
