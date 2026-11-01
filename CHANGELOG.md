@@ -3,6 +3,29 @@
 Format `vAA.MM.XX` (voir `CLAUDE.md`). Seules les versions stables figurent ici : chaque section sert
 de texte à la release GitHub créée automatiquement.
 
+## v26.11.03
+
+**Avant la séance**
+- Objectif de la séance (`objectif: …`) affiché sous le titre.
+- Encadré « Avant de commencer » : sport à lancer sur la montre (`montre: Marche sur tapis (Treadmill walking)`, rappelé à voix haute au démarrage) et liste à cocher des conditions d’exécution (`avant: …`, une ligne par point, rien n’est enregistré).
+- Ceinture cardio (`ceinture: recommandée`) : question Oui / Non dans l’encadré, ou au démarrage si elle n’a pas été répondue.
+
+**Pendant la séance**
+- Exercices en répétitions : la voix annonce l’exercice sans ajouter « Touchez Fait quand c’est terminé ».
+- Le temps écoulé affiche aussi la part de la séance déjà faite (« 1:10 · 13 % »).
+
+**Bilan**
+- Courbe de FC 1,5× plus haute, avec 4 repères étiquetés : limite (fc max de la séance), max, moyenne, min.
+- Décrochements brefs de la montre (aller-retour de plus de 25 bpm en quelques secondes) : point entouré sur la courbe, « ? » après la valeur concernée, explication sous la courbe.
+
+**Rapport pour l’IA**
+- FC min/moy/max calculées sans les décrochements ; segment « décrochement capteur FC ignoré : … » dans la remarque.
+- Segment « ceinture cardio portée » / « sans ceinture cardio (recommandée) » quand la séance la recommande.
+- Fichier exporté : lignes « Objectif » et « Sport sur la montre », ceinture cardio sur la ligne du capteur.
+
+**Consignes pour l’IA**
+- Nouvelles lignes d’en-tête `objectif:`, `montre:`, `avant:`, `ceinture:` expliquées, avec des exemples ; nouveaux segments de la remarque documentés. À redonner à l’IA.
+
 ## v26.11.02
 
 **FC max et plages de FC**

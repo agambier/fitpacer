@@ -117,7 +117,7 @@ Format **`vAA.MM.XX`** (année et mois sur deux chiffres, XX = numéro de versio
   `vAA.MM.XX` existe avec le bon texte. Ne pas annoncer « déployé » avant. (Un run `ccr-*` « cancelled »
   remplacé par le run `main` du même commit est normal.) Le site github.io n'est pas joignable depuis
   l'environnement de Claude : le dire plutôt que de prétendre l'avoir vu.
-- Dernière version stable confirmée : `v26.11.02` (01/11/2026). La prochaine modification passe en `v26.11.03-dev` (ou `v26.12.01-dev` si elle est faite en décembre).
+- Dernière version stable confirmée : `v26.11.03` (01/11/2026). La prochaine modification passe en `v26.11.04-dev` (ou `v26.12.01-dev` si elle est faite en décembre).
 
 ## Façon de travailler
 
