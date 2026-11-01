@@ -14,6 +14,12 @@ export interface RepInfo {
   block: number;
 }
 
+/** Target heart-rate range of a step, bpm (written "FC 120-145"). */
+export interface HrZone {
+  lo: number;
+  hi: number;
+}
+
 interface StepBase {
   name: string;
   /** Free infos (speed, slope, load…) as written. */
@@ -21,6 +27,8 @@ interface StepBase {
   /** Ramp parsed from each info (same index), or null. */
   ramps: (Ramp | null)[];
   note: string;
+  /** Target HR range, or null. */
+  hr: HrZone | null;
   rep: RepInfo | null;
   isRest: boolean;
   isCooldown: boolean;
@@ -43,6 +51,8 @@ export type Step = TimedStep | RepsStep;
 export interface Program {
   title: string;
   type: string;
+  /** Session HR max as written in the header ("fc max: 155"), or null. */
+  hrMax: number | null;
   steps: Step[];
   /** Estimated total duration, seconds. */
   est: number;
@@ -51,6 +61,34 @@ export interface Program {
 
 const REST_RE = /^(repos|r[ée]cup(?!ération active)|pause)\b/i;
 const COOLDOWN_RE = /^(retour au calme|r[ée]cup[ée]ration active|[ée]tirements?|stretching|cool[\s-]?down)/i;
+
+/** Plausible heart rates, bpm. */
+export const HR_MIN = 40;
+export const HR_MAX = 230;
+const HR_MAX_RE = /^(?:fc|fr[ée]quence cardiaque)\s*max(?:imale)?\s*:\s*(.*)$/i;
+const HR_ZONE_RE = /^fc\s*:?\s*(\d{2,3})\s*(?:-|à|→)\s*(\d{2,3})\s*(?:bpm)?$/i;
+const okHr = (v: number) => v >= HR_MIN && v <= HR_MAX;
+
+/** "FC 120-145" (also "FC 120 à 145", "FC 120-145 bpm") -> {lo, hi}; null if not a HR range. */
+export function parseHrZone(cell: string): HrZone | null {
+  const m = cell.trim().match(HR_ZONE_RE);
+  return m ? { lo: +m[1], hi: +m[2] } : null;
+}
+
+/** "120-145" */
+export const hrZoneTxt = (z: HrZone) => z.lo + "-" + z.hi;
+
+/**
+ * HR alert threshold for the session: the header "fc max", raised to the highest step range
+ * when a range goes above it. Null when the header is missing (no alert).
+ */
+export function sessionHrMax(p: Program): { value: number | null; raisedBy: Step | null } {
+  if (p.hrMax == null) return { value: null, raisedBy: null };
+  let value = p.hrMax;
+  let raisedBy: Step | null = null;
+  for (const s of p.steps) if (s.hr && s.hr.hi > value) { value = s.hr.hi; raisedBy = s; }
+  return { value, raisedBy };
+}
 
 export const isRestName = (name: string) => REST_RE.test(name);
 
@@ -112,6 +150,7 @@ const isBlock = (it: Item): it is Block => "repeat" in it;
 export function parseProgram(text: string): Program {
   let title = "";
   let type = "";
+  let hrMax: number | null = null;
   const root: Item[] = [];
   const stack: { items: Item[] }[] = [{ items: root }];
   const errors: string[] = [];
@@ -123,6 +162,12 @@ export function parseProgram(text: string): Program {
     let m: RegExpMatchArray | null;
     if ((m = line.match(/^titre\s*:\s*(.+)$/i))) { title = m[1].trim(); return; }
     if ((m = line.match(/^type\s*:\s*(.+)$/i))) { type = m[1].trim(); return; }
+    if ((m = line.match(HR_MAX_RE))) {
+      const v = parseInt(m[1], 10);
+      if (/^\d+\s*(?:bpm)?$/i.test(m[1].trim()) && okHr(v)) hrMax = v;
+      else errors.push(where + "FC max illisible (« " + m[1].trim() + " »). Exemple : fc max: 155.");
+      return;
+    }
     if ((m = line.match(/^(?:x\s*(\d+)|(\d+)\s*x)\s*\{$/i))) {
       const blk: Block = { repeat: +(m[1] || m[2]), items: [] };
       if (blk.repeat < 1) { errors.push(where + "nombre de répétitions invalide."); }
@@ -139,15 +184,27 @@ export function parseProgram(text: string): Program {
     const amt = parseAmount(p[1] || "");
     if (!p[0]) { errors.push(where + "nom d’étape manquant."); return; }
     if (!amt) { errors.push(where + "quantité illisible (« " + (p[1] || "") + " »). Exemples : 4:00, 45s, x10, max."); return; }
-    const infos = [p[2] || "", p[3] || ""].filter(Boolean);
+    // The HR range "FC 120-145" may be written in any column after the amount.
+    const cells = p.slice(2);
+    let hr: HrZone | null = null;
+    const zi = cells.findIndex((c) => /^fc\s*:?\s*\d/i.test(c));
+    if (zi >= 0) {
+      hr = parseHrZone(cells[zi]);
+      if (!hr || !okHr(hr.lo) || !okHr(hr.hi) || hr.lo >= hr.hi) {
+        errors.push(where + "plage de FC illisible (« " + cells[zi] + " »). Exemple : FC 120-145.");
+        return;
+      }
+      cells[zi] = "";
+    }
+    const infos = [cells[0] || "", cells[1] || ""].filter(Boolean);
     if (amt.kind === "time")
       for (const info of infos) {
         const r = parseRamp(info, amt.dur);
         if (r?.over && r.over > amt.dur)
           errors.push(where + "la progression « " + info + " » dure plus longtemps que l’étape (" + fmtClock(amt.dur) + ").");
       }
-    const note = p.slice(4).filter(Boolean).join(" ; ");
-    stack[stack.length - 1].items.push({ name: p[0], infos, note, ...amt } as RawStep);
+    const note = cells.slice(2).filter(Boolean).join(" ; ");
+    stack[stack.length - 1].items.push({ name: p[0], infos, note, hr, ...amt } as RawStep);
   });
   if (stack.length > 1) errors.push("Un bloc de répétition n’est pas fermé : ajoutez une ligne « } ».");
 
@@ -180,7 +237,7 @@ export function parseProgram(text: string): Program {
   });
 
   const est = steps.reduce((a, s) => a + weight(s), 0);
-  return { title: title || "Séance", type: (type || "salle").toLowerCase(), steps, est, errors };
+  return { title: title || "Séance", type: (type || "salle").toLowerCase(), hrMax, steps, est, errors };
 }
 
 /** Duration used for estimates and the progress bar. */

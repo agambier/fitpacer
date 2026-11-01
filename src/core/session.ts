@@ -44,6 +44,7 @@ export type SessionEvent =
   | { type: "step"; idx: number; announce: boolean }
   | { type: "ramp"; idx: number; changes: { info: number; value: number }[] }
   | { type: "hrAlert"; hr: number }
+  | { type: "hrZone"; dir: "low" | "high"; hr: number }
   | { type: "finish" };
 
 export interface Clock {
@@ -57,6 +58,15 @@ export interface Clock {
 export const SKIP_MAX = 0.2;
 export const DONE_MIN = 0.9;
 const HR_ALERT_EVERY = 20; // seconds between two HR alerts
+/** Outside the step HR range for this long (s) before a voice reminder, then at most every ZONE_ALERT_EVERY s. */
+export const ZONE_ALERT_AFTER = 15;
+export const ZONE_ALERT_EVERY = 30;
+
+/** Where a heart rate stands against the step range: "low" | "in" | "high" (null without range). */
+export function zoneState(bpm: number, z: { lo: number; hi: number } | null): "low" | "in" | "high" | null {
+  if (!z) return null;
+  return bpm < z.lo ? "low" : bpm > z.hi ? "high" : "in";
+}
 
 export class Session {
   state: "running" | "paused" | "finished" = "running";
@@ -79,6 +89,8 @@ export class Session {
   private rampLevels: number[] = [];
   private lastSampleSec = -1;
   private lastAlert = -Infinity;
+  /** Out of the step HR range: direction, since when (active s), last reminder (active s). */
+  private zoneOut: { dir: "low" | "high"; since: number; last: number } | null = null;
   private events: SessionEvent[] = [];
 
   constructor(readonly program: Program, private clock: Clock) {
@@ -186,7 +198,7 @@ export class Session {
   }
 
   /** Feeds the latest heart rate (or null when unavailable). */
-  hr(bpm: number | null, cap: number) {
+  hr(bpm: number | null, cap: number | null) {
     this.liveHr = bpm; // kept during pauses too: HR at the start / end of a pause
     if (this.state !== "running" || bpm == null) return;
     const t = this.elapsed();
@@ -194,9 +206,23 @@ export class Session {
     if (sec === this.lastSampleSec) return;
     this.lastSampleSec = sec;
     this.samples.push({ t, wall: this.clock.wall(), hr: bpm, idx: this.idx });
-    if (bpm > cap && t - this.lastAlert >= HR_ALERT_EVERY) {
-      this.lastAlert = t;
-      this.events.push({ type: "hrAlert", hr: bpm });
+    if (cap != null && bpm > cap) {
+      // Danger first: the session HR max overrides the step range.
+      this.zoneOut = null;
+      if (t - this.lastAlert >= HR_ALERT_EVERY) {
+        this.lastAlert = t;
+        this.events.push({ type: "hrAlert", hr: bpm });
+      }
+      return;
+    }
+    const z = zoneState(bpm, this.step.hr);
+    if (z !== "low" && z !== "high") { this.zoneOut = null; return; }
+    // Whole seconds (one sample per second): no float rounding at the thresholds.
+    if (!this.zoneOut || this.zoneOut.dir !== z) this.zoneOut = { dir: z, since: sec, last: -Infinity };
+    const o = this.zoneOut;
+    if (sec - o.since >= ZONE_ALERT_AFTER && sec - o.last >= ZONE_ALERT_EVERY) {
+      o.last = sec;
+      this.events.push({ type: "hrZone", dir: z, hr: bpm });
     }
   }
 
@@ -266,6 +292,7 @@ export class Session {
     this.lastCountdown = null;
     this.lastRampCountdown = null;
     this.rampLevels = this.step.ramps.map(() => 0);
+    this.zoneOut = null;
     this.events.push({ type: "step", idx: i, announce });
   }
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { parseProgram } from "../src/core/program";
 import { parseRamp } from "../src/core/ramp";
-import { rampAnnouncement, resumeAnnouncement, sayDuration, sayInfo, stepAnnouncement } from "../src/core/speech";
+import { hrZoneAnnouncement, rampAnnouncement, resumeAnnouncement, sayDuration, sayInfo, stepAnnouncement } from "../src/core/speech";
 
 describe("speech", () => {
   it("reads durations and infos", () => {
@@ -47,5 +47,14 @@ describe("speech", () => {
     );
     expect(resumeAnnouncement(po, re, 0, [])).toBe("On reprend. Pompes. 10 répétitions. Touchez Fait quand c'est terminé.");
     expect(resumeAnnouncement(re, pl, 45, [])).toBe("On reprend. Repos, encore 45 secondes. Ensuite : Planche, 30 secondes.");
+  });
+});
+
+describe("HR range announcements", () => {
+  it("states the range when a step starts, and reminds when out of it", () => {
+    const p = parseProgram("fc max: 160\nMarche rapide | 10:00 | 6 km/h | FC 120-145");
+    expect(stepAnnouncement(p.steps[0], undefined)).toContain("Fréquence cardiaque entre 120 et 145.");
+    expect(hrZoneAnnouncement("high", p.steps[0].hr!)).toBe("Fréquence cardiaque au-dessus de 145 : ralentissez.");
+    expect(hrZoneAnnouncement("low", p.steps[0].hr!)).toBe("Fréquence cardiaque sous 120 : accélérez.");
   });
 });

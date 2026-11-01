@@ -12,6 +12,9 @@ export const RELEASES: ReleaseNotes[] = [
     items: [
       "Les « Consignes pour Claude » montrent maintenant des exemples de ce que l’app lui renvoie : la ligne du journal, et le fichier téléchargé en fin de séance avec le détail de chaque exercice. Claude comprend ainsi mieux comment s’est passée votre séance.",
       "Pendant la séance, « Terminer la séance » est maintenant un vrai bouton, toujours visible en bas de l’écran.",
+      "La FC max de la séance est maintenant choisie par Claude dans la séance (ligne « fc max: … ») et ne se règle plus dans l’app. Au-dessus, un bandeau rouge s’affiche, en plus des bips et de la voix.",
+      "Claude peut donner une plage de fréquence cardiaque pour un exercice (par exemple entre 120 et 145). Pendant l’exercice, une jauge montre si vous êtes dedans, et une voix vous dit d’accélérer ou de ralentir si vous en sortez plus de 15 secondes.",
+      "Le rapport de fin de séance indique le temps passé dans chaque plage de fréquence cardiaque.",
     ],
   },
   {

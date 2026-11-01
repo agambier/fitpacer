@@ -70,6 +70,7 @@ button { cursor: pointer; touch-action: manipulation; }
 .hr .u { color: var(--muted); font-size: 15px; }
 .hr.calm .v { color: var(--ok); } .hr.near .v { color: var(--amber); } .hr.over .v { color: var(--hot); }
 .hr.stale .v { color: var(--muted); }
+.hr.low .v { color: var(--ramp); } .hr.high .v { color: var(--amber); }
 .icon { margin-left: auto; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; width: 42px; height: 38px; font-size: 18px; padding: 0; }
 .icon[aria-pressed="false"] { opacity: .55; }
 .bt {
@@ -226,3 +227,27 @@ td.r, th.r { text-align: right; }
 .dialog.info details:last-of-type { border-bottom: 1px solid var(--line); }
 .dialog.info summary { font-weight: 600; font-size: 17px; cursor: pointer; }
 .dialog.info details[open] summary { margin-bottom: 8px; }
+
+/* Session HR max (program screen): read-only, written by Claude in the workout. */
+.capInfo { margin: 14px 0 0; padding: 10px 12px; background: var(--surface); border-radius: 8px; display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.capInfo > span { display: grid; gap: 2px; }
+.capInfo b { white-space: nowrap; font: 700 24px/1 "Barlow Condensed", Barlow, sans-serif; }
+.capInfo .h { color: var(--muted); font-size: 14px; }
+.capInfo.missing { display: grid; border-left: 4px solid var(--amber); }
+.planz { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--ok); color: var(--ok); font-size: 13px; white-space: nowrap; }
+
+/* Step HR range: gauge and status. */
+.zone { margin: 14px 0 4px; }
+.zone .zt { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.zone .k { color: var(--muted); font-size: 14px; }
+.zone .rng { font: 700 26px/1.1 "Barlow Condensed", Barlow, sans-serif; }
+.zone .st { display: grid; font: 700 18px/1.1 "Barlow Condensed", Barlow, sans-serif; text-align: right; color: var(--muted); }
+.zone .bar { position: relative; height: 14px; margin-top: 8px; border-radius: 7px; background: var(--line); }
+.zone .in { position: absolute; top: 0; bottom: 0; border-radius: 7px; background: color-mix(in srgb, var(--ok) 45%, transparent); border: 2px solid var(--ok); }
+.zone .mk { position: absolute; top: -5px; width: 6px; height: 24px; margin-left: -3px; border-radius: 3px; background: var(--ink); box-shadow: 0 0 0 2px var(--surface); transition: left .4s; }
+.zone .capMk { position: absolute; top: -4px; bottom: -4px; width: 0; border-left: 2px dashed var(--hot); }
+.zone.ok .st { color: var(--ok); } .zone.low .st { color: var(--ramp); } .zone.high .st { color: var(--amber); } .zone.danger .st { color: var(--hot); }
+.zone.danger .mk { background: var(--hot); }
+
+/* Above the session HR max. */
+.dangerBanner { border: 3px solid var(--hot); background: color-mix(in srgb, var(--hot) 16%, var(--surface)); border-radius: 12px; padding: 10px 14px; font: 700 22px/1.15 "Barlow Condensed", Barlow, sans-serif; color: var(--hot); text-align: center; }

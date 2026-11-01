@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { parseProgram } from "../src/core/program";
-import { exportFileName, exportMarkdown, fmtPause, hrDrift, hrRecovery, journalLine, pausesSegment } from "../src/core/journal";
+import { exportFileName, exportMarkdown, fmtPause, hrZoneSegments, hrDrift, hrRecovery, journalLine, pausesSegment } from "../src/core/journal";
 import { advance, example, start } from "./helpers";
 
 const fb = { rpe: 8, comment: "salle très chaude", weight: "82,4", waist: "" };
@@ -70,7 +70,7 @@ describe("markdown export", () => {
     sess.resume();
     advance(sess, clock, 10, () => 112);
     sess.stop();
-    const md = exportMarkdown(sess, fb, { source: src, cap: 150, device: "Suunto Watch HR 1211" });
+    const md = exportMarkdown(sess, fb, { source: src, device: "Suunto Watch HR 1211" });
     expect(md).toContain("## Ligne de journal");
     expect(md).toContain(journalLine(sess, fb));
     expect(md).toMatch(/\| 1 \| {2}\| Chauffe \| 5:00 \|/);
@@ -91,7 +91,7 @@ describe("missing HR", () => {
     const cols = journalLine(sess, { rpe: 5, comment: "ok", weight: "", waist: "" }).split(" | ");
     expect(cols[4]).toBe("FC non reçue");
     expect(cols[8]).toBe("ok ; montre non connectée : pas de FC (ni dérive ni récupération)");
-    expect(exportMarkdown(sess, fb, { source: "", cap: 150, device: null })).toContain("⚠️ Montre non connectée");
+    expect(exportMarkdown(sess, fb, { source: "", device: null })).toContain("⚠️ Montre non connectée");
   });
   it("says when HR is partial", () => {
     const { sess, clock } = start(parseProgram("A | 10:00"));
@@ -142,7 +142,7 @@ describe("pauses added by the user", () => {
     sess.resume();
     advance(sess, clock, 70);
     expect(pausesSegment(sess)).toBe("pause ajoutée par l'utilisateur : Marche 10 s");
-    const md = exportMarkdown(sess, fb, { source: "", cap: 150, device: null });
+    const md = exportMarkdown(sess, fb, { source: "", device: null });
     expect(md).toContain("| *pause courte (moins de 10 s, non comptée)* |");
     expect(md).toContain(": 1, total 10 s");
   });
@@ -159,12 +159,39 @@ describe("pauses added by the user", () => {
     sess.resume();
     advance(sess, clock, 60);
     expect(pausesSegment(sess)).toBe("pauses ajoutées par l'utilisateur : 2 (Marche 1 min (FC 148→120), Corde 20 s (FC 140→?)), total 1 min 20");
-    const md = exportMarkdown(sess, fb, { source: "", cap: 150, device: null });
+    const md = exportMarkdown(sess, fb, { source: "", device: null });
     expect(md).toContain("| *pause ajoutée par l'utilisateur* | | FC 148→120 |");
   });
   it("adds nothing without pause", () => {
     const { sess, clock } = start(parseProgram("Marche | 1:00"));
     advance(sess, clock, 70);
     expect(pausesSegment(sess)).toBe("");
+  });
+});
+
+describe("step HR ranges in the journal", () => {
+  it("adds the share of time within each range (rounds grouped) and a column in the export", () => {
+    const { sess, clock } = start(parseProgram("titre: T\nfc max: 160\nx2 {\n  Marche | 2:00 | 6 km/h | FC 120-140\n  Repos | 0:30\n}\nRetour au calme | 1:00"));
+    // 1st pass: 90 s in range out of 120 ; 2nd pass: all in range
+    advance(sess, clock, 30, () => 110);
+    advance(sess, clock, 90, () => 130);
+    advance(sess, clock, 30, () => 100);
+    advance(sess, clock, 120, () => 135);
+    advance(sess, clock, 61, () => 100);
+    expect(hrZoneSegments(sess)).toEqual(["plage FC Marche 120-140 : 87 %"]);
+    expect(journalLine(sess, fb).split(" | ")[8]).toMatch(/ ; plage FC Marche 120-140 : 87 %$/);
+    const md = exportMarkdown(sess, fb, { source: "", device: null });
+    expect(md).toContain("FC max de la séance : 160 —");
+    expect(md).toMatch(/\| Marche \| 2:00 \| 6 km\/h \|.*\| 120-140 \(7[45] %\) \|/);
+    expect(md).toContain("- plage FC Marche 120-140 : 87 %");
+  });
+
+  it("export: HR max missing or raised by a range", () => {
+    let { sess, clock } = start(parseProgram("A | 1:00"));
+    advance(sess, clock, 61);
+    expect(exportMarkdown(sess, fb, { source: "", device: null })).toContain("FC max de la séance : absente de la séance (pas d'alerte)");
+    ({ sess, clock } = start(parseProgram("fc max: 140\nA | 1:00 | FC 120-145")));
+    advance(sess, clock, 61);
+    expect(exportMarkdown(sess, fb, { source: "", device: null })).toContain("FC max de la séance : 145 (relevée par la plage FC de A ; fc max: 140 dans la séance)");
   });
 });

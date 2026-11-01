@@ -55,8 +55,7 @@
     <input type="file" id="fileIn" accept=".txt,.md,.markdown,.text,text/plain,text/markdown" hidden>
     <textarea id="src" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="Collez ici la séance préparée par Claude, ou chargez un fichier texte (.txt, .md)."></textarea>
     <ul class="errors" id="errors"></ul>
-    <label for="cap">Plafond de FC (alerte au-dessus)</label>
-    <div class="row"><input type="number" id="cap" min="90" max="220" step="1" inputmode="numeric"> <span class="help inline">bpm</span></div>
+    <div class="capInfo" id="capInfo" hidden></div>
     <ul class="plan num" id="plan"></ul>
     <p class="total" id="total"></p>
     <button class="primary" id="startBtn" type="button">Démarrer la séance</button>
@@ -64,10 +63,15 @@
 
   <!-- Déroulé -->
   <section class="screen" id="run" hidden>
+    <div class="dangerBanner" id="danger" role="alert" hidden></div>
     <div class="stage" id="stage">
       <p class="stepname" id="sName"></p>
       <span class="rep num" id="sRep"></span>
       <div class="params num" id="params"></div>
+      <div class="zone" id="zone" hidden>
+        <div class="zt"><div><div class="k">Plage FC</div><div class="rng num" id="zoneRng"></div></div><div class="st" id="zoneSt"></div></div>
+        <div class="bar" aria-hidden="true"><div class="in" id="zoneIn"></div><div class="capMk" id="zoneCap"></div><div class="mk" id="zoneMk"></div></div>
+      </div>
       <p class="note" id="sNote"></p>
       <div class="clock num" id="clock"></div>
       <p class="sub num" id="sub"></p>
@@ -138,7 +142,8 @@
       <li><b>Progression guidée</b> : <code>4 → 5,5 km/h</code>, annoncée palier par palier. En option : <code>par 1</code> pour l’écart entre deux paliers (<code>3 → 5 km/h par 1</code>), <code>en 2:00</code> pour atteindre la vitesse d’arrivée au bout de 2 min puis la garder (<code>3 → 5 km/h par 1 en 2:00</code> : 4 km/h à 1:00, 5 km/h dès 2:00).</li>
       <li><b>Repos</b> : <code>Repos | 1:30</code>, l’exercice suivant est annoncé.</li>
       <li><b>Bloc répété</b> : <code>x3 {</code> (ou <code>3x {</code>) … <code>}</code></li>
-      <li><b>En tête</b> : <code>titre: …</code> et <code>type: salle</code> ou <code>maison</code>. <code>#</code> pour un commentaire.</li>
+      <li><b>Plage de FC d’une étape</b> : <code>FC 120-145</code> dans n’importe quelle case après la quantité (<code>Marche rapide | 10:00 | 6 km/h | 3 % | FC 120-145</code>). L’app affiche la plage, indique si vous êtes dedans et vous le rappelle à voix haute si vous en sortez plus de 15 s.</li>
+      <li><b>En tête</b> : <code>titre: …</code>, <code>type: salle</code> ou <code>maison</code>, et <code>fc max: 155</code> : la FC max de la séance, au-dessus de laquelle l’app donne l’alerte (bandeau rouge, bips, voix), quelle que soit la plage de l’étape. Elle est fixée par Claude et ne se modifie pas dans l’app ; si une plage d’étape va plus haut, la FC max prend cette valeur. <code>#</code> pour un commentaire.</li>
     </ul>
   </details>
   <details>
@@ -156,7 +161,7 @@
   <details>
     <summary>Vie privée</summary>
     <p>Aucun compte, aucun serveur : rien n’est envoyé sur Internet et aucune séance n’est conservée. Le résultat n’existe que le temps de le copier ou de le partager.</p>
-    <p>Seuls quelques réglages restent sur ce téléphone, pour votre confort : la dernière séance collée, le plafond de FC, le choix des annonces vocales, le thème (sombre ou clair), et ce qui a déjà été montré (fenêtre de bienvenue, dernière version vue pour « Quoi de neuf ? »).</p>
+    <p>Seuls quelques réglages restent sur ce téléphone, pour votre confort : la dernière séance collée, le choix des annonces vocales, le thème (sombre ou clair), et ce qui a déjà été montré (fenêtre de bienvenue, dernière version vue pour « Quoi de neuf ? »).</p>
   </details>
   <button class="primary" type="button" data-close>Fermer</button>
 </dialog>

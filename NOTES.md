@@ -8,10 +8,10 @@ coller. L'app ne crée ni ne modifie jamais de séance.
 
 1. Dans une conversation, Claude génère une séance (maison, salle) au **format FitPacer** (ci-dessous).
 2. Je copie le texte et je le colle dans l'app (bouton « Coller »), ou je charge un fichier texte reçu ou téléchargé (bouton « Charger »).
-3. L'app affiche le programme, je règle mon plafond de FC, je connecte ma montre (Suunto, partage FC
+3. L'app affiche le programme (avec la FC max de la séance, fixée par Claude), je connecte ma montre (Suunto, partage FC
    en Bluetooth), je démarre.
 4. L'app me cadence : étape en cours, vitesse / pente / charge, compte à rebours ou nombre de
-   répétitions (« Fait ✓ »), étape suivante, bips + vibrations, alerte si la FC dépasse le plafond.
+   répétitions (« Fait ✓ »), étape suivante, bips + vibrations, plage de FC de l'étape (si Claude en a donné une), alerte si la FC dépasse la FC max.
 5. À la fin : bilan (durée, FC min/moy/max, courbe, FC par étape), je note mon **ressenti (RPE 1–10)**
    et un **commentaire**.
 6. L'app génère une **ligne de journal** que je copie et redonne à Claude pour qu'il suive mon évolution.
@@ -23,7 +23,7 @@ Les séances en extérieur restent sur la montre Suunto : hors périmètre.
 Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA installable :
 
 - [x] Écran **Programme** : zone de texte, Charger (fichier texte du téléphone) / Coller / Effacer, aide sur le format, erreurs de lecture
-      ligne par ligne, plafond FC, aperçu des étapes, durée estimée, « Démarrer ».
+      ligne par ligne, FC max de la séance (lecture seule), aperçu des étapes, durée estimée, « Démarrer ».
 - [x] Écran **Séance** : nom + n° de répétition (2/5), paramètres (vitesse, pente…), note, gros chrono
       (orange sur les 10 dernières s), mode répétitions avec bouton « Fait ✓ », visuel de pente,
       « Ensuite », barre de segments, temps écoulé / restant, courbe FC, Préc. / Pause / Suiv.,
@@ -42,7 +42,7 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
       Le menu propose aussi un sous-menu **Thème** : **Sombre** (par défaut) / **Clair** (gris clairs) ; le choix est
       gardé sur le téléphone, sinon le réglage du système s'applique (décision du 31/10).
 - [x] **Aide** (menu ☰) en trois parties : Format de séance, Connexion de la montre (dépannage),
-      Vie privée (ce qui est gardé sur le téléphone : dernière séance collée, plafond FC, choix de la
+      Vie privée (ce qui est gardé sur le téléphone : dernière séance collée, choix de la
       voix, thème ; rien n'est envoyé).
 - [x] **Navigateurs sans Bluetooth web** : « Connecter la montre » explique pourquoi et quoi faire
       (iPhone / iPad, Brave sans le flag, Firefox, Samsung Internet, navigateur intégré à une app,
@@ -53,7 +53,7 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
 - [x] **Question au démarrage** : si la montre n'est pas connectée (et que le Bluetooth web existe),
       « Démarrer » demande « Voulez-vous la connecter ? ». Oui → sélecteur Bluetooth, puis la séance
       démarre (avec ou sans FC selon le résultat) ; Non → la séance démarre tout de suite sans montre.
-- [x] **FC Bluetooth** : connexion, affichage couleur (calme / proche du plafond / au-dessus / périmée),
+- [x] **FC Bluetooth** : connexion, affichage couleur (calme / proche de la FC max / au-dessus / périmée ; avec plage d'étape : en dessous / dedans / au-dessus),
       reconnexion automatique.
 - [x] **Retours** : bips (5-4-3-2-1, changement d'étape, fin, alerte FC), vibrations, écran maintenu allumé.
 - [x] **Annonce vocale** de chaque nouvelle étape (`speechSynthesis`, voix française), activable /
@@ -185,16 +185,33 @@ Explicitement **hors MVP** : comptes, sync, historique, envoi automatique à Cla
 ```
 titre: Tapis incliné 35 min
 type: salle
+fc max: 150
 # commentaire ignoré
 Chauffe | 5:00 | 4 → 5,5 km/h | 0 % | monter progressivement
 x5 {
-  Marche | 4:00 | 5,5 km/h | 7 %
+  Marche | 4:00 | 5,5 km/h | 7 % | FC 120-135
   Montée | 1:00 | 5,5 km/h | 9 %
 }
 Retour au calme | 5:00 | -0,5 km/h / 30 s | 0 % | finir à 3 km/h environ
 ```
 
 - En-tête optionnel : `titre: …` (défaut « Séance »), `type: salle | maison` (défaut `salle`).
+- **FC max de la séance** (décision du 01/11, v26.11.02) : `fc max: 155` dans l'en-tête (aussi
+  `FC max : 155 bpm`, `fréquence cardiaque max: …`). Écrite par Claude, **non modifiable dans l'app**
+  (l'ancien champ « Plafond de FC » et sa sauvegarde `fitpacer.cap` sont supprimés). Au-dessus : alerte
+  « danger » (bandeau rouge, bips, voix toutes les 20 s) quelle que soit la plage de l'étape en cours.
+  Absente : message « FC max absente de la séance, demandez à Claude », aucune alerte (pas de valeur par
+  défaut). Valeur hors 40–230 ou illisible : erreur de lecture.
+- **Plage de FC d'une étape** (facultative, v26.11.02) : une case `FC 120-145` (aussi `FC 120 à 145`,
+  `FC 120-145 bpm`) **dans n'importe quelle colonne après la quantité** ; elle est retirée des infos /
+  de la note (les autres cases gardent leur place). Une case commençant par `FC` suivi d'un nombre doit être
+  une plage valide (min < max, 40–230), sinon erreur ; `FC basse` reste une consigne. Si le max d'une plage
+  dépasse la FC max de la séance, la FC max de la séance prend cette valeur pour toute la séance (affiché :
+  « relevée par la plage FC de … »). Pendant l'étape : bloc « Plage FC » (jauge, état dans / en dessous /
+  au-dessus), FC du bandeau colorée (bleu / vert / orange, rouge au-dessus de la FC max) ; rappel vocal
+  « accélérez » / « ralentissez » après 15 s hors plage, puis au plus toutes les 30 s (pas pendant l'alerte
+  danger). Étape sans plage : rien de plus. Journal : segment « plage FC <étape> <min>-<max> : <n> % » à la
+  fin de la remarque ; fichier exporté : colonne « Plage FC (% du temps dedans) » et ligne dans « Analyses FC ».
 - Une étape par ligne : `Nom | quantité | info 1 | info 2 | note` (seuls nom et quantité obligatoires).
 - **Quantité chronométrée** : `4:00`, `45s`, `5` ou `5 min` (minutes). Virgule décimale acceptée.
 - **Quantité en répétitions** : `x10`, `x12 par bras`, `x8 par côté`, `max`. Forme de référence
@@ -300,10 +317,13 @@ Lignes venant de l'app FitPacer :
     « FC partielle : reçue <durée> sur <durée> (montre déconnectée) »  — la FC est alors absente ou incomplète
     « dérive FC <étape> ~<FC début>→<FC fin> »   (une par étape concernée)
     « récup FC <FC fin d'effort>→<FC à 1 min> en 1 min, <FC finale> en <n> min »
+    « plage FC <étape> <min>-<max> : <n> % »   (part du temps passé dans la plage prévue, tours regroupés ;
+                                               une par étape avec plage)
   Les segments sont séparés par « ; ». « – » si rien.
+
 Exemples de lignes produites par l'app (une ligne par séance) :
 - séance tapis avec la montre, une pause ajoutée pendant le 2e tour :
-31/10/2026 | salle | 35 min | Tapis incliné 35 min : Chauffe 5 min (4 → 5,5 km/h, 0 %) ; Marche 5x4 min (5,5 km/h, 7 %) ; Montée 5x1 min (5,5 km/h, 9 %) ; Retour au calme 5 min (5,5 → 3 km/h par 1 en 3:00, 0 %) ; pause ajoutée par l'utilisateur : Marche (tour 2) 1 min 20 (FC 128→112) | 95/127/140 | ressenti 7/10 | 82,4 kg | – | salle chaude ; dérive FC Marche ~124→138 ; récup FC 140→133 en 1 min, 107 en 5 min
+31/10/2026 | salle | 35 min | Tapis incliné 35 min : Chauffe 5 min (4 → 5,5 km/h, 0 %) ; Marche 5x4 min (5,5 km/h, 7 %) ; Montée 5x1 min (5,5 km/h, 9 %) ; Retour au calme 5 min (5,5 → 3 km/h par 1 en 3:00, 0 %) ; pause ajoutée par l'utilisateur : Marche (tour 2) 1 min 20 (FC 128→112) | 95/127/140 | ressenti 7/10 | 82,4 kg | – | salle chaude ; dérive FC Marche ~124→138 ; récup FC 140→133 en 1 min, 107 en 5 min ; plage FC Marche 120-135 : 79 %
 - séance maison sans la montre, un Dead bug sauté et une Planche écourtée :
 31/10/2026 | maison | 19 min | Maison pompes, gainage, corde : Échauffement 3 min ; Pompes 3x10 rép ; Planche 2x30 s ; Dead bug 2x8 rép par côté ; Étirements 4 min ; sauté : Dead bug (tour 3) ; écourté : Planche (tour 2) 0:18/0:30 | FC non reçue | ressenti 6/10 | – | – | montre non connectée : pas de FC (ni dérive ni récupération)
 
@@ -339,14 +359,14 @@ même contenu en `.txt` / `text/plain`). Contenu :
 
 ## Séance
 - Début : 2026-10-31 11:02:14 (heure locale, UTC+1) — Fin : 11:37:40 — Durée : 35:26
-- Type : salle — Plafond FC : 150 — Montre : Suunto Watch HR 1211 (ou « FC non reçue »)
+- Type : salle — FC max de la séance : 150 — Montre : Suunto Watch HR 1211 (ou « FC non reçue »)
 - Ressenti : 8/10 — Poids : – — Tour de taille : –
 - Commentaire : …
 
 ## Étapes
-| # | Tour | Étape | Prévu | Consignes | Début | Fin | Durée | Statut | FC moy | FC max |
-|---|------|-------|-------|-----------|-------|-----|-------|--------|--------|--------|
-| 1 | | Chauffe | 5:00 | 4 → 5,5 km/h, 0 % | 11:02:14 | 11:07:14 | 5:00 | fait | 92 | 104 |
+| # | Tour | Étape | Prévu | Consignes | Début | Fin | Durée | Statut | FC moy | FC max | Plage FC (% du temps dedans) |
+|---|------|-------|-------|-----------|-------|-----|-------|--------|--------|--------|------------------------------|
+| 1 | | Chauffe | 5:00 | 4 → 5,5 km/h, 0 % | 11:02:14 | 11:07:14 | 5:00 | fait | 92 | 104 | |
 | … |
 Statut : fait / sauté / écourté / non fait (arrêt) ; pauses du bouton Pause indiquées en ligne
 « pause ajoutée par l'utilisateur » avec début/fin, et récapitulées dans « Séance » (nombre, total).
@@ -366,7 +386,8 @@ heure,fc,etape
 
 ## Questions ouvertes
 
-- Garder le dernier texte collé et le plafond FC en `localStorage` (comme le prototype) : oui par défaut.
+- Garder le dernier texte collé en `localStorage` (comme le prototype) : oui par défaut. Le plafond FC
+  n'est plus gardé : il vient de la séance (`fc max:`, v26.11.02).
 - ~~URL de déploiement~~ : décidé le 31/10 — stable `agambier.github.io/fitpacer/` (`main`),
   développement `agambier.github.io/fitpacer/dev/` (branche de travail `ccr-*`).
 
@@ -382,5 +403,6 @@ heure,fc,etape
 
 - Historique local des séances et export.
 - Bibliothèque de séances favorites.
-- Zones FC personnalisées au lieu d'un simple plafond.
+- ~~Zones FC personnalisées au lieu d'un simple plafond~~ : fait en v26.11.02 (FC max + plages par étape,
+  écrites par Claude).
 - Partage direct vers l'app Claude (Web Share API).

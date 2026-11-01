@@ -8,11 +8,11 @@ import "./styles.css";
 import { registerSW } from "virtual:pwa-register";
 
 import { fmtClock, fmtLong } from "./core/format";
-import { amountTxt, paramLabel, parseProgram, weight, type Program } from "./core/program";
+import { amountTxt, hrZoneTxt, paramLabel, parseProgram, sessionHrMax, weight, type HrZone, type Program } from "./core/program";
 import { rampValueTxt } from "./core/ramp";
-import { RAMP_COUNTDOWN_MIN_LEN, Session, type Sample, type SessionEvent } from "./core/session";
+import { RAMP_COUNTDOWN_MIN_LEN, Session, zoneState, type Sample, type SessionEvent } from "./core/session";
 import { exportFileName, exportMarkdown, hrPerStep, hrStats, journalLine, RPE_TXT, activeDuration, type Feedback } from "./core/journal";
-import { finishAnnouncement, hrAlertAnnouncement, rampAnnouncement, resumeAnnouncement, stepAnnouncement } from "./core/speech";
+import { finishAnnouncement, hrAlertAnnouncement, hrZoneAnnouncement, rampAnnouncement, resumeAnnouncement, stepAnnouncement } from "./core/speech";
 import { APP_VERSION, IS_DEV_BUILD } from "./version";
 import { claudeInstructions, FORMAT_VERSION } from "./core/instructions";
 import { launchPopup, notesSince, RELEASES } from "./core/whatsnew";
@@ -78,11 +78,30 @@ function flashIcon(b: HTMLElement, ok: boolean, failTxt: string) {
 
 /* ---------- Editor ---------- */
 const src = $<HTMLTextAreaElement>("src");
-const cap = $<HTMLInputElement>("cap");
 src.value = store.get("fitpacer.text", store.get("guidee.texte", ""));
-cap.value = store.get("fitpacer.cap", store.get("guidee.plafond", "150"));
-const capValue = () => +cap.value || 150;
 let prog: Program = parseProgram("");
+/** HR alert threshold of the current session (written by Claude in the workout), or null. */
+const capValue = (p: Program = sess?.program ?? prog) => sessionHrMax(p).value;
+const NO_CAP_MSG = "FC max absente de la séance : pas d’alerte de FC trop haute. Demandez à Claude d’ajouter la ligne « fc max: … ».";
+
+/** Session HR max box on the program screen (read-only: written by Claude in the workout). */
+function renderCapInfo() {
+  const box = $("capInfo");
+  box.hidden = !prog.steps.length;
+  const c = sessionHrMax(prog);
+  box.classList.toggle("missing", c.value == null);
+  if (c.value == null) {
+    box.replaceChildren(el("span", "", "FC max absente de la séance"), el("span", "h", "Pas d’alerte de FC trop haute. Demandez à Claude d’ajouter la ligne « fc max: … »."));
+    return;
+  }
+  const t = el("span", "", "FC max de la séance");
+  const h = el("span", "h", c.raisedBy
+    ? "Relevée par la plage FC de « " + c.raisedBy.name + " » (fc max: " + prog.hrMax + " dans la séance). Alerte au-dessus."
+    : "Alerte au-dessus. Fixée par Claude dans la séance.");
+  const left = el("span");
+  left.append(t, h);
+  box.replaceChildren(left, el("b", "num", c.value + " bpm"));
+}
 
 function refreshPlan() {
   prog = parseProgram(src.value);
@@ -96,6 +115,7 @@ function refreshPlan() {
       const li = el("li", s.isRest ? "rest" : "");
       const a = el("span", "t" + (s.kind === "reps" ? " reps" : ""), s.kind === "time" ? fmtClock(s.dur) : s.reps === "Max" ? "max" : "x" + s.reps);
       const b = el("span", "d", s.name + (s.rep ? "  (" + s.rep.r + "/" + s.rep.n + ")" : "") + (s.kind === "reps" && s.extra ? ", " + s.extra : ""));
+      if (s.hr) b.append(el("span", "planz num", "FC " + hrZoneTxt(s.hr).replace("-", "–")));
       const c = el("span", "s", s.infos.join(" · "));
       li.append(a, b, c);
       return li;
@@ -106,9 +126,9 @@ function refreshPlan() {
     ? prog.steps.length + (prog.steps.length > 1 ? " étapes" : " étape") + ", environ " + fmtLong(prog.est) + (nReps ? " (dont " + nReps + " en répétitions, durée estimée)" : "") + "."
     : "Collez une séance pour commencer.";
   $<HTMLButtonElement>("startBtn").disabled = !prog.steps.length || prog.errors.length > 0;
+  renderCapInfo();
 }
 src.addEventListener("input", refreshPlan);
-cap.addEventListener("change", () => store.set("fitpacer.cap", cap.value));
 
 $("pasteBtn").addEventListener("click", async () => {
   try {
@@ -317,8 +337,49 @@ const monitor = new HeartRateMonitor({
 function renderHr() {
   const box = $("hrBox");
   const c = capValue();
-  $("hrVal").textContent = hrFresh() ? String(hr) : "--";
-  box.className = "hr num " + (!hrFresh() ? "stale" : hr! > c ? "over" : hr! > c - 10 ? "near" : "calm");
+  const fresh = hrFresh();
+  $("hrVal").textContent = fresh ? String(hr) : "--";
+  // With a step range: blue below, green inside, amber above; red above the session max in any case.
+  const z = sess ? zoneState(hr ?? 0, sess.step.hr) : null;
+  box.className = "hr num " + (!fresh ? "stale" : c != null && hr! > c ? "over" : z === "low" ? "low" : z === "high" ? "high" : z === "in" ? "calm" : c != null && hr! > c - 10 ? "near" : "calm");
+  renderZone();
+}
+
+/** Step HR range (gauge + status) and danger banner, refreshed with the HR. */
+function renderZone() {
+  const c = capValue();
+  const fresh = hrFresh();
+  $("danger").hidden = !(sess && fresh && c != null && hr! > c);
+  if (c != null) $("danger").textContent = "FC au-dessus de " + c + " : ralentissez, récupérez";
+  const box = $("zone");
+  const z: HrZone | null = sess?.step.hr ?? null;
+  box.hidden = !z;
+  if (!z) return;
+  $("zoneRng").textContent = z.lo + " – " + z.hi;
+  // Gauge scale: around the range, wide enough to show the session max.
+  const lo = z.lo - 30;
+  const hi = Math.max(z.hi + 20, (c ?? 0) + 10);
+  const pc = (v: number) => Math.min(100, Math.max(0, ((v - lo) / (hi - lo)) * 100));
+  const inEl = $("zoneIn");
+  inEl.style.left = pc(z.lo) + "%";
+  inEl.style.width = pc(z.hi) - pc(z.lo) + "%";
+  const capEl = $("zoneCap");
+  capEl.hidden = c == null;
+  if (c != null) capEl.style.left = pc(c) + "%";
+  const mk = $("zoneMk");
+  mk.hidden = !fresh;
+  const st = $("zoneSt");
+  if (!fresh) {
+    box.className = "zone";
+    st.textContent = "FC non reçue";
+    return;
+  }
+  mk.style.left = pc(hr!) + "%";
+  const state = c != null && hr! > c ? "danger" : zoneState(hr!, z);
+  box.className = "zone " + (state === "in" ? "ok" : state);
+  st.replaceChildren(
+    ...(state === "danger" ? ["FC max dépassée"] : state === "in" ? ["Dans la plage ✓"] : state === "low" ? ["En dessous", "accélérez"] : ["Au-dessus", "ralentissez"]).map((t) => el("span", "", t)),
+  );
 }
 btBtn.addEventListener("click", async () => {
   if (btBtn.dataset.s === "on") return;
@@ -332,21 +393,20 @@ let sess: Session | null = null;
 let runSource = "";
 const clock = { mono: () => performance.now(), wall: () => Date.now() };
 
-function sparkline(svg: SVGSVGElement, pts: Sample[], total: number) {
+function sparkline(svg: SVGSVGElement, pts: Sample[], total: number, c: number | null = capValue()) {
   svg.replaceChildren();
-  const c = capValue();
   const hrs = pts.map((p) => p.hr);
   const lo = Math.min(80, ...hrs) - 5;
-  const hi = Math.max(c + 5, ...hrs) + 5;
+  const hi = Math.max((c ?? 0) + 5, 120, ...hrs) + 5;
   const y = (v: number) => 70 - ((v - lo) / (hi - lo)) * 66 - 2;
   const ns = "http://www.w3.org/2000/svg";
   const line = document.createElementNS(ns, "line");
   line.setAttribute("class", "cap");
   line.setAttribute("x1", "0");
   line.setAttribute("x2", "300");
-  line.setAttribute("y1", String(y(c)));
-  line.setAttribute("y2", String(y(c)));
-  svg.append(line);
+  line.setAttribute("y1", String(y(c ?? 0)));
+  line.setAttribute("y2", String(y(c ?? 0)));
+  if (c != null) svg.append(line);
   if (pts.length < 2) return;
   const pl = document.createElementNS(ns, "polyline");
   pl.setAttribute("class", "ln");
@@ -383,6 +443,7 @@ function renderStep() {
     }),
   );
   params.hidden = !s.infos.length;
+  renderHr();
   $("sNote").textContent = s.note;
   const isReps = s.kind === "reps";
   $("doneBtn").hidden = !isReps;
@@ -496,7 +557,13 @@ function handle(events: SessionEvent[]) {
       }
       case "hrAlert":
         sounds.hrAlert();
-        say(hrAlertAnnouncement(capValue()));
+        say(hrAlertAnnouncement(capValue()!));
+        break;
+      case "hrZone":
+        if (sess.step.hr) {
+          sounds.countdown();
+          say(hrZoneAnnouncement(e.dir, sess.step.hr));
+        }
         break;
       case "finish":
         finish();
@@ -517,7 +584,10 @@ function loop() {
 setInterval(loop, 200);
 
 function startSession() {
-  showMsg(monitor.supported ? "" : "Séance sans FC : ce navigateur ne permet pas de connecter la montre (détails : bouton « Connecter la montre »).");
+  showMsg([
+    monitor.supported ? "" : "Séance sans FC : ce navigateur ne permet pas de connecter la montre (détails : bouton « Connecter la montre »).",
+    capValue(prog) == null ? NO_CAP_MSG : "",
+  ].filter(Boolean).join(" "));
   buildSegs();
   sparkline($<SVGSVGElement & HTMLElement>("spark"), [], prog.est);
   $("pauseBtn").textContent = "Pause";
@@ -546,7 +616,8 @@ $("watchYes").addEventListener("click", async () => {
   watchDialog.close();
   const ok = await monitor.connect(); // opens the Bluetooth chooser
   startSession();
-  if (!ok && btBtn.dataset.s !== "on") showMsg("Montre non connectée : séance sans FC. Le bouton en haut permet de la connecter à tout moment.");
+  if (!ok && btBtn.dataset.s !== "on")
+    showMsg("Montre non connectée : séance sans FC. Le bouton en haut permet de la connecter à tout moment." + (capValue(prog) == null ? " " + NO_CAP_MSG : ""));
 });
 $("watchNo").addEventListener("click", () => {
   watchDialog.close();
@@ -621,7 +692,7 @@ function finish() {
       return d;
     }),
   );
-  sparkline($<SVGSVGElement & HTMLElement>("spark2"), finished.samples, Math.max(dur, 1));
+  sparkline($<SVGSVGElement & HTMLElement>("spark2"), finished.samples, Math.max(dur, 1), capValue(finished.program));
   const tbl = $<HTMLTableElement>("perStep");
   tbl.replaceChildren();
   const per = hrPerStep(finished);
@@ -684,7 +755,7 @@ $("waist").addEventListener("input", (e) => {
   updateJournal();
 });
 
-const exportText = () => exportMarkdown(finished!, fb, { source: runSource, appVersion: APP_VERSION, cap: capValue(), device: monitor.name });
+const exportText = () => exportMarkdown(finished!, fb, { source: runSource, appVersion: APP_VERSION, device: monitor.name });
 $("copyBtn").addEventListener("click", async (e) => {
   const ok = await copyText($<HTMLTextAreaElement>("journal").value, $<HTMLTextAreaElement>("journal"));
   flashIcon(e.currentTarget as HTMLElement, ok, "Sélectionnée, copiez-la");

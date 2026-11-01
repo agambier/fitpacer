@@ -1,6 +1,6 @@
 // Session summary: HR stats, HR analyses, journal line and Markdown export.
 import { fmtClock, fmtDateFr, fmtDateIso, fmtDur, fmtLong, fmtNum, fmtTime, fmtUtcOffset, parseNum, slug } from "./format";
-import { amountTxt, type Step } from "./program";
+import { amountTxt, hrZoneTxt, sessionHrMax, type HrZone, type Step } from "./program";
 import { stepStatuses, type Sample, type Session, type StepStatus } from "./session";
 
 export interface Feedback {
@@ -93,6 +93,36 @@ export function hrRecovery(sess: Session): string | null {
   const mins = Math.round((tLast - tEnd) / 60);
   if (fin != null && mins >= 2) txt += ", " + Math.round(fin) + " en " + mins + " min";
   return txt;
+}
+
+/* ---------- Step HR ranges ---------- */
+
+/** Below this many HR samples (s) in a step range, no share is computed. */
+export const ZONE_MIN_SAMPLES = 30;
+
+/** Share (0-100) of the HR samples of the steps with index in `idx` that fall within z. Null if too few samples. */
+function zoneShare(sess: Session, idx: (i: number) => boolean, z: HrZone): number | null {
+  const xs = sess.samples.filter((p) => idx(p.idx));
+  if (xs.length < ZONE_MIN_SAMPLES) return null;
+  return Math.round((xs.filter((p) => p.hr >= z.lo && p.hr <= z.hi).length / xs.length) * 100);
+}
+
+/** "plage FC Marche rapide 120-145 : 78 %" for each step with a range (rounds grouped). */
+export function hrZoneSegments(sess: Session): string[] {
+  const groups = new Map<string, { name: string; z: HrZone; idx: Set<number> }>();
+  sess.program.steps.forEach((s, i) => {
+    if (!s.hr) return;
+    const key = s.name + "|" + hrZoneTxt(s.hr);
+    const g = groups.get(key) || { name: s.name, z: s.hr, idx: new Set<number>() };
+    g.idx.add(i);
+    groups.set(key, g);
+  });
+  const out: string[] = [];
+  groups.forEach((g) => {
+    const pc = zoneShare(sess, (i) => g.idx.has(i), g.z);
+    if (pc != null) out.push("plage FC " + g.name + " " + hrZoneTxt(g.z) + " : " + pc + " %");
+  });
+  return out;
 }
 
 /* ---------- HR availability ---------- */
@@ -220,7 +250,7 @@ export function journalLine(sess: Session, fb: Feedback): string {
   const statuses = stepStatuses(sess);
   const content = [...doneContent(p.steps, statuses), ...deviations(sess, statuses)];
   const st = hrStats(sess.samples);
-  const remark = [clean(fb.comment), hrWarning(sess) || "", ...hrDrift(sess), hrRecovery(sess) || ""].filter(Boolean).join(" ; ");
+  const remark = [clean(fb.comment), hrWarning(sess) || "", ...hrDrift(sess), hrRecovery(sess) || "", ...hrZoneSegments(sess)].filter(Boolean).join(" ; ");
   return [
     fmtDateFr(new Date(sess.startWall)),
     p.type,
@@ -255,7 +285,6 @@ export interface ExportMeta {
   source: string;
   /** "v26.10.01" */
   appVersion?: string;
-  cap: number;
   device: string | null;
 }
 
@@ -279,7 +308,11 @@ export function exportMarkdown(sess: Session, fb: Feedback, meta: ExportMeta): s
   L.push("## Séance", "");
   L.push("- Début : " + fmtDateIso(start) + " " + fmtTime(start) + " (heure locale, " + fmtUtcOffset(start) + ") — Fin : " + fmtTime(end) +
     " — Durée active : " + fmtClock(activeDuration(sess)) + " — Durée totale (pauses incluses) : " + fmtClock((sess.endWall - sess.startWall) / 1000));
-  L.push("- Type : " + p.type + " — Plafond FC : " + meta.cap + " — Capteur FC : " + (meta.device || "aucun") +
+  const cap = sessionHrMax(p);
+  const capTxt = cap.value == null
+    ? "absente de la séance (pas d'alerte)"
+    : cap.value + (cap.raisedBy ? " (relevée par la plage FC de " + cap.raisedBy.label + " ; fc max: " + p.hrMax + " dans la séance)" : "");
+  L.push("- Type : " + p.type + " — FC max de la séance : " + capTxt + " — Capteur FC : " + (meta.device || "aucun") +
     " — FC min/moy/max : " + (st ? st.min + "/" + st.avg + "/" + st.max : "FC non reçue"));
   const warn = hrWarning(sess);
   if (warn) L.push("- ⚠️ " + warn.charAt(0).toUpperCase() + warn.slice(1) + ". Les données de FC de cette séance sont incomplètes : se fier au fichier .fit de la montre s'il existe.");
@@ -293,12 +326,14 @@ export function exportMarkdown(sess: Session, fb: Feedback, meta: ExportMeta): s
 
   L.push("## Étapes", "");
   L.push("Heures locales. Statut : fait / écourté / sauté / arrêt (étape en cours quand la séance a été terminée). Les étapes jamais atteintes sont listées à la fin.", "");
-  L.push("| # | Tour | Étape | Prévu | Consignes | Début | Fin | Durée | Statut | FC moy | FC max |");
-  L.push("|---|------|-------|-------|-----------|-------|-----|-------|--------|--------|--------|");
+  L.push("| # | Tour | Étape | Prévu | Consignes | Début | Fin | Durée | Statut | FC moy | FC max | Plage FC (% du temps dedans) |");
+  L.push("|---|------|-------|-------|-----------|-------|-----|-------|--------|--------|--------|------------------------------|");
   type Row = { wall: number; line: string };
   const rows: Row[] = sess.logs.map((l) => {
     const s = p.steps[l.idx];
     const hrs = sess.samples.filter((x) => x.t >= l.t0 && x.t < l.t1).map((x) => x.hr);
+    const z = s.hr;
+    const zoneCell = !z ? "" : hrZoneTxt(z) + (hrs.length ? " (" + Math.round((hrs.filter((v) => v >= z.lo && v <= z.hi).length / hrs.length) * 100) + " %)" : "");
     return {
       wall: l.wall0,
       line: "| " + [
@@ -313,6 +348,7 @@ export function exportMarkdown(sess: Session, fb: Feedback, meta: ExportMeta): s
         l.status,
         hrs.length ? Math.round(mean(hrs)) : "–",
         hrs.length ? Math.max(...hrs) : "–",
+        zoneCell,
       ].join(" | ") + " |",
     };
   });
@@ -322,7 +358,7 @@ export function exportMarkdown(sess: Session, fb: Feedback, meta: ExportMeta): s
     const what = counted ? "pause ajoutée par l'utilisateur" : "pause courte (moins de " + MIN_USER_PAUSE + " s, non comptée)";
     rows.push({
       wall: pz.wall0,
-      line: "| | | *" + what + "* | | " + (counted ? pauseHrTxt(pz) : "") + " | " + fmtTime(new Date(pz.wall0)) + " | " + fmtTime(new Date(w1)) + " | " + fmtClock((w1 - pz.wall0) / 1000) + " | pause | | |",
+      line: "| | | *" + what + "* | | " + (counted ? pauseHrTxt(pz) : "") + " | " + fmtTime(new Date(pz.wall0)) + " | " + fmtTime(new Date(w1)) + " | " + fmtClock((w1 - pz.wall0) / 1000) + " | pause | | | |",
     });
   });
   rows.sort((a, b) => a.wall - b.wall).forEach((r) => L.push(r.line));
@@ -337,7 +373,7 @@ export function exportMarkdown(sess: Session, fb: Feedback, meta: ExportMeta): s
     perStep.forEach((x) => L.push("| " + md(x.label) + " | " + x.avg + " | " + x.max + " |"));
     L.push("");
   }
-  const analyses = [...hrDrift(sess), hrRecovery(sess) || ""].filter(Boolean);
+  const analyses = [...hrDrift(sess), hrRecovery(sess) || "", ...hrZoneSegments(sess)].filter(Boolean);
   if (analyses.length) L.push("## Analyses FC", "", ...analyses.map((a) => "- " + a), "");
 
   L.push("## Fréquence cardiaque (toutes les 5 s)", "");

@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { Session, type Clock } from "../src/core/session";
-import type { Program } from "../src/core/program";
+import { sessionHrMax, type Program } from "../src/core/program";
 
 export const example = (name: string) => readFileSync(new URL("../examples/" + name, import.meta.url), "utf8");
 
@@ -12,7 +12,7 @@ export class FakeClock implements Clock {
 }
 
 /** Runs the session, ticking every 200 ms for `sec` seconds, feeding hr(t). */
-export function advance(sess: Session, clock: FakeClock, sec: number, hr?: (t: number) => number | null, cap = 150) {
+export function advance(sess: Session, clock: FakeClock, sec: number, hr?: (t: number) => number | null, cap: number | null = sessionHrMax(sess.program).value) {
   const events = [];
   const end = clock.ms + sec * 1000;
   while (clock.ms < end && sess.state !== "finished") {

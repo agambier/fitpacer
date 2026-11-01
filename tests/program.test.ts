@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseAmount, parseDur, parseProgram } from "../src/core/program";
+import { parseAmount, parseDur, parseProgram, sessionHrMax } from "../src/core/program";
 import { parseRamp, rampAt, rampValue, rampValueTxt } from "../src/core/ramp";
 import { claudeInstructions, EXAMPLE_HOME, EXAMPLE_TREADMILL } from "../src/core/instructions";
 import { example } from "./helpers";
@@ -146,5 +146,38 @@ describe("ramps", () => {
     expect(rampAt(r, 299, 300)).toMatchObject({ level: 3, value: 5.5, nextAt: null });
     const d = parseRamp("5,5 → 3 km/h")!;
     expect(rampAt(d, 50, 300).value).toBe(5);
+  });
+});
+
+describe("HR max and step HR ranges", () => {
+  it("reads the session HR max from the header", () => {
+    expect(parseProgram("titre: T\nfc max: 155\nA | 1:00").hrMax).toBe(155);
+    expect(parseProgram("FC max : 160 bpm\nA | 1:00").hrMax).toBe(160);
+    expect(parseProgram("A | 1:00").hrMax).toBeNull();
+    expect(parseProgram("fc max: beaucoup\nA | 1:00").errors[0]).toMatch(/^Ligne 1 : FC max illisible/);
+    expect(parseProgram("fc max: 300\nA | 1:00").errors).toHaveLength(1);
+  });
+
+  it("reads a step HR range in any column after the amount", () => {
+    const p = parseProgram("A | 10:00 | 6 km/h | 3 % | FC 120-145 | respirer\nB | 5:00 | FC 110 à 130\nC | 5:00 | | | FC 100-120 bpm\nD | 1:00 | FC basse");
+    expect(p.errors).toEqual([]);
+    expect(p.steps[0]).toMatchObject({ infos: ["6 km/h", "3 %"], note: "respirer", hr: { lo: 120, hi: 145 } });
+    expect(p.steps[1]).toMatchObject({ infos: [], note: "", hr: { lo: 110, hi: 130 } });
+    expect(p.steps[2]).toMatchObject({ infos: [], hr: { lo: 100, hi: 120 } });
+    expect(p.steps[3]).toMatchObject({ infos: ["FC basse"], hr: null }); // plain instruction, not a range
+    expect(parseProgram("A | 10:00 | 6 km/h | 3 % | FC 120–145").steps[0].hr).toEqual({ lo: 120, hi: 145 }); // en dash pasted from a chat
+  });
+
+  it("rejects unreadable ranges", () => {
+    expect(parseProgram("A | 1:00 | FC 145-120").errors[0]).toMatch(/^Ligne 1 : plage de FC illisible/);
+    expect(parseProgram("A | 1:00 | FC 120").errors).toHaveLength(1);
+  });
+
+  it("raises the session HR max to the highest step range", () => {
+    expect(sessionHrMax(parseProgram("fc max: 150\nA | 1:00 | FC 120-140"))).toMatchObject({ value: 150, raisedBy: null });
+    const r = sessionHrMax(parseProgram("fc max: 140\nA | 1:00 | FC 120-145\nB | 1:00 | FC 130-150"));
+    expect(r.value).toBe(150);
+    expect(r.raisedBy?.name).toBe("B");
+    expect(sessionHrMax(parseProgram("A | 1:00 | FC 120-145")).value).toBeNull(); // no header: no alert
   });
 });

@@ -1,7 +1,7 @@
 // Spoken announcements (French). Pure text builders; the browser part lives in device/voice.ts.
 import { fmtNum } from "./format";
 import { rampValueTxt, type Ramp } from "./ramp";
-import type { Step } from "./program";
+import type { HrZone, Step } from "./program";
 import { COUNTDOWN } from "./session";
 
 /** 90 -> "1 minute 30", 45 -> "45 secondes", 300 -> "5 minutes" */
@@ -69,7 +69,7 @@ export function stepAnnouncement(s: Step, next: Step | undefined): string {
     return s.kind === "reps" || fits(full, s.dur - COUNTDOWN - 1) ? full : "Repos, " + amountPhrase(s) + "." + nextTxt;
   }
   const infos = s.infos.map(sayInfo).join(", ");
-  const base = s.name + ". " + amountPhrase(s) + "." + (infos ? " " + infos + "." : "");
+  const base = s.name + ". " + amountPhrase(s) + "." + (infos ? " " + infos + "." : "") + (s.hr ? " " + sayZone(s.hr) : "");
   if (s.kind === "reps") return base + " " + (s.note ? s.note + ". " : "") + REPS_DONE;
   const budget = s.dur - COUNTDOWN - 1; // finish before the 5-4-3-2-1 beeps
   const full = base + (s.note ? " " + s.note + "." : "");
@@ -107,4 +107,11 @@ export function resumeAnnouncement(s: Step, next: Step | undefined, remaining: n
 }
 
 export const finishAnnouncement = () => "Séance terminée. Bravo !";
-export const hrAlertAnnouncement = (cap: number) => "Fréquence cardiaque au-dessus de " + fmtNum(cap) + ".";
+/** "Fréquence cardiaque entre 120 et 145." */
+export const sayZone = (z: HrZone) => "Fréquence cardiaque entre " + z.lo + " et " + z.hi + ".";
+
+/** Reminder when the HR stays out of the step range. */
+export const hrZoneAnnouncement = (dir: "low" | "high", z: HrZone) =>
+  dir === "high" ? "Fréquence cardiaque au-dessus de " + z.hi + " : ralentissez." : "Fréquence cardiaque sous " + z.lo + " : accélérez.";
+
+export const hrAlertAnnouncement = (cap: number) => "Fréquence cardiaque au-dessus de " + fmtNum(cap) + " : ralentissez, récupérez.";

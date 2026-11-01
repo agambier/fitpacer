@@ -67,4 +67,42 @@ describe("Session", () => {
     expect(sess.samples.length).toBeGreaterThanOrEqual(49);
     expect(ev.filter((e) => e.type === "hrAlert")).toHaveLength(3);
   });
+
+  it("no HR max: no alert", () => {
+    const { sess, clock } = start(parseProgram("A | 1:00"));
+    expect(advance(sess, clock, 50, () => 200).filter((e) => e.type === "hrAlert")).toEqual([]);
+  });
+
+  it("step HR range: reminder after 15 s out of range, then every 30 s", () => {
+    const { sess, clock } = start(parseProgram("fc max: 160\nA | 5:00 | FC 120-145\nB | 1:00"));
+    let ev = advance(sess, clock, 14, () => 150);
+    expect(ev.filter((e) => e.type === "hrZone")).toEqual([]);
+    ev = advance(sess, clock, 2, () => 150);
+    expect(ev.filter((e) => e.type === "hrZone")).toEqual([{ type: "hrZone", dir: "high", hr: 150 }]);
+    ev = advance(sess, clock, 40, () => 150); // +30 s
+    expect(ev.filter((e) => e.type === "hrZone")).toHaveLength(1);
+    ev = advance(sess, clock, 10, () => 130); // back in range: reset
+    ev = advance(sess, clock, 14, () => 110);
+    expect(ev.filter((e) => e.type === "hrZone")).toEqual([]);
+    ev = advance(sess, clock, 3, () => 110); // out since 67 s (the sample at 66 s was in range)
+    expect(ev.filter((e) => e.type === "hrZone")).toEqual([{ type: "hrZone", dir: "low", hr: 110 }]);
+  });
+
+  it("above the session HR max: danger alert only, not the range reminder", () => {
+    const { sess, clock } = start(parseProgram("fc max: 150\nA | 5:00 | FC 120-140"));
+    const ev = advance(sess, clock, 40, () => 155);
+    expect(ev.filter((e) => e.type === "hrZone")).toEqual([]);
+    expect(ev.filter((e) => e.type === "hrAlert")).toHaveLength(2);
+  });
+
+  it("a range above the HR max raises the alert threshold", () => {
+    const { sess, clock } = start(parseProgram("fc max: 140\nA | 5:00 | FC 120-150"));
+    expect(advance(sess, clock, 40, () => 148).filter((e) => e.type === "hrAlert")).toEqual([]);
+    expect(advance(sess, clock, 5, () => 152).filter((e) => e.type === "hrAlert")).toHaveLength(1);
+  });
+
+  it("no range reminder on a step without range", () => {
+    const { sess, clock } = start(parseProgram("fc max: 160\nA | 5:00"));
+    expect(advance(sess, clock, 60, () => 100).filter((e) => e.type === "hrZone")).toEqual([]);
+  });
 });

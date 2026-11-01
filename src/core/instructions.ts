@@ -5,15 +5,17 @@ export const FORMAT_VERSION = "v1";
 
 export const EXAMPLE_TREADMILL = `titre: Tapis incliné 35 min
 type: salle
+fc max: 150
 Chauffe | 5:00 | 4 → 5,5 km/h | 0 % | monter progressivement
 x5 {
-  Marche | 4:00 | 5,5 km/h | 7 %
+  Marche | 4:00 | 5,5 km/h | 7 % | FC 120-135
   Montée | 1:00 | 5,5 km/h | 9 %
 }
 Retour au calme | 5:00 | 5,5 → 3 km/h par 1 en 3:00 | 0 %`;
 
 export const EXAMPLE_HOME = `titre: Maison pompes, gainage, corde
 type: maison
+fc max: 150
 Échauffement | 3:00 | | | rotations d’épaules, montées de genoux sur place
 x3 {
   Pompes | x10 | | | garder 2-3 rép en réserve
@@ -27,7 +29,7 @@ x3 {
 
 // Journal lines produced by the app for the two examples above (kept in sync by tests/instructions.test.ts).
 export const EXAMPLE_JOURNAL_TREADMILL =
-  "31/10/2026 | salle | 35 min | Tapis incliné 35 min : Chauffe 5 min (4 → 5,5 km/h, 0 %) ; Marche 5x4 min (5,5 km/h, 7 %) ; Montée 5x1 min (5,5 km/h, 9 %) ; Retour au calme 5 min (5,5 → 3 km/h par 1 en 3:00, 0 %) ; pause ajoutée par l'utilisateur : Marche (tour 2) 1 min 20 (FC 128→112) | 95/127/140 | ressenti 7/10 | 82,4 kg | – | salle chaude ; dérive FC Marche ~124→138 ; récup FC 140→133 en 1 min, 107 en 5 min";
+  "31/10/2026 | salle | 35 min | Tapis incliné 35 min : Chauffe 5 min (4 → 5,5 km/h, 0 %) ; Marche 5x4 min (5,5 km/h, 7 %) ; Montée 5x1 min (5,5 km/h, 9 %) ; Retour au calme 5 min (5,5 → 3 km/h par 1 en 3:00, 0 %) ; pause ajoutée par l'utilisateur : Marche (tour 2) 1 min 20 (FC 128→112) | 95/127/140 | ressenti 7/10 | 82,4 kg | – | salle chaude ; dérive FC Marche ~124→138 ; récup FC 140→133 en 1 min, 107 en 5 min ; plage FC Marche 120-135 : 79 %";
 
 export const EXAMPLE_JOURNAL_HOME =
   "31/10/2026 | maison | 19 min | Maison pompes, gainage, corde : Échauffement 3 min ; Pompes 3x10 rép ; Planche 2x30 s ; Dead bug 2x8 rép par côté ; Étirements 4 min ; sauté : Dead bug (tour 3) ; écourté : Planche (tour 2) 0:18/0:30 | FC non reçue | ressenti 6/10 | – | – | montre non connectée : pas de FC (ni dérive ni récupération)";
@@ -52,6 +54,8 @@ Lignes venant de l'app FitPacer :
     « FC partielle : reçue <durée> sur <durée> (montre déconnectée) »  — la FC est alors absente ou incomplète
     « dérive FC <étape> ~<FC début>→<FC fin> »   (une par étape concernée)
     « récup FC <FC fin d'effort>→<FC à 1 min> en 1 min, <FC finale> en <n> min »
+    « plage FC <étape> <min>-<max> : <n> % »   (part du temps passé dans la plage prévue, tours regroupés ;
+                                               une par étape avec plage)
   Les segments sont séparés par « ; ». « – » si rien.
 
 Exemples de lignes produites par l'app (une ligne par séance) :
@@ -66,9 +70,10 @@ Conserve ces lignes telles quelles ; tu peux compléter la remarque avec les don
 // Short session used to show Claude the file exported at the end of a session.
 export const EXAMPLE_SHORT = `titre: Tapis court
 type: salle
+fc max: 150
 Chauffe | 3:00 | 4 → 5 km/h | 0 %
 x2 {
-  Marche | 2:00 | 5,5 km/h | 7 %
+  Marche | 2:00 | 5,5 km/h | 7 % | FC 120-135
   Montée | 1:00 | 5,5 km/h | 9 %
 }
 Retour au calme | 3:00 | 5 → 3 km/h | 0 %`;
@@ -80,12 +85,12 @@ export const EXAMPLE_EXPORT = [
   "",
   "## Ligne de journal",
   "",
-  "31/10/2026 | salle | 11 min | Tapis court : Chauffe 3 min (4 → 5 km/h, 0 %) ; Marche 2x2 min (5,5 km/h, 7 %) ; Montée 1 min (5,5 km/h, 9 %) ; Retour au calme 3 min (5 → 3 km/h, 0 %) ; écourté : Montée (tour 2) 0:40/1:00 ; pause ajoutée par l'utilisateur : Marche (tour 1) 50 s (FC 125→118) | 92/122/138 | ressenti 7/10 | – | – | jambes lourdes ; dérive FC Marche ~126→135 ; récup FC 138→126 en 1 min, 103 en 3 min",
+  "31/10/2026 | salle | 11 min | Tapis court : Chauffe 3 min (4 → 5 km/h, 0 %) ; Marche 2x2 min (5,5 km/h, 7 %) ; Montée 1 min (5,5 km/h, 9 %) ; Retour au calme 3 min (5 → 3 km/h, 0 %) ; écourté : Montée (tour 2) 0:40/1:00 ; pause ajoutée par l'utilisateur : Marche (tour 1) 50 s (FC 125→118) | 92/122/138 | ressenti 7/10 | – | – | jambes lourdes ; dérive FC Marche ~126→135 ; récup FC 138→126 en 1 min, 103 en 3 min ; plage FC Marche 120-135 : 95 %",
   "",
   "## Séance",
   "",
   "- Début : 2026-10-31 11:02:14 (heure locale, UTC+1) — Fin : 11:14:44 — Durée active : 11:40 — Durée totale (pauses incluses) : 12:30",
-  "- Type : salle — Plafond FC : 150 — Capteur FC : Suunto Race — FC min/moy/max : 92/122/138",
+  "- Type : salle — FC max de la séance : 150 — Capteur FC : Suunto Race — FC min/moy/max : 92/122/138",
   "- Ressenti : 7/10 (Dur) — Poids : – — Tour de taille : –",
   "- Commentaire : jambes lourdes",
   "- Arrêtée avant la fin : non",
@@ -95,15 +100,15 @@ export const EXAMPLE_EXPORT = [
   "",
   "Heures locales. Statut : fait / écourté / sauté / arrêt (étape en cours quand la séance a été terminée). Les étapes jamais atteintes sont listées à la fin.",
   "",
-  "| # | Tour | Étape | Prévu | Consignes | Début | Fin | Durée | Statut | FC moy | FC max |",
-  "|---|------|-------|-------|-----------|-------|-----|-------|--------|--------|--------|",
-  "| 1 |  | Chauffe | 3:00 | 4 → 5 km/h, 0 % | 11:02:14 | 11:05:14 | 3:00 | fait | 107 | 122 |",
-  "| 2 | 1/2 | Marche | 2:00 | 5,5 km/h, 7 % | 11:05:14 | 11:08:04 | 2:00 | fait | 125 | 128 |",
-  "| | | *pause ajoutée par l'utilisateur* | | FC 125→118 | 11:06:14 | 11:07:04 | 0:50 | pause | | |",
-  "| 3 | 1/2 | Montée | 1:00 | 5,5 km/h, 9 % | 11:08:04 | 11:09:04 | 1:00 | fait | 129 | 130 |",
-  "| 4 | 2/2 | Marche | 2:00 | 5,5 km/h, 7 % | 11:09:04 | 11:11:04 | 2:00 | fait | 133 | 136 |",
-  "| 5 | 2/2 | Montée | 1:00 | 5,5 km/h, 9 % | 11:11:04 | 11:11:44 | 0:40 | écourté | 137 | 138 |",
-  "| 6 |  | Retour au calme | 3:00 | 5 → 3 km/h, 0 % | 11:11:44 | 11:14:44 | 3:00 | fait | 120 | 138 |",
+  "| # | Tour | Étape | Prévu | Consignes | Début | Fin | Durée | Statut | FC moy | FC max | Plage FC (% du temps dedans) |",
+  "|---|------|-------|-------|-----------|-------|-----|-------|--------|--------|--------|------------------------------|",
+  "| 1 |  | Chauffe | 3:00 | 4 → 5 km/h, 0 % | 11:02:14 | 11:05:14 | 3:00 | fait | 107 | 122 |  |",
+  "| 2 | 1/2 | Marche | 2:00 | 5,5 km/h, 7 % | 11:05:14 | 11:08:04 | 2:00 | fait | 125 | 128 | 120-135 (100 %) |",
+  "| | | *pause ajoutée par l'utilisateur* | | FC 125→118 | 11:06:14 | 11:07:04 | 0:50 | pause | | | |",
+  "| 3 | 1/2 | Montée | 1:00 | 5,5 km/h, 9 % | 11:08:04 | 11:09:04 | 1:00 | fait | 129 | 130 |  |",
+  "| 4 | 2/2 | Marche | 2:00 | 5,5 km/h, 7 % | 11:09:04 | 11:11:04 | 2:00 | fait | 133 | 136 | 120-135 (89 %) |",
+  "| 5 | 2/2 | Montée | 1:00 | 5,5 km/h, 9 % | 11:11:04 | 11:11:44 | 0:40 | écourté | 137 | 138 |  |",
+  "| 6 |  | Retour au calme | 3:00 | 5 → 3 km/h, 0 % | 11:11:44 | 11:14:44 | 3:00 | fait | 120 | 138 |  |",
   "",
   "## FC par exercice",
   "",
@@ -118,6 +123,7 @@ export const EXAMPLE_EXPORT = [
   "",
   "- dérive FC Marche ~126→135",
   "- récup FC 138→126 en 1 min, 103 en 3 min",
+  "- plage FC Marche 120-135 : 95 %",
   "",
   "## Fréquence cardiaque (toutes les 5 s)",
   "",
@@ -136,9 +142,10 @@ export const EXAMPLE_EXPORT = [
   "```",
   "titre: Tapis court",
   "type: salle",
+  "fc max: 150",
   "Chauffe | 3:00 | 4 → 5 km/h | 0 %",
   "x2 {",
-  "  Marche | 2:00 | 5,5 km/h | 7 %",
+  "  Marche | 2:00 | 5,5 km/h | 7 % | FC 120-135",
   "  Montée | 1:00 | 5,5 km/h | 9 %",
   "}",
   "Retour au calme | 3:00 | 5 → 3 km/h | 0 %",
@@ -147,12 +154,12 @@ export const EXAMPLE_EXPORT = [
 
 export const EXPORT_RULES = `Je peux aussi te donner le fichier « fitpacer-….md » que l'app me fait télécharger en fin de
 séance. Il commence par la ligne de journal, puis détaille la séance :
-- Séance : heures de début et de fin, durée active (sans mes pauses) et totale, capteur FC, ressenti,
-  commentaire, pauses que j'ai ajoutées ;
+- Séance : heures de début et de fin, durée active (sans mes pauses) et totale, FC max de la séance,
+  capteur FC, ressenti, commentaire, pauses que j'ai ajoutées ;
 - Étapes : une ligne par étape dans l'ordre où je les ai faites (tour, prévu, consignes, heures de début et
-  de fin, durée réelle, statut fait / écourté / sauté / arrêt, FC moyenne et max), avec mes pauses
-  ajoutées (FC au début et à la fin de la pause) ;
-- FC par exercice (tous les tours regroupés), puis les analyses FC (dérive, récupération) ;
+  de fin, durée réelle, statut fait / écourté / sauté / arrêt, FC moyenne et max, plage FC prévue et
+  part du temps passé dedans), avec mes pauses ajoutées (FC au début et à la fin de la pause) ;
+- FC par exercice (tous les tours regroupés), puis les analyses FC (dérive, récupération, plages) ;
 - FC toutes les 5 s (heure, FC, numéro de l'étape dans le tableau) et le programme collé.
 Sers-t'en pour voir comment s'est passé chaque exercice (FC qui monte d'un tour à l'autre, étape écourtée
 ou sautée, pause prise à un moment précis) et pour adapter la séance suivante. Si je te donne aussi le
@@ -177,6 +184,7 @@ Donne la séance dans un seul bloc de texte, sans autre contenu dedans.
 En-tête :
 titre: <titre court>
 type: salle   (ou maison)
+fc max: <FC max de la séance, en bpm>
 
 Puis une étape par ligne :
 Nom | quantité | info 1 | info 2 | note
@@ -198,6 +206,14 @@ Nom | quantité | info 1 | info 2 | note
   N'écris pas de consigne du type « −0,5 km/h / 30 s ».
 - Repos : une étape nommée « Repos » avec une durée (Repos | 1:30). L'app annonce l'exercice suivant.
 - Répétition d'un bloc : « x3 { » (ou « 3x { ») sur une ligne, les étapes, puis « } » sur une ligne.
+- FC max (obligatoire) : « fc max: 155 » dans l'en-tête, choisie selon mon profil et le but de la
+  séance. Au-dessus, l'app donne l'alerte (bandeau rouge, bips, voix) pendant toute la séance, quelle que
+  soit la plage de l'étape. Je ne peux pas la modifier dans l'app : sans elle, aucune alerte.
+- Plage de FC d'une étape (facultative) : ajoute une case « FC 120-145 » après la quantité, en général
+  après les infos (Marche rapide | 10:00 | 6 km/h | 3 % | FC 120-145 | respirer par le nez). L'app
+  affiche la plage, me dit si je suis dedans et me le rappelle à voix haute (« accélérez » / « ralentissez »)
+  si j'en sors plus de 15 s. Une plage dont le haut dépasse la FC max relève la FC max de la séance à
+  cette valeur : garde le haut des plages sous la FC max.
 - Note : courte, utile pendant l'effort (technique, respiration). Elle est lue à voix haute.
 - Termine toujours par un retour au calme ou des étirements chronométrés (au moins 3 min) :
   l'app s'en sert pour mesurer ma récupération cardiaque.
