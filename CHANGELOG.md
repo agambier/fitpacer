@@ -3,6 +3,25 @@
 Format `vAA.MM.XX` (voir `CLAUDE.md`). Seules les versions stables figurent ici : chaque section sert
 de texte à la release GitHub créée automatiquement.
 
+## v26.11.02
+
+**FC max et plages de FC**
+- La FC max de la séance est écrite dans la séance par l’IA (`fc max: 155`) et ne se règle plus dans l’app (champ « Plafond de FC » supprimé, plus rien n’est gardé sur le téléphone). Absente : message « demandez à l’IA », pas d’alerte.
+- Au-dessus de la FC max : bandeau rouge en plus des bips et de la voix, quelle que soit la plage de l’exercice.
+- Plage de FC par exercice (`FC 120-145`, dans n’importe quelle case après la durée) : badge sur l’écran programme ; pendant l’exercice, jauge et état « Dans la plage » / « En dessous : accélérez » / « Au-dessus : ralentissez » (FC colorée en conséquence), « FC non reçue » en orange ; rappel vocal après 15 s hors plage, puis toutes les 30 s ; la plage est annoncée au début de l’exercice.
+- Une plage qui dépasse la FC max relève la FC max de la séance (affiché sur l’écran programme).
+
+**Séance**
+- « Terminer la séance » devient un vrai bouton, toujours visible en bas de l’écran.
+
+**Bilan**
+- Ligne de journal : segment « plage FC <exercice> <min>-<max> : <n> % » (temps passé dans la plage).
+- Fichier exporté : FC max de la séance, colonne « Plage FC (% du temps dedans) » dans le tableau des étapes, plages dans « Analyses FC ».
+
+**Consignes pour l’IA** (anciennement « Consignes pour Claude »)
+- Format `fc max:` et `FC 120-145` expliqués ; exemples de lignes de journal et exemple complet du fichier exporté (résumé, tableau des étapes…), produits par l’app et vérifiés par les tests.
+- Les textes de l’app parlent de « l’IA » (Claude, ChatGPT…) au lieu de Claude ; fichier `fitpacer-consignes-ia.md`.
+
 ## v26.11.01
 
 **Nouveautés à l’écran**
