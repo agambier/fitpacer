@@ -248,6 +248,7 @@ td.r, th.r { text-align: right; }
 .zone .capMk { position: absolute; top: -4px; bottom: -4px; width: 0; border-left: 2px dashed var(--hot); }
 .zone.ok .st { color: var(--ok); } .zone.low .st { color: var(--ramp); } .zone.high .st { color: var(--amber); } .zone.danger .st { color: var(--hot); }
 .zone.danger .mk { background: var(--hot); }
+.zone.nohr .st { color: var(--amber); }
 
 /* Above the session HR max. */
 .dangerBanner { border: 3px solid var(--hot); background: color-mix(in srgb, var(--hot) 16%, var(--surface)); border-radius: 12px; padding: 10px 14px; font: 700 22px/1.15 "Barlow Condensed", Barlow, sans-serif; color: var(--hot); text-align: center; }

@@ -370,8 +370,8 @@ function renderZone() {
   mk.hidden = !fresh;
   const st = $("zoneSt");
   if (!fresh) {
-    box.className = "zone";
-    st.textContent = "FC non reçue";
+    box.className = "zone nohr";
+    st.textContent = "⚠ FC non reçue";
     return;
   }
   mk.style.left = pc(hr!) + "%";
