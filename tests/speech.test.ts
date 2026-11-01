@@ -21,6 +21,15 @@ describe("speech", () => {
     expect(stepAnnouncement(rep, p.steps[3])).toBe("Repos, 1 minute 30. Ensuite : Planche, 30 secondes.");
     expect(stepAnnouncement(rep10, p.steps[5])).toBe("Repos. Ensuite : Dead bug.");
   });
+  it("reads the instructions of a rest step", () => {
+    const p = parseProgram("Repos | 1:30 | allongé sur le dos | | bien respirer\nPlanche | 30s\nRepos | 10s | | | debout\nPompes | x10\nRepos | 15s | | | allongé sur le dos, jambes surélevées contre le mur, relâcher les épaules et respirer lentement par le nez en comptant jusqu’à quatre\nPompes | x10");
+    const [r1, pl, r10, po, r20] = p.steps;
+    expect(stepAnnouncement(r1, pl)).toBe("Repos, 1 minute 30. allongé sur le dos, bien respirer. Ensuite : Planche, 30 secondes.");
+    expect(stepAnnouncement(r10, po)).toBe("Repos. debout. Ensuite : Pompes.");
+    // too long for a 15 s rest: the next exercise wins
+    expect(stepAnnouncement(r20, p.steps[5])).toBe("Repos, 15 secondes. Ensuite : Pompes, 10 répétitions.");
+    expect(resumeAnnouncement(r1, pl, 45, [])).toBe("On reprend. Repos, encore 45 secondes. allongé sur le dos, bien respirer. Ensuite : Planche, 30 secondes.");
+  });
   it("announces ramp levels", () => {
     expect(rampAnnouncement([{ ramp: parseRamp("4 → 5,5 km/h")!, value: 5 }])).toBe("Passez à 5 kilomètres heure.");
     expect(rampAnnouncement([{ ramp: parseRamp("2 → 6 %")!, value: 3 }])).toBe("Pente 3 pour cent.");

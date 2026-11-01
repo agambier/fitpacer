@@ -44,11 +44,24 @@ const fits = (txt: string, sec: number) => txt.length / CHARS_PER_SEC <= sec;
  * Announcement when a step starts. Kept short enough not to overlap the 3-2-1 beeps
  * of a short timed step.
  */
+/** Infos and note of a step, as spoken: " allongé sur le dos, bien respirer." ("" if none). */
+function restInstructions(s: Step): string {
+  const parts = [...s.infos.map(sayInfo), ...(s.note ? [s.note] : [])];
+  return parts.length ? " " + parts.join(", ") + "." : "";
+}
+
 export function stepAnnouncement(s: Step, next: Step | undefined): string {
   if (s.isRest) {
     const nextTxt = next ? " Ensuite : " + next.name + ", " + amountPhrase(next) + "." : "";
-    if (s.kind === "time" && s.dur < 15) return "Repos." + (next ? " Ensuite : " + next.name + "." : "");
-    return "Repos, " + amountPhrase(s) + "." + nextTxt;
+    const instr = restInstructions(s);
+    if (s.kind === "time" && s.dur < 15) {
+      const short = "Repos." + (next ? " Ensuite : " + next.name + "." : "");
+      const withInstr = "Repos." + instr + (next ? " Ensuite : " + next.name + "." : "");
+      return instr && fits(withInstr, s.dur - 4) ? withInstr : short;
+    }
+    const full = "Repos, " + amountPhrase(s) + "." + instr + nextTxt;
+    // The next exercise matters most: drop the rest instructions rather than overlap the 3-2-1 beeps.
+    return s.kind === "reps" || fits(full, s.dur - 4) ? full : "Repos, " + amountPhrase(s) + "." + nextTxt;
   }
   const infos = s.infos.map(sayInfo).join(", ");
   const base = s.name + ". " + amountPhrase(s) + "." + (infos ? " " + infos + "." : "");
@@ -74,7 +87,7 @@ export function rampAnnouncement(changes: { ramp: Ramp; value: number }[]): stri
 export function resumeAnnouncement(s: Step, next: Step | undefined, remaining: number, rampValues: (number | null)[]): string {
   const left = s.kind === "time" ? "encore " + sayDuration(Math.max(1, Math.round(remaining))) : "";
   if (s.isRest) {
-    return "On reprend. Repos" + (left ? ", " + left : "") + "." + (next ? " Ensuite : " + next.name + ", " + amountPhrase(next) + "." : "");
+    return "On reprend. Repos" + (left ? ", " + left : "") + "." + restInstructions(s) + (next ? " Ensuite : " + next.name + ", " + amountPhrase(next) + "." : "");
   }
   const infos = s.infos
     .map((info, k) => {

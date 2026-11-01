@@ -68,6 +68,10 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
   - **Étape de repos** (`Repos…`, `Récup…`) : annoncer la durée **et l'exercice suivant** pour
     se préparer. Ex. « Repos, 1 minute 30. Ensuite : planche, 30 secondes. »
     Repos de moins de 15 s : version courte, « Repos. Ensuite : planche latérale droite. »
+    Les consignes du repos (infos et note) sont lues aussi, entre la durée et l'exercice suivant :
+    « Repos, 1 minute 30. allongé sur le dos, bien respirer. Ensuite : planche, 30 secondes. »
+    Si c'est trop long pour la durée du repos, on les saute : l'exercice suivant passe avant (v26.11.01).
+    Idem à la reprise après pause.
   - Une annonce ne doit jamais chevaucher les bips 3-2-1 : si elle est trop longue pour l'étape,
     on raccourcit (nom seul) et on n'annonce pas la note.
   - Annonce de fin de séance ; alerte FC parlée (« Fréquence cardiaque au-dessus de 150 ») en plus du bip.
