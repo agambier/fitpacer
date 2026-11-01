@@ -60,7 +60,7 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
   - **Étape chronométrée** (`4:00`, `45s`…) : nom + durée + infos.
     Ex. « Montée, 1 minute, 5,5 kilomètres heure, pente 9 pour cent. »
     Le chrono passe tout seul à l'étape suivante, avec les bips 3-2-1.
-  - **Étape en répétitions** (`10 rép`, `max`…) : nom + nombre + rappel du bouton.
+  - **Étape en répétitions** (`x10`, `max`…) : nom + nombre + rappel du bouton.
     Ex. « Pompes, 10 répétitions. Touchez Fait quand c'est terminé. »
     Pas de compte à rebours : l'étape attend que je touche **« Fait ✓ »** (gros bouton vert) avant de
     passer à la suite (le temps passé est affiché, « En cours depuis 0:35 »).
@@ -140,8 +140,10 @@ Retour au calme | 5:00 | -0,5 km/h / 30 s | 0 % | finir à 3 km/h environ
 - En-tête optionnel : `titre: …` (défaut « Séance »), `type: salle | maison` (défaut `salle`).
 - Une étape par ligne : `Nom | quantité | info 1 | info 2 | note` (seuls nom et quantité obligatoires).
 - **Quantité chronométrée** : `4:00`, `45s`, `5` ou `5 min` (minutes). Virgule décimale acceptée.
-- **Quantité en répétitions** : `10 rép`, `12 rép par bras`, `max`. Forme courte `10x` (ou `10 x`,
-  `10X`, `12x par bras`), équivalente à `10 rép` ; affichée et recopiée dans le journal en `10 rép`.
+- **Quantité en répétitions** : `x10`, `x12 par bras`, `x8 par côté`, `max`. Forme de référence
+  `x` + valeur, utilisée dans toute la doc, l'aide et les consignes pour Claude (décision du 01/11).
+  Restent acceptées (rétrocompatibilité) : `10x`, `10 x`, `X10`, `10 rép`, `10 reps`, `10 répétitions`.
+  Affichage dans l'app : `x10 par côté` ; la ligne de journal garde `3x10 rép` (format du journal inchangé).
   L'étape attend « Fait ✓ » (durée estimée 40 s pour les calculs).
 - **Infos** : texte libre, libellé déduit : `km/h` → Vitesse, `%` → Pente (+ visuel de rampe),
   `kg` → Charge, `rpm` / `tr/min` → Cadence, `W` → Puissance, `niv…` → Niveau, sinon Consigne.

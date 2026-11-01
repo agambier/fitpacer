@@ -16,11 +16,11 @@ export const EXAMPLE_HOME = `titre: Maison pompes, gainage, corde
 type: maison
 Échauffement | 3:00 | | | rotations d’épaules, montées de genoux sur place
 x3 {
-  Pompes | 10 rép | | | garder 2-3 rép en réserve
+  Pompes | x10 | | | garder 2-3 rép en réserve
   Repos | 1:30
   Planche | 30s | | | respirer normalement
   Repos | 30s
-  Dead bug | 8 rép par côté | | | bas du dos plaqué au sol
+  Dead bug | x8 par côté | | | bas du dos plaqué au sol
   Repos | 45s
 }
 Étirements | 4:00 | | | pectoraux, épaules, mollets`;
@@ -67,7 +67,7 @@ Nom | quantité | info 1 | info 2 | note
 
 - Seuls le nom et la quantité sont obligatoires. Laisse une case vide si besoin : « Planche | 30s | | | respirer ».
 - Quantité chronométrée : 4:00, 45s, 5 (minutes). L'app enchaîne seule à la fin du chrono.
-- Quantité en répétitions : 10 rép (ou 10x), 12 rép par bras, 8 rép par côté, max. L'app attend que je
+- Quantité en répétitions : x10, x12 par bras, x8 par côté, max. L'app attend que je
   touche « Fait » : n'utilise les répétitions que pour un exercice qui se compte (pompes, squats…).
 - Infos : vitesse (5,5 km/h), pente (7 %), charge (6 kg), niveau (niv 8), puissance (120 W),
   cadence (85 rpm) ou une consigne courte (rythme facile).

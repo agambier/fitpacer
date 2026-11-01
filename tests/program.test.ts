@@ -20,6 +20,12 @@ describe("parseDur / parseAmount", () => {
     expect(parseAmount("10 x")).toEqual({ kind: "reps", reps: "10", extra: "" });
     expect(parseAmount("10X")).toEqual({ kind: "reps", reps: "10", extra: "" });
     expect(parseAmount("12x par bras")).toEqual({ kind: "reps", reps: "12", extra: "par bras" });
+    expect(parseAmount("x10")).toEqual({ kind: "reps", reps: "10", extra: "" });
+    expect(parseAmount("x 10")).toEqual({ kind: "reps", reps: "10", extra: "" });
+    expect(parseAmount("X3")).toEqual({ kind: "reps", reps: "3", extra: "" });
+    expect(parseAmount("x8 par côté")).toEqual({ kind: "reps", reps: "8", extra: "par côté" });
+    expect(parseAmount("x1:30")).toBeNull();
+    expect(parseAmount("xyz")).toBeNull();
     expect(parseAmount("10xyz")).toBeNull();
     expect(parseAmount("10×")).toBeNull();
     expect(parseAmount("max")).toEqual({ kind: "reps", reps: "Max", extra: "" });
