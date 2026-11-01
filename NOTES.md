@@ -72,6 +72,8 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
     « Repos, 1 minute 30. allongé sur le dos, bien respirer. Ensuite : planche, 30 secondes. »
     Si c'est trop long pour la durée du repos, on les saute : l'exercice suivant passe avant (v26.11.01).
     Idem à la reprise après pause.
+  - Pendant une étape de repos, le bouton **Pause est désactivé** : le repos est déjà une pause, on ne le
+    prolonge pas (décision du 01/11, v26.11.01). « Suiv. » permet toujours de l'écourter.
   - Une annonce ne doit jamais chevaucher les bips 3-2-1 : si elle est trop longue pour l'étape,
     on raccourcit (nom seul) et on n'annonce pas la note.
   - Annonce de fin de séance ; alerte FC parlée (« Fréquence cardiaque au-dessus de 150 ») en plus du bip.

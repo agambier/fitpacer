@@ -15,6 +15,7 @@ export const RELEASES: ReleaseNotes[] = [
       "Vous pouvez ouvrir une séance enregistrée dans un fichier sur le téléphone : reçue par e-mail, téléchargée ou dans votre cloud.",
       "Des boutons plus simples, avec des icônes : ouvrir un fichier, coller, effacer ; et à la fin de la séance : copier, partager, télécharger.",
       "Pendant les repos, la voix lit aussi les consignes du programme (par exemple « allongé sur le dos »).",
+      "Pendant un repos, le bouton Pause est désactivé : le repos est déjà une pause.",
       "Le bouton Partager propose bien vos applications (WhatsApp, Gmail…) pour envoyer le rapport de séance.",
       "Une fenêtre de bienvenue pour découvrir l’app, et cette fenêtre « Quoi de neuf ? » à chaque nouvelle version.",
     ],
