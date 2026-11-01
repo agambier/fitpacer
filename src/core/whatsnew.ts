@@ -16,7 +16,7 @@ export const RELEASES: ReleaseNotes[] = [
       "Des boutons plus simples, avec des icônes : ouvrir un fichier, coller, effacer ; et à la fin de la séance : copier, partager, télécharger.",
       "Pendant les repos, la voix lit aussi les consignes du programme (par exemple « allongé sur le dos »).",
       "Pendant un repos, le bouton Pause est désactivé : le repos est déjà une pause.",
-      "Les pauses que vous prenez avec le bouton Pause sont notées dans le rapport de fin de séance (où et combien de temps), pour que Claude en tienne compte.",
+      "Les pauses de plus de 10 secondes que vous prenez avec le bouton Pause sont notées dans le rapport de fin de séance (où et combien de temps), pour que Claude en tienne compte.",
       "Le bouton Partager propose bien vos applications (WhatsApp, Gmail…) pour envoyer le rapport de séance.",
       "Une fenêtre de bienvenue pour découvrir l’app, et cette fenêtre « Quoi de neuf ? » à chaque nouvelle version.",
     ],

@@ -75,7 +75,7 @@ describe("markdown export", () => {
     expect(md).toContain(journalLine(sess, fb));
     expect(md).toMatch(/\| 1 \| {2}\| Chauffe \| 5:00 \|/);
     expect(md).toContain("| *pause ajoutée par l'utilisateur* |");
-    expect(md).toContain("- Pauses ajoutées par l'utilisateur (bouton Pause, hors repos du programme) : 1, total 30 s");
+    expect(md).toContain("- Pauses ajoutées par l'utilisateur (bouton Pause, au moins 10 s, hors repos du programme) : 1, total 30 s");
     expect(journalLine(sess, fb)).toContain("pause ajoutée par l'utilisateur : Chauffe 30 s");
     expect(md).toContain("heure,fc,etape");
     expect(md).toContain("Jamais atteintes : 2. Marche (tour 1), 3. Montée (tour 1)");
@@ -129,6 +129,22 @@ describe("pauses added by the user", () => {
     const line = journalLine(sess, fb).split(" | ");
     expect(line[2]).toBe("3 min"); // 3:30 of effort, pauses excluded
     expect(line[3]).toMatch(/; pauses ajoutées par l'utilisateur : 2 \(Marche 1 min 20, Corde 45 s\), total 2 min 05$/);
+  });
+  it("ignores pauses shorter than 10 s (mistaken tap)", () => {
+    const { sess, clock } = start(parseProgram("Marche | 2:00"));
+    advance(sess, clock, 30);
+    sess.pause();
+    advance(sess, clock, 9);
+    sess.resume();
+    advance(sess, clock, 30);
+    sess.pause();
+    advance(sess, clock, 10);
+    sess.resume();
+    advance(sess, clock, 70);
+    expect(pausesSegment(sess)).toBe("pause ajoutée par l'utilisateur : Marche 10 s");
+    const md = exportMarkdown(sess, fb, { source: "", cap: 150, device: null });
+    expect(md).toContain("| *pause courte (moins de 10 s, non comptée)* |");
+    expect(md).toContain(": 1, total 10 s");
   });
   it("adds nothing without pause", () => {
     const { sess, clock } = start(parseProgram("Marche | 1:00"));

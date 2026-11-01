@@ -234,6 +234,8 @@ Corde 6x30 s ; Étirements 4 min`
   - `pause ajoutée par l'utilisateur : <étape> <durée>` ou, s'il y en a plusieurs,
     `pauses ajoutées par l'utilisateur : <n> (<étape> <durée>, …), total <durée>` — pauses prises avec le
     bouton Pause (les repos du programme n'en sont pas). Durées : `45 s`, `3 min`, `3 min 10`.
+    Seulement les pauses d'**au moins 10 s** : en dessous, c'est un appui par erreur, non compté (décision
+    du 01/11). Elles restent visibles dans le tableau du fichier exporté (« pause courte … non comptée »).
     La colonne **durée** reste le temps d'effort réel, **sans** ces pauses (décision du 01/11, v26.11.01).
   - Les repos sautés ou écourtés ne sont pas signalés (sans intérêt pour l'analyse).
   - Chaque étape est repérée par son tour quand elle est dans un bloc répété.
@@ -257,7 +259,7 @@ Lignes venant de l'app FitPacer :
   puis éventuellement les écarts au programme : « sauté : … », « écourté : … (fait/prévu) »,
   « non fait (arrêt) : … » (étapes repérées par leur tour, ex. « Corde (tour 3, 2e) »),
   « pause ajoutée par l'utilisateur : Marche (tour 2) 1 min 20 » ou « pauses ajoutées par l'utilisateur :
-  2 (…), total 3 min 10 » : pauses que j'ai prises en plus du programme, avec l'étape en cours
+  2 (…), total 3 min 10 » : pauses de 10 s ou plus que j'ai prises en plus du programme, avec l'étape en cours
 - FC : min/moy/max en bpm, ou « FC non reçue »
 - poids : « 82,4 kg » ou « – » ; tour de taille : « 94 cm » ou « – »
 - remarque : mon commentaire libre, puis éventuellement ces segments calculés par l'app, dans cet ordre :
