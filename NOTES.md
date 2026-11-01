@@ -216,7 +216,7 @@ jj/mm/aaaa | type | durée | contenu et perfs | FC min/moy/max | ressenti x/10 |
 
 Lignes venant de l'app FitPacer :
 - type : salle ou maison
-- contenu : « titre : étapes réalisées », suivi de « (arrêtée avant la fin) » si la séance a été interrompue,
+- contenu : « titre : étapes réalisées » (passages comptés avec la lettre x : « Pompes 3x10 rép »), suivi de « (arrêtée avant la fin) » si la séance a été interrompue,
   puis éventuellement les écarts au programme : « sauté : … », « écourté : … (fait/prévu) »,
   « non fait (arrêt) : … » (étapes repérées par leur tour, ex. « Corde (tour 3, 2e) »)
 - FC : min/moy/max en bpm, ou « FC non reçue »

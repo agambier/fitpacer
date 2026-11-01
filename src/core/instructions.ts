@@ -30,7 +30,7 @@ jj/mm/aaaa | type | durée | contenu et perfs | FC min/moy/max | ressenti x/10 |
 
 Lignes venant de l'app FitPacer :
 - type : salle ou maison
-- contenu : « titre : étapes réalisées », suivi de « (arrêtée avant la fin) » si la séance a été interrompue,
+- contenu : « titre : étapes réalisées » (passages comptés avec la lettre x : « Pompes 3x10 rép »), suivi de « (arrêtée avant la fin) » si la séance a été interrompue,
   puis éventuellement les écarts au programme : « sauté : … », « écourté : … (fait/prévu) »,
   « non fait (arrêt) : … » (étapes repérées par leur tour, ex. « Corde (tour 3, 2e) »)
 - FC : min/moy/max en bpm, ou « FC non reçue »
@@ -75,7 +75,7 @@ Nom | quantité | info 1 | info 2 | note
   L'app la découpe en paliers réguliers sur la durée de l'étape (0,5 km/h, 0,5 %, 1 niveau,
   10 W, 5 rpm) et m'annonce chaque palier. N'écris pas de consigne du type « −0,5 km/h / 30 s ».
 - Repos : une étape nommée « Repos » avec une durée (Repos | 1:30). L'app annonce l'exercice suivant.
-- Répétition d'un bloc : « x3 { » sur une ligne, les étapes, puis « } » sur une ligne.
+- Répétition d'un bloc : « x3 { » (ou « 3x { ») sur une ligne, les étapes, puis « } » sur une ligne.
 - Note : courte, utile pendant l'effort (technique, respiration). Elle est lue à voix haute.
 - Termine toujours par un retour au calme ou des étirements chronométrés (au moins 3 min) :
   l'app s'en sert pour mesurer ma récupération cardiaque.
