@@ -104,15 +104,12 @@ describe("ramps", () => {
     expect(parseRamp("6:00 → 5:00 min/km par 0:15")).toMatchObject({ inc: 15, levels: 5 });
     expect(parseRamp("6:00 → 5 min/km")).toBeNull();
   });
-  it("shares the progression duration between the levels, then keeps the last value", () => {
+  it("reaches the last value at the end of the progression duration, then holds it", () => {
     const r = parseRamp("3 → 5 km/h par 1 en 3:00")!;
-    expect(rampAt(r, 0, 300)).toMatchObject({ value: 3, nextAt: 60 });
-    expect(rampAt(r, 70, 300)).toMatchObject({ value: 4, nextAt: 120 });
-    expect(rampAt(r, 120, 300)).toMatchObject({ value: 5, nextAt: null });
+    expect(rampAt(r, 0, 300)).toMatchObject({ value: 3, nextAt: 90 });
+    expect(rampAt(r, 100, 300)).toMatchObject({ value: 4, nextAt: 180 });
+    expect(rampAt(r, 180, 300)).toMatchObject({ value: 5, nextAt: null });
     expect(rampAt(r, 290, 300)).toMatchObject({ value: 5, nextAt: null });
-    // "en" equal to the step duration = no "en"
-    const whole = parseRamp("3 → 5 km/h par 1")!;
-    expect(rampAt(parseRamp("3 → 5 km/h par 1 en 5:00")!, 130, 300)).toEqual(rampAt(whole, 130, 300));
   });
   it("reports a progression longer than its step", () => {
     const p = parseProgram("Marche | 2:00 | 3 → 5 km/h en 3:00");

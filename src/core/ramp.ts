@@ -98,11 +98,11 @@ export interface RampState {
 
 /**
  * Level reached after `elapsed` seconds of a step lasting `dur` seconds.
- * The levels share the progression time equally, the last one included: the whole step, or D with
- * "en D" (then the last value is kept until the end of the step). "en <step duration>" = no "en".
+ * Whole step: every level, the last one included, gets the same time.
+ * "en D": the last value is reached at D, then held until the end of the step.
  */
 export function rampAt(r: Ramp, elapsed: number, dur: number): RampState {
-  const len = Math.min(r.over ?? dur, dur) / r.levels;
+  const len = r.over ? Math.min(r.over, dur) / (r.levels - 1) : dur / r.levels;
   const level = Math.min(r.levels - 1, Math.max(0, Math.floor(elapsed / len)));
   return { level, value: rampValue(r, level), nextAt: level < r.levels - 1 ? (level + 1) * len : null, len };
 }

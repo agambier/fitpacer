@@ -93,10 +93,10 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
   - Option **`par S`** (v26.11.01) : écart entre deux paliers, toute unité (`3 → 5 km/h par 1` → 3 / 4 / 5 ;
     `10 → 20 kg par 2,5` ; `6:00 → 5:00 min/km par 0:15`). Unité répétée tolérée (`par 1 km/h`). Si l'écart
     ne tombe pas juste, le dernier palier est la valeur d'arrivée (`3 → 5 par 0,75` → 3 / 3,75 / 4,5 / 5).
-  - Option **`en D`** (v26.11.01) : durée de la progression (`en 3:00`, `en 3 min`, `en 90 s`). Les paliers,
-    le dernier compris, se partagent D à parts égales, puis la valeur d'arrivée est gardée jusqu'à la fin
-    de l'étape. Ex. `Chauffe | 5:00 | 3 → 5 km/h par 1 en 3:00` → 3 (0:00–1:00), 4 (1:00–2:00), 5 (dès 2:00
-    et jusqu'à 5:00). Sans `en` = `en <durée de l'étape>` : comportement d'origine.
+  - Option **`en D`** (v26.11.01) : durée de la progression (`en 3:00`, `en 3 min`, `en 90 s`). La valeur
+    d'arrivée est atteinte à D puis gardée jusqu'à la fin de l'étape ; les paliers intermédiaires se
+    partagent D. Ex. `Chauffe | 5:00 | 3 → 5 km/h par 1 en 3:00` → 3 (1:30), 4 (1:30), 5 (2:00).
+    Sans `en` : comportement d'origine (chaque palier, le dernier compris, a la même durée).
     `en` plus long que l'étape → erreur de lecture.
   - Les deux options se combinent, dans n'importe quel ordre, à la fin de l'info.
   - Écran : la valeur **à régler maintenant** en gros (« 4,5 km/h »), et en petit la cible
