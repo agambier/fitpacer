@@ -78,8 +78,9 @@ Nom | quantité | info 1 | info 2 | note
   6:00 → 5:30 min/km). L'app la découpe en paliers réguliers sur la durée de l'étape (0,5 km/h, 0,5 %,
   1 niveau, 10 W, 5 rpm, 0:10 min/km) et m'annonce chaque palier. Deux options, facultatives :
   « par 1 » fixe l'écart entre deux paliers (3 → 5 km/h par 1 : 3, 4, 5), obligatoire pour une autre
-  unité (10 → 20 kg par 2,5) ; « en 3:00 » fait la progression sur 3 min seulement, puis garde la
-  valeur d'arrivée jusqu'à la fin de l'étape (Chauffe | 5:00 | 3 → 5 km/h en 3:00).
+  unité (10 → 20 kg par 2,5) ; « en 3:00 » répartit les paliers sur 3 min seulement, puis garde la
+  valeur d'arrivée jusqu'à la fin de l'étape (Chauffe | 5:00 | 3 → 5 km/h par 1 en 3:00 : 3 km/h
+  pendant 1 min, 4 km/h pendant 1 min, puis 5 km/h jusqu'à la fin).
   N'écris pas de consigne du type « −0,5 km/h / 30 s ».
 - Repos : une étape nommée « Repos » avec une durée (Repos | 1:30). L'app annonce l'exercice suivant.
 - Répétition d'un bloc : « x3 { » (ou « 3x { ») sur une ligne, les étapes, puis « } » sur une ligne.
