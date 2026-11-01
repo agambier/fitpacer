@@ -25,6 +25,58 @@ export function hrStats(samples: Sample[]): HrStats | null {
   return { min: Math.min(...hrs), avg: Math.round(mean(hrs)), max: Math.max(...hrs) };
 }
 
+/* ---------- Sensor dropouts ---------- */
+
+const GLITCH_WIN = 10; // s, on each side
+const GLITCH_DELTA = 25; // bpm
+
+/**
+ * Brief sensor dropouts/spikes: samples more than 25 bpm away from the median HR of BOTH the 10 s before
+ * and the 10 s after (the curve leaves and comes back; a genuine fast change does not come back).
+ * Samples are chronological, at most one per second.
+ */
+export function hrGlitches(samples: Sample[]): Sample[] {
+  const med = (xs: number[]) => xs.sort((a, b) => a - b)[xs.length >> 1];
+  const out: Sample[] = [];
+  samples.forEach((p, i) => {
+    const before: number[] = [];
+    const after: number[] = [];
+    for (let j = i - 1; j >= 0 && samples[j].t >= p.t - GLITCH_WIN; j--) before.push(samples[j].hr);
+    for (let j = i + 1; j < samples.length && samples[j].t <= p.t + GLITCH_WIN; j++) after.push(samples[j].hr);
+    if (before.length >= 3 && after.length >= 3 && Math.abs(p.hr - med(before)) > GLITCH_DELTA && Math.abs(p.hr - med(after)) > GLITCH_DELTA) out.push(p);
+  });
+  return out;
+}
+
+/** Groups consecutive doubtful samples (≤ 3 s apart) into dropout episodes. */
+export function glitchEpisodes(glitches: Sample[]): Sample[][] {
+  const eps: Sample[][] = [];
+  for (const g of glitches) {
+    const last = eps[eps.length - 1];
+    if (last && g.t - last[last.length - 1].t <= 3) last.push(g);
+    else eps.push([g]);
+  }
+  return eps;
+}
+
+/** Samples without the sensor dropouts, for the stats given to Claude. */
+export function cleanSamples(samples: Sample[]): Sample[] {
+  const bad = new Set(hrGlitches(samples));
+  return samples.filter((s) => !bad.has(s));
+}
+
+/** "décrochement capteur FC ignoré : 49 à 5:00" / "décrochements capteur FC ignorés : 2 (49 à 5:00, 182 à 12:31)". */
+export function hrDropoutSegment(sess: Session): string | null {
+  const eps = glitchEpisodes(hrGlitches(sess.samples));
+  if (!eps.length) return null;
+  const mid = sess.samples.length ? mean(sess.samples.map((s) => s.hr)) : 0;
+  const txt = eps.map((ep) => {
+    const g = ep.reduce((a, b) => (Math.abs(b.hr - mid) > Math.abs(a.hr - mid) ? b : a));
+    return g.hr + " à " + fmtClock(g.t);
+  });
+  return eps.length === 1 ? "décrochement capteur FC ignoré : " + txt[0] : "décrochements capteur FC ignorés : " + eps.length + " (" + txt.join(", ") + ")";
+}
+
 /** Mean HR of the samples with lo <= t < hi, or null when fewer than 3 samples. */
 function meanBetween(samples: Sample[], lo: number, hi: number): number | null {
   const xs = samples.filter((s) => s.t >= lo && s.t < hi).map((s) => s.hr);
@@ -249,8 +301,8 @@ export function journalLine(sess: Session, fb: Feedback): string {
   const p = sess.program;
   const statuses = stepStatuses(sess);
   const content = [...doneContent(p.steps, statuses), ...deviations(sess, statuses)];
-  const st = hrStats(sess.samples);
-  const remark = [clean(fb.comment), hrWarning(sess) || "", ...hrDrift(sess), hrRecovery(sess) || "", ...hrZoneSegments(sess)].filter(Boolean).join(" ; ");
+  const st = hrStats(cleanSamples(sess.samples));
+  const remark = [clean(fb.comment), hrWarning(sess) || "", hrDropoutSegment(sess) || "", ...hrDrift(sess), hrRecovery(sess) || "", ...hrZoneSegments(sess)].filter(Boolean).join(" ; ");
   return [
     fmtDateFr(new Date(sess.startWall)),
     p.type,
@@ -300,7 +352,7 @@ export function exportMarkdown(sess: Session, fb: Feedback, meta: ExportMeta): s
   const p = sess.program;
   const start = new Date(sess.startWall);
   const end = new Date(sess.endWall || sess.startWall);
-  const st = hrStats(sess.samples);
+  const st = hrStats(cleanSamples(sess.samples));
   const L: string[] = [];
   L.push("# FitPacer — " + p.title + " — " + fmtDateFr(start) + " " + fmtTime(start).slice(0, 5), "");
   L.push("## Ligne de journal", "", journalLine(sess, fb), "");
@@ -313,7 +365,8 @@ export function exportMarkdown(sess: Session, fb: Feedback, meta: ExportMeta): s
     ? "absente de la séance (pas d'alerte)"
     : cap.value + (cap.raisedBy ? " (relevée par la plage FC de " + cap.raisedBy.label + " ; fc max: " + p.hrMax + " dans la séance)" : "");
   L.push("- Type : " + p.type + " — FC max de la séance : " + capTxt + " — Capteur FC : " + (meta.device || "aucun") +
-    " — FC min/moy/max : " + (st ? st.min + "/" + st.avg + "/" + st.max : "FC non reçue"));
+    " — FC min/moy/max : " + (st ? st.min + "/" + st.avg + "/" + st.max : "FC non reçue") +
+    (hrGlitches(sess.samples).length ? " (décrochements brefs du capteur exclus)" : ""));
   const warn = hrWarning(sess);
   if (warn) L.push("- ⚠️ " + warn.charAt(0).toUpperCase() + warn.slice(1) + ". Les données de FC de cette séance sont incomplètes : se fier au fichier .fit de la montre s'il existe.");
   L.push("- Ressenti : " + (fb.rpe ? fb.rpe + "/10 (" + RPE_TXT[fb.rpe] + ")" : "non noté") + " — Poids : " + measure(fb.weight, "kg") +

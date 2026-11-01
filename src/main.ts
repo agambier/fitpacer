@@ -5,13 +5,14 @@ import "@fontsource/barlow-condensed/500.css";
 import "@fontsource/barlow-condensed/600.css";
 import "@fontsource/barlow-condensed/700.css";
 import "./styles.css";
+import { hrChart } from "./hrchart";
 import { registerSW } from "virtual:pwa-register";
 
 import { fmtClock, fmtLong } from "./core/format";
 import { amountTxt, hrZoneTxt, paramLabel, parseProgram, sessionHrMax, weight, type HrZone, type Program } from "./core/program";
 import { rampValueTxt } from "./core/ramp";
 import { RAMP_COUNTDOWN_MIN_LEN, Session, zoneState, type Sample, type SessionEvent } from "./core/session";
-import { exportFileName, exportMarkdown, hrPerStep, hrStats, journalLine, RPE_TXT, activeDuration, type Feedback } from "./core/journal";
+import { exportFileName, exportMarkdown, hrGlitches, hrPerStep, hrStats, journalLine, RPE_TXT, activeDuration, type Feedback } from "./core/journal";
 import { finishAnnouncement, hrAlertAnnouncement, hrZoneAnnouncement, rampAnnouncement, resumeAnnouncement, stepAnnouncement } from "./core/speech";
 import { APP_VERSION, IS_DEV_BUILD } from "./version";
 import { claudeInstructions, FORMAT_VERSION } from "./core/instructions";
@@ -679,18 +680,23 @@ function finish() {
 
   const st = hrStats(finished.samples);
   const dur = activeDuration(finished);
+  // Values coming from a sensor dropout get an orange "?" (explained under the chart).
+  const doubtful = new Set(hrGlitches(finished.samples).map((g) => g.hr));
+  const hrTxt = (v: number) => String(v) + (doubtful.has(v) ? "<i>?</i>" : "");
   $("stats").replaceChildren(
     ...[
       ["Durée", fmtLong(dur)],
-      ["FC min / moy", st ? st.min + " / " + st.avg : "–"],
-      ["FC max", st ? String(st.max) : "–"],
+      ["FC min / moy", st ? hrTxt(st.min) + " / " + st.avg : "–"],
+      ["FC max", st ? hrTxt(st.max) : "–"],
     ].map(([k, v]) => {
       const d = el("div");
-      d.append(el("div", "k", k), el("div", "v", v));
+      const val = el("div", "v");
+      val.innerHTML = v;
+      d.append(el("div", "k", k), val);
       return d;
     }),
   );
-  sparkline($<SVGSVGElement & HTMLElement>("spark2"), finished.samples, Math.max(dur, 1), capValue(finished.program));
+  hrChart($("chart2"), finished.samples, Math.max(dur, 1), capValue(finished.program));
   const tbl = $<HTMLTableElement>("perStep");
   tbl.replaceChildren();
   const per = hrPerStep(finished);

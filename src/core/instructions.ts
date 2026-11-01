@@ -47,11 +47,14 @@ Lignes venant de l'app FitPacer :
   l'utilisateur : 2 (…), total 3 min 10 » : pauses de 10 s ou plus que j'ai prises en plus du programme,
   avec l'étape en cours et, si la montre est connectée, la FC au début et à la fin de la pause (« ? » si
   non reçue) : indice de ma récupération pendant ces pauses non prévues
-- FC : min/moy/max en bpm, ou « FC non reçue »
+- FC : min/moy/max en bpm (sans les décrochements brefs du capteur), ou « FC non reçue »
 - poids : « 82,4 kg » ou « – » ; tour de taille : « 94 cm » ou « – »
 - remarque : mon commentaire libre, puis éventuellement ces segments calculés par l'app, dans cet ordre :
     « montre non connectée : pas de FC (ni dérive ni récupération) »  ou
     « FC partielle : reçue <durée> sur <durée> (montre déconnectée) »  — la FC est alors absente ou incomplète
+    « décrochement capteur FC ignoré : <FC> à <temps de séance> »  ou
+    « décrochements capteur FC ignorés : <n> (<FC> à <temps>, …) »  — chute ou pic de quelques secondes
+                                               (perte du signal), exclus du min/moy/max
     « dérive FC <étape> ~<FC début>→<FC fin> »   (une par étape concernée)
     « récup FC <FC fin d'effort>→<FC à 1 min> en 1 min, <FC finale> en <n> min »
     « plage FC <étape> <min>-<max> : <n> % »   (part du temps passé dans la plage prévue, tours regroupés ;

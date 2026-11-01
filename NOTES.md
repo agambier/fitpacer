@@ -122,6 +122,13 @@ Reproduire le prototype (`reference/prototype-workout.html`) sous forme de PWA i
 - [x] **FC manquante signalée** : si la montre n'était pas connectée (aucune FC), ou s'il manque plus
       de 10 % de la FC (déconnexion), la remarque du journal le dit (« montre non connectée : … » /
       « FC partielle : reçue 23 min sur 35 … ») et le fichier exporté l'indique en tête.
+- [x] **Courbe FC du bilan** (v26.11.03) : 1,5× plus haute que pendant la séance, avec 4 repères horizontaux
+      étiquetés à droite : limite (fc max de la séance, si présente), max, moyenne, min.
+  - **Décrochements du capteur** : une mesure à plus de 25 bpm de la médiane des 10 s d'avant **et** des 10 s
+    d'après (aller-retour éclair, ex. chute à 49 pendant 2 s) est jugée douteuse. Sur le bilan : point entouré,
+    « ? » orange après la valeur (repère et case du haut), phrase d'explication sous la courbe avec min/max sans elle.
+    Journal et fichier exporté : min/moy/max **sans** ces mesures, segment « décrochement capteur FC ignoré : … »
+    dans la remarque.
 - [x] **Analyses FC automatiques**, ajoutées en fin de colonne remarque (après mon commentaire,
       séparées par ` ; `), uniquement si les données FC le permettent :
   - **Dérive cardiaque** : pour chaque étape chronométrée (même nom + mêmes infos, hors repos) dont
@@ -316,11 +323,14 @@ Lignes venant de l'app FitPacer :
   l'utilisateur : 2 (…), total 3 min 10 » : pauses de 10 s ou plus que j'ai prises en plus du programme,
   avec l'étape en cours et, si la montre est connectée, la FC au début et à la fin de la pause (« ? » si
   non reçue) : indice de ma récupération pendant ces pauses non prévues
-- FC : min/moy/max en bpm, ou « FC non reçue »
+- FC : min/moy/max en bpm (sans les décrochements brefs du capteur), ou « FC non reçue »
 - poids : « 82,4 kg » ou « – » ; tour de taille : « 94 cm » ou « – »
 - remarque : mon commentaire libre, puis éventuellement ces segments calculés par l'app, dans cet ordre :
     « montre non connectée : pas de FC (ni dérive ni récupération) »  ou
     « FC partielle : reçue <durée> sur <durée> (montre déconnectée) »  — la FC est alors absente ou incomplète
+    « décrochement capteur FC ignoré : <FC> à <temps de séance> »  ou
+    « décrochements capteur FC ignorés : <n> (<FC> à <temps>, …) »  — chute ou pic de quelques secondes
+                                               (perte du signal), exclus du min/moy/max
     « dérive FC <étape> ~<FC début>→<FC fin> »   (une par étape concernée)
     « récup FC <FC fin d'effort>→<FC à 1 min> en 1 min, <FC finale> en <n> min »
     « plage FC <étape> <min>-<max> : <n> % »   (part du temps passé dans la plage prévue, tours regroupés ;

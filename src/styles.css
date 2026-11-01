@@ -252,3 +252,28 @@ td.r, th.r { text-align: right; }
 
 /* Above the session HR max. */
 .dangerBanner { border: 3px solid var(--hot); background: color-mix(in srgb, var(--hot) 16%, var(--surface)); border-radius: 12px; padding: 10px 14px; font: 700 22px/1.15 "Barlow Condensed", Barlow, sans-serif; color: var(--hot); text-align: center; }
+/* End-of-session HR chart: curve + markers, labels in a column on the right. */
+.hrchart { display: grid; grid-template-columns: 1fr auto; background: var(--surface); border-radius: 12px; }
+.hrchart .spark { height: 105px; border-radius: 0; background: none; }
+.spark .mk { stroke-width: 1; vector-effect: non-scaling-stroke; }
+.spark .mk.cap { stroke: var(--amber); stroke-dasharray: 5 4; }
+.spark .mk.max { stroke: var(--hot); stroke-dasharray: 2 3; opacity: .7; }
+.spark .mk.avg { stroke: var(--ink); stroke-dasharray: 2 3; opacity: .55; }
+.spark .mk.min { stroke: var(--ramp); stroke-dasharray: 2 3; opacity: .8; }
+.hrchart .marks { position: relative; width: 66px; height: 105px; border-left: 1px solid var(--line); }
+.hrchart .marks .mk { position: absolute; left: 7px; transform: translateY(-50%); font-size: 13px; line-height: 1; white-space: nowrap; color: var(--muted); }
+.hrchart .marks .mk b { font: 700 16px/1 "Barlow Condensed", Barlow, sans-serif; }
+.hrchart .marks .cap b { color: var(--amber); }
+.hrchart .marks .max b { color: var(--hot); }
+.hrchart .marks .avg b { color: var(--ink); }
+.hrchart .marks .min b { color: var(--ramp); }
+.hrchart .plot { position: relative; min-width: 0; }
+.hrchart .ring {
+  position: absolute; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%;
+  border: 2px dashed var(--amber); background: var(--flash); pointer-events: none;
+}
+.hrchart .marks .mk i, .hrnote i, .stats .v i { font: 700 16px/1 "Barlow Condensed", Barlow, sans-serif; font-style: normal; color: var(--amber); }
+.hrchart .marks .mk.doubt b { opacity: .6; }
+.spark .mk.doubt { opacity: .35; }
+.hrnote { margin: 6px 2px 0; font-size: 14px; line-height: 1.35; color: var(--muted); }
+.stats .v i { font-size: inherit; }

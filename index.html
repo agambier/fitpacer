@@ -100,7 +100,11 @@
   <section class="screen" id="done" hidden>
     <h1>Séance terminée</h1>
     <div class="stats num" id="stats"></div>
-    <svg class="spark" id="spark2" viewBox="0 0 300 70" preserveAspectRatio="none" aria-label="Courbe de fréquence cardiaque de la séance"></svg>
+    <div class="hrchart" id="chart2">
+      <div class="plot"><svg class="spark" viewBox="0 0 300 105" preserveAspectRatio="none" aria-label="Courbe de fréquence cardiaque de la séance"></svg></div>
+      <div class="marks"></div>
+    </div>
+    <p class="hrnote" hidden></p>
     <table class="num" id="perStep"></table>
     <fieldset class="rpe">
       <legend>Ressenti de l’effort</legend>

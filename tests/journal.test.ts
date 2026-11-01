@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { parseProgram } from "../src/core/program";
-import { exportFileName, exportMarkdown, fmtPause, hrZoneSegments, hrDrift, hrRecovery, journalLine, pausesSegment } from "../src/core/journal";
+import { cleanSamples, exportFileName, exportMarkdown, fmtPause, glitchEpisodes, hrGlitches, hrZoneSegments, hrDrift, hrRecovery, journalLine, pausesSegment } from "../src/core/journal";
 import { advance, example, start } from "./helpers";
 
 const fb = { rpe: 8, comment: "salle très chaude", weight: "82,4", waist: "" };
@@ -193,5 +193,32 @@ describe("step HR ranges in the journal", () => {
     ({ sess, clock } = start(parseProgram("fc max: 140\nA | 1:00 | FC 120-145")));
     advance(sess, clock, 61);
     expect(exportMarkdown(sess, fb, { source: "", device: null })).toContain("FC max de la séance : 145 (relevée par la plage FC de A ; fc max: 140 dans la séance)");
+  });
+});
+
+describe("sensor dropouts", () => {
+  const S = (hrs: number[]) => hrs.map((hr, t) => ({ t, wall: t * 1000, hr, idx: 0 }));
+
+  it("flags a brief drop that comes back, not a genuine fast change", () => {
+    const flat = Array(30).fill(110);
+    const drop = [...flat.slice(0, 15), 49, 52, ...flat.slice(0, 15)];
+    expect(hrGlitches(S(drop)).map((g) => g.hr)).toEqual([49, 52]);
+    expect(glitchEpisodes(hrGlitches(S(drop)))).toHaveLength(1);
+    const step = [...Array(20).fill(100), ...Array(20).fill(135)];
+    expect(hrGlitches(S(step))).toEqual([]);
+    const spike = [...flat, 190, ...flat];
+    expect(hrGlitches(S(spike)).map((g) => g.hr)).toEqual([190]);
+    expect(cleanSamples(S(spike))).toHaveLength(60);
+  });
+
+  it("journal line: min/avg/max without the dropout, remark segment", () => {
+    const { sess, clock } = start(parseProgram(example("tapis-incline-35-progressions.txt")));
+    advance(sess, clock, 6 * 60, (t) => (t >= 120 && t < 122 ? 49 : 110));
+    sess.stop();
+    const cols = journalLine(sess, { rpe: 5, comment: "", weight: "", waist: "" }).split(" | ");
+    expect(cols[4]).toBe("110/110/110");
+    expect(cols[8]).toBe("décrochement capteur FC ignoré : 49 à 2:00");
+    expect(exportMarkdown(sess, { rpe: 5, comment: "", weight: "", waist: "" }, { source: "", device: "Montre", appVersion: "" }))
+      .toContain("FC min/moy/max : 110/110/110 (décrochements brefs du capteur exclus)");
   });
 });

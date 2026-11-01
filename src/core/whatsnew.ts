@@ -11,6 +11,8 @@ export const RELEASES: ReleaseNotes[] = [
     version: "v26.11.03",
     items: [
       "Pour les exercices en répétitions (pompes, abdos…), la voix annonce simplement l’exercice, sans répéter à chaque fois « Touchez Fait quand c’est terminé ».",
+      "En fin de séance, la courbe de fréquence cardiaque est plus grande et montre quatre repères : la limite prévue dans la séance, votre maximum, votre moyenne et votre minimum.",
+      "Quand la montre perd le signal quelques secondes (par exemple une chute soudaine à 49), le point est entouré sur la courbe et la valeur est suivie d’un « ? ». Ces erreurs ne sont pas comptées dans le résumé envoyé à l’IA.",
     ],
   },
   {
