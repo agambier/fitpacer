@@ -277,3 +277,7 @@ td.r, th.r { text-align: right; }
 .spark .mk.doubt { opacity: .35; }
 .hrnote { margin: 6px 2px 0; font-size: 14px; line-height: 1.35; color: var(--muted); }
 .stats .v i { font-size: inherit; }
+/* Session goal ("objectif: …"), under the title on the program screen. */
+.goal { margin: -4px 0 16px; padding: 10px 14px; background: var(--surface); border-left: 4px solid var(--ramp); border-radius: 8px; }
+.goal .k { display: block; color: var(--muted); font: 600 14px/1.2 "Barlow Condensed", Barlow, sans-serif; text-transform: uppercase; letter-spacing: .06em; }
+.goal p { margin: 4px 0 0; font-size: 17px; line-height: 1.35; }

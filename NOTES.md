@@ -198,6 +198,7 @@ Explicitement **hors MVP** : comptes, sync, historique, envoi automatique à Cla
 ```
 titre: Tapis incliné 35 min
 type: salle
+objectif: endurance en côte, FC stable entre 120 et 135 sur les marches
 fc max: 150
 # commentaire ignoré
 Chauffe | 5:00 | 4 → 5,5 km/h | 0 % | monter progressivement
@@ -209,6 +210,9 @@ Retour au calme | 5:00 | -0,5 km/h / 30 s | 0 % | finir à 3 km/h environ
 ```
 
 - En-tête optionnel : `titre: …` (défaut « Séance »), `type: salle | maison` (défaut `salle`).
+- **Objectif** (facultatif, v26.11.03) : `objectif: …` dans l'en-tête, une ligne. Affiché sous le titre sur
+  l'écran du programme (encadré « Objectif »), rappelé dans le fichier exporté (« - Objectif : … », sous la
+  ligne « Type »). Pas dans la ligne de journal (format inchangé). Absent : rien ne s'affiche.
 - **FC max de la séance** (décision du 01/11, v26.11.02) : `fc max: 155` dans l'en-tête (aussi
   `FC max : 155 bpm`, `fréquence cardiaque max: …`). Écrite par Claude, **non modifiable dans l'app**
   (l'ancien champ « Plafond de FC » et sa sauvegarde `fitpacer.cap` sont supprimés). Au-dessus : alerte

@@ -367,6 +367,7 @@ export function exportMarkdown(sess: Session, fb: Feedback, meta: ExportMeta): s
   L.push("- Type : " + p.type + " — FC max de la séance : " + capTxt + " — Capteur FC : " + (meta.device || "aucun") +
     " — FC min/moy/max : " + (st ? st.min + "/" + st.avg + "/" + st.max : "FC non reçue") +
     (hrGlitches(sess.samples).length ? " (décrochements brefs du capteur exclus)" : ""));
+  if (p.goal) L.push("- Objectif : " + p.goal);
   const warn = hrWarning(sess);
   if (warn) L.push("- ⚠️ " + warn.charAt(0).toUpperCase() + warn.slice(1) + ". Les données de FC de cette séance sont incomplètes : se fier au fichier .fit de la montre s'il existe.");
   L.push("- Ressenti : " + (fb.rpe ? fb.rpe + "/10 (" + RPE_TXT[fb.rpe] + ")" : "non noté") + " — Poids : " + measure(fb.weight, "kg") +

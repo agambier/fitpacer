@@ -152,6 +152,8 @@ describe("ramps", () => {
 describe("HR max and step HR ranges", () => {
   it("reads the session HR max from the header", () => {
     expect(parseProgram("titre: T\nfc max: 155\nA | 1:00").hrMax).toBe(155);
+    expect(parseProgram("titre: T\nObjectif : endurance, FC stable\nA | 1:00")).toMatchObject({ goal: "endurance, FC stable", errors: [] });
+    expect(parseProgram("A | 1:00").goal).toBe("");
     expect(parseProgram("FC max : 160 bpm\nA | 1:00").hrMax).toBe(160);
     expect(parseProgram("A | 1:00").hrMax).toBeNull();
     expect(parseProgram("fc max: beaucoup\nA | 1:00").errors[0]).toMatch(/^Ligne 1 : FC max illisible/);

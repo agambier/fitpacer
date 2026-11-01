@@ -51,6 +51,8 @@ export type Step = TimedStep | RepsStep;
 export interface Program {
   title: string;
   type: string;
+  /** Session goal ("objectif: …"), shown on the program screen; "" if none. */
+  goal: string;
   /** Session HR max as written in the header ("fc max: 155"), or null. */
   hrMax: number | null;
   steps: Step[];
@@ -150,6 +152,7 @@ const isBlock = (it: Item): it is Block => "repeat" in it;
 export function parseProgram(text: string): Program {
   let title = "";
   let type = "";
+  let goal = "";
   let hrMax: number | null = null;
   const root: Item[] = [];
   const stack: { items: Item[] }[] = [{ items: root }];
@@ -162,6 +165,7 @@ export function parseProgram(text: string): Program {
     let m: RegExpMatchArray | null;
     if ((m = line.match(/^titre\s*:\s*(.+)$/i))) { title = m[1].trim(); return; }
     if ((m = line.match(/^type\s*:\s*(.+)$/i))) { type = m[1].trim(); return; }
+    if ((m = line.match(/^objectif\s*:\s*(.+)$/i))) { goal = m[1].trim(); return; }
     if ((m = line.match(HR_MAX_RE))) {
       const v = parseInt(m[1], 10);
       if (/^\d+\s*(?:bpm)?$/i.test(m[1].trim()) && okHr(v)) hrMax = v;
@@ -237,7 +241,7 @@ export function parseProgram(text: string): Program {
   });
 
   const est = steps.reduce((a, s) => a + weight(s), 0);
-  return { title: title || "Séance", type: (type || "salle").toLowerCase(), hrMax, steps, est, errors };
+  return { title: title || "Séance", type: (type || "salle").toLowerCase(), goal, hrMax, steps, est, errors };
 }
 
 /** Duration used for estimates and the progress bar. */

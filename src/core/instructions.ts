@@ -5,6 +5,7 @@ export const FORMAT_VERSION = "v1";
 
 export const EXAMPLE_TREADMILL = `titre: Tapis incliné 35 min
 type: salle
+objectif: endurance en côte, FC stable entre 120 et 135 sur les marches
 fc max: 150
 Chauffe | 5:00 | 4 → 5,5 km/h | 0 % | monter progressivement
 x5 {
@@ -15,6 +16,7 @@ Retour au calme | 5:00 | 5,5 → 3 km/h par 1 en 3:00 | 0 %`;
 
 export const EXAMPLE_HOME = `titre: Maison pompes, gainage, corde
 type: maison
+objectif: renforcement du haut du corps et du gainage, sans aller à l'échec
 fc max: 150
 Échauffement | 3:00 | | | rotations d’épaules, montées de genoux sur place
 x3 {
@@ -73,6 +75,7 @@ Conserve ces lignes telles quelles ; tu peux compléter la remarque avec les don
 // Short session used to show Claude the file exported at the end of a session.
 export const EXAMPLE_SHORT = `titre: Tapis court
 type: salle
+objectif: reprise en douceur, FC entre 120 et 135 sur les marches
 fc max: 150
 Chauffe | 3:00 | 4 → 5 km/h | 0 %
 x2 {
@@ -94,6 +97,7 @@ export const EXAMPLE_EXPORT = [
   "",
   "- Début : 2026-10-31 11:02:14 (heure locale, UTC+1) — Fin : 11:14:44 — Durée active : 11:40 — Durée totale (pauses incluses) : 12:30",
   "- Type : salle — FC max de la séance : 150 — Capteur FC : Suunto Race — FC min/moy/max : 92/122/138",
+  "- Objectif : reprise en douceur, FC entre 120 et 135 sur les marches",
   "- Ressenti : 7/10 (Dur) — Poids : – — Tour de taille : –",
   "- Commentaire : jambes lourdes",
   "- Arrêtée avant la fin : non",
@@ -145,6 +149,7 @@ export const EXAMPLE_EXPORT = [
   "```",
   "titre: Tapis court",
   "type: salle",
+  "objectif: reprise en douceur, FC entre 120 et 135 sur les marches",
   "fc max: 150",
   "Chauffe | 3:00 | 4 → 5 km/h | 0 %",
   "x2 {",
@@ -187,6 +192,7 @@ Donne la séance dans un seul bloc de texte, sans autre contenu dedans.
 En-tête :
 titre: <titre court>
 type: salle   (ou maison)
+objectif: <but de la séance en une phrase courte, facultatif>
 fc max: <FC max de la séance, en bpm>
 
 Puis une étape par ligne :
@@ -209,6 +215,9 @@ Nom | quantité | info 1 | info 2 | note
   N'écris pas de consigne du type « −0,5 km/h / 30 s ».
 - Repos : une étape nommée « Repos » avec une durée (Repos | 1:30). L'app annonce l'exercice suivant.
 - Répétition d'un bloc : « x3 { » (ou « 3x { ») sur une ligne, les étapes, puis « } » sur une ligne.
+- Objectif (facultatif mais conseillé) : une seule ligne, en langage simple (ex. « objectif: endurance
+  en côte, FC stable entre 120 et 135 »). L'app l'affiche sous le titre avant la séance et le rappelle
+  dans le fichier de fin de séance.
 - FC max (obligatoire) : « fc max: 155 » dans l'en-tête, choisie selon mon profil et le but de la
   séance. Au-dessus, l'app donne l'alerte (bandeau rouge, bips, voix) pendant toute la séance, quelle que
   soit la plage de l'étape. Je ne peux pas la modifier dans l'app : sans elle, aucune alerte.

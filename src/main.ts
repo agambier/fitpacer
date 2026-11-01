@@ -108,6 +108,8 @@ function refreshPlan() {
   prog = parseProgram(src.value);
   store.set("fitpacer.text", src.value);
   $("planTitle").textContent = prog.title;
+  $("goal").hidden = !prog.goal;
+  $("goalTxt").textContent = prog.goal;
   const errs = $("errors");
   errs.replaceChildren(...prog.errors.map((e) => el("li", "", e)));
   const plan = $("plan");
